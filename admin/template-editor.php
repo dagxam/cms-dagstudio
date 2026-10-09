@@ -6,14 +6,22 @@ $selectedTemplate = site_template();
 $design = template_design();
 $content = template_content();
 $sections = template_active_sections();
+$editing = (string)($_GET['view'] ?? '') === 'edit';
+$editorTabs = ['appearance'=>'Внешний вид','content'=>'Содержимое и бренд','blocks'=>'Блоки главной'];
+if ($selectedTemplate === 'government') $editorTabs['government'] = 'Конструктор администрации';
+$activeTab = (string)($_GET['tab'] ?? 'appearance');
+if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
 ?>
 <div class="eyebrow">DAG STUDIO / ДИЗАЙН САЙТА</div>
 <div class="heading-row">
-  <div><h1>Шаблоны и оформление</h1>
-    <p class="muted">Выберите основу сайта, затем настройте каждый блок под свои задачи. Материалы и пользователи сохраняются при смене шаблона.</p></div>
+  <div><h1><?=$editing?'Настройка шаблона':'Выбор шаблона'?></h1>
+    <p class="muted"><?=$editing
+        ? 'Настраивайте только выбранный шаблон. Для изменения типа сайта вернитесь к выбору.'
+        : 'Выберите тип сайта. После выбора откроются настройки именно этого шаблона. Материалы и пользователи сохраняются.'?></p></div>
   <a class="button button-outline" href="/" target="_blank" rel="noopener">↗ Посмотреть сайт</a>
 </div>
-<h2 class="template-heading">1. Выберите шаблон</h2>
+<?php if (!$editing): ?>
+<div class="template-selection-intro"><span class="template-selection-index">01</span><div><h2>Выберите тип вашего сайта</h2><p>Настройки станут доступны на следующем шаге. Активный шаблон можно открыть сразу для редактирования.</p></div></div>
 <div class="template-gallery">
 <?php foreach ($catalog as $code => $tpl): ?>
   <article class="template-choice box <?=$selectedTemplate===$code?'is-selected':''?>">
@@ -37,11 +45,15 @@ $sections = template_active_sections();
       <p class="template-choice-sub"><?=h($tpl['caption'])?></p>
       <p class="muted template-choice-description"><?=h($tpl['description'])?></p>
       <div class="template-choice-actions">
-        <form method="post" action="/admin/actions.php"><?=csrf()?>
-          <input type="hidden" name="action" value="select_template">
-          <input type="hidden" name="template" value="<?=h($code)?>">
-          <button class="button <?=$selectedTemplate===$code?'button-outline':''?>" type="submit" <?=$selectedTemplate===$code?'disabled':''?>><?=$selectedTemplate===$code?'Выбран':'Применить шаблон'?></button>
-        </form>
+        <?php if ($selectedTemplate === $code): ?>
+          <a class="button" href="/admin/index.php?section=templates&amp;view=edit&amp;tab=appearance">Настроить шаблон ↗</a>
+        <?php else: ?>
+          <form method="post" action="/admin/actions.php"><?=csrf()?>
+            <input type="hidden" name="action" value="select_template">
+            <input type="hidden" name="template" value="<?=h($code)?>">
+            <button class="button" type="submit">Выбрать шаблон →</button>
+          </form>
+        <?php endif; ?>
         <a href="/?preview_template=<?=h($code)?>" class="template-preview-link" target="_blank" rel="noopener">Предпросмотр ↗</a>
       </div>
     </div>
@@ -49,7 +61,30 @@ $sections = template_active_sections();
 <?php endforeach; ?>
 </div>
 
-<div class="template-edit-grid">
+<?php else: ?>
+<div class="template-editor-current box">
+  <div class="template-editor-current-copy">
+    <span class="template-editor-step">02 / НАСТРОЙКА ШАБЛОНА</span>
+    <div class="template-editor-current-title">
+      <span class="template-editor-current-icon" aria-hidden="true">◈</span>
+      <div><h2><?=h($catalog[$selectedTemplate]['label'])?></h2>
+        <p><?=h($catalog[$selectedTemplate]['caption'])?> · Активный шаблон сайта</p></div>
+    </div>
+  </div>
+  <div class="template-editor-current-actions">
+    <a class="button button-outline" href="/admin/index.php?section=templates">← Сменить шаблон</a>
+    <a class="button" href="/" target="_blank" rel="noopener">Посмотреть сайт ↗</a>
+  </div>
+</div>
+<nav class="template-editor-tabs" aria-label="Настройки выбранного шаблона">
+<?php foreach($editorTabs as $tabId=>$tabLabel):?>
+  <a class="template-editor-tab <?=$activeTab===$tabId?'is-active':''?>"
+     href="/admin/index.php?section=templates&amp;view=edit&amp;tab=<?=h($tabId)?>"
+     <?=$activeTab===$tabId?'aria-current="page"':''?>><?=h($tabLabel)?></a>
+<?php endforeach; ?>
+</nav>
+<?php if ($activeTab === 'appearance'): ?>
+<div class="template-edit-grid template-edit-single">
   <section class="template-edit-card box">
     <div class="template-edit-head"><span class="template-section-index">02</span><div><h2>Внешний вид</h2><p class="muted">Отдельные палитры для светлого и тёмного режима, шрифт и композиция.</p></div></div>
     <form method="post" action="/admin/actions.php"><?=csrf()?>
@@ -115,6 +150,10 @@ $sections = template_active_sections();
     </form>
   </section>
 
+</div>
+<?php elseif ($activeTab === 'content'): ?>
+<div class="template-edit-grid template-edit-single">
+
   <section class="template-edit-card box">
     <div class="template-edit-head"><span class="template-section-index">03</span><div><h2>Содержимое и бренд</h2><p class="muted">Заголовки, логотип, кнопки и контактная информация.</p></div></div>
     <form method="post" action="/admin/actions.php" enctype="multipart/form-data"><?=csrf()?>
@@ -168,7 +207,7 @@ $sections = template_active_sections();
     </form>
   </section>
 </div>
-
+<?php elseif ($activeTab === 'blocks'): ?>
 <section class="template-edit-card box template-sections-panel">
   <div class="template-edit-head"><span class="template-section-index">04</span><div><h2>Блоки главной страницы</h2><p class="muted">Включайте, выключайте и меняйте порядок отображения. Пустые разделы не показывают фиктивные публикации.</p></div></div>
   <form method="post" action="/admin/actions.php"><?=csrf()?>
@@ -191,6 +230,11 @@ $sections = template_active_sections();
   </form>
 </section>
 
+<?php elseif ($activeTab === 'government' && $selectedTemplate === 'government'): ?>
+
 <?php if ($selectedTemplate === 'government'): ?>
 <?php require __DIR__ . '/government-editor.php'; ?>
+<?php endif; ?>
+
+<?php endif; ?>
 <?php endif; ?>
