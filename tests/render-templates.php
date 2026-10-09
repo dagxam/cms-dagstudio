@@ -46,6 +46,8 @@ try {
     ob_start();
     include $root.'/index.php';
     $html=ob_get_clean();
+    // Подключаемые PHP-шаблоны работают в области видимости include и используют $id в foreach.
+    $id=(string)$argv[1];
     $layoutOk=$id==='government'
         ? (str_contains($html,'government-columns') &&
            str_contains($html,'government-left-nav') &&
