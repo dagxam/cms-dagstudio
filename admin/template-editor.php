@@ -46,12 +46,33 @@ $sections = template_active_sections();
 
 <div class="template-edit-grid">
   <section class="template-edit-card box">
-    <div class="template-edit-head"><span class="template-section-index">02</span><div><h2>Внешний вид</h2><p class="muted">Цвета, шрифт и композиция выбранного шаблона.</p></div></div>
+    <div class="template-edit-head"><span class="template-section-index">02</span><div><h2>Внешний вид</h2><p class="muted">Отдельные палитры для светлого и тёмного режима, шрифт и композиция.</p></div></div>
     <form method="post" action="/admin/actions.php"><?=csrf()?>
       <input type="hidden" name="action" value="save_template_design">
-      <div class="template-fields template-fields-3">
-        <?php foreach(['accent'=>'Акцентный цвет','background'=>'Фон сайта','ink'=>'Цвет текста'] as $key=>$label): ?>
-        <label><?=h($label)?> <input type="color" name="<?=h($key)?>" value="<?=h($design[$key])?>" class="template-color"></label>
+      <p class="muted template-tip">У выбранного шаблона собственные цвета для светлого и тёмного режимов. Изменения одной темы не затрагивают другую.</p>
+      <div class="template-palette-grid">
+        <?php foreach (['light'=>'Светлая тема','dark'=>'Тёмная тема'] as $mode=>$title):
+          $palette=$design['palettes'][$mode];
+        ?>
+        <fieldset class="template-palette-panel" data-palette-panel="<?=h($mode)?>">
+          <legend><span class="template-mode-symbol" aria-hidden="true"><?=$mode==='light'?'☼':'☾'?></span> <?=h($title)?></legend>
+          <div class="template-palette-preview" data-palette-preview
+            style="--preview-accent:<?=h($palette['accent'])?>;--preview-bg:<?=h($palette['background'])?>;--preview-ink:<?=h($palette['ink'])?>;--preview-surface:<?=h($palette['surface'])?>;--preview-border:<?=h($palette['border'])?>">
+            <div class="template-palette-demo-header"><span>◈ <?=h($catalog[$selectedTemplate]['label'])?></span><span>☰</span></div>
+            <div class="template-palette-demo-content"><strong>Пример оформления</strong><p>Заголовок и текст на фоне выбранной темы.</p>
+              <span class="template-palette-demo-button">Подробнее →</span>
+              <span class="template-palette-demo-tile">Карточка содержимого</span>
+            </div>
+          </div>
+          <div class="template-palette-inputs">
+            <?php foreach (['accent'=>'Акцентный цвет','background'=>'Фон сайта','ink'=>'Цвет текста','surface'=>'Карточки и меню','border'=>'Границы блоков'] as $key=>$label): ?>
+            <label><?=h($label)?><span class="template-palette-color-line">
+              <input type="color" name="palette[<?=h($mode)?>][<?=h($key)?>]" value="<?=h($palette[$key])?>" data-palette-color="<?=h($key)?>">
+              <span class="template-palette-hex"><?=h(strtoupper($palette[$key]))?></span>
+            </span></label>
+            <?php endforeach; ?>
+          </div>
+        </fieldset>
         <?php endforeach; ?>
       </div>
       <div class="template-fields">
@@ -81,7 +102,7 @@ $sections = template_active_sections();
         </select></label>
       </div>
       <p class="muted template-tip">Вы можете изменить любой параметр, не затрагивая опубликованные материалы и базу данных.</p>
-      <button class="button template-save" type="submit">Сохранить оформление</button>
+      <button class="button template-save" type="submit">Сохранить цвета и оформление</button>
     </form>
   </section>
 
