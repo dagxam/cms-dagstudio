@@ -47,6 +47,15 @@ jobs:
           TEST_DB_USER: 'root'
           TEST_DB_PASS: 'testpassword'
         run: php tests/smoke.php
+      - name: Проверка восстановления доступа администратора
+        env:
+          DAG_CMS_TEST_MODE: '1'
+          TEST_DB_HOST: '127.0.0.1'
+          TEST_DB_NAME: 'dagcms_test'
+          TEST_DB_USER: 'root'
+          TEST_DB_PASS: 'testpassword'
+        run: php tests/password-recovery.php
+
 
   deploy:
     name: Загрузка сайта по FTPS
