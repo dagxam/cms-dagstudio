@@ -58,14 +58,14 @@ if ($activeTemplate === 'government') {
     <span><?=h($siteName)?></span>
   </a>
   <nav class="site-nav" aria-label="Главное меню">
-    <a href="/" <?=$kind===''?'class="current"':''?>>Главная</a>
+
     <?php $menuUrls=[];foreach(cms_menu_visible($activeTemplate) as $link):$menuUrls[]=$link['url']; ?>
     <a href="<?=h($link['url'])?>"><?=h($link['label'])?></a>
     <?php endforeach;?>
     <?php foreach(cms_module_ids($activeTemplate,'nav') as $id):if(in_array(cms_module_href($id),$menuUrls,true))continue;?>
     <a href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
     <?php endforeach;?>
-    <?php foreach ($navLinks as $link): if(!is_array($link) || !safe_template_url((string)($link['url']??'')))continue; ?>
+    <?php foreach ((!cms_menu_configured($activeTemplate)?$navLinks:[]) as $link): if(!is_array($link) || !safe_template_url((string)($link['url']??'')))continue; ?>
     <a href="<?=h((string)$link['url'])?>"><?=h((string)($link['label']??''))?></a>
     <?php endforeach;?>
   </nav>
