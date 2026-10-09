@@ -108,10 +108,17 @@ function cms_module_sidebar(string $id,string $template): void {
     echo '<section class="cms-module-widget cms-module-widget-'.h($id).'"><h2>'
         .'<a href="'.h(cms_module_href($id)).'">'.h(cms_module_label($id)).'</a></h2>';
     if(array_key_exists($id,kinds())) {
-        $q=database()->prepare("SELECT title,slug FROM content WHERE kind=? AND status='published' ORDER BY created_at DESC LIMIT 3");
+        $q=database()->prepare("SELECT id,title,slug FROM content WHERE kind=? AND status='published' ORDER BY created_at DESC LIMIT 3");
         $q->execute([$id]);$items=$q->fetchAll();
-        foreach($items as $item)
-            echo '<a class="cms-module-widget-entry" href="/?p='.rawurlencode($item['slug']).'">'.h($item['title']).'</a>';
+        $covers=cms_content_image_map($items);
+        foreach($items as $item) {
+            $itemId=(int)$item['id'];
+            echo '<a class="cms-module-widget-entry cms-module-widget-entry-cover" href="/?p='.rawurlencode($item['slug']).'">';
+            if(isset($covers[$itemId]))
+                echo '<img loading="lazy" src="'.h(cms_content_image_url($itemId,$covers[$itemId])).'" alt="">';
+            else echo '<span class="cms-module-widget-symbol" aria-hidden="true">▤</span>';
+            echo '<span>'.h($item['title']).'</span></a>';
+        }
         if(!$items)echo '<p>Публикаций пока нет.</p>';
     }elseif(in_array($id,['documents','photos','videos'],true)) {
         foreach(array_slice(array_values(array_filter(cms_media_list(true),static fn(array $item):bool=>$item['category']===['documents'=>'document','photos'=>'photo','videos'=>'video'][$id])),0,3) as $item)
