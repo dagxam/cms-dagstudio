@@ -5,7 +5,7 @@ if (!installed()) go('/install.php');
 $siteName = config_value('site_name','DAG STUDIO CMS');
 $siteDescription = config_value('site_description','Официальный сайт');
 $siteType = config_value('site_type','company');
-$types = kinds();
+$types = array_filter(kinds(), static fn (string $key): bool => module_enabled($key), ARRAY_FILTER_USE_KEY);
 $slug = trim((string)($_GET['p'] ?? ''));
 $kind = (string)($_GET['kind'] ?? '');
 if (!array_key_exists($kind, $types)) $kind = '';
@@ -46,6 +46,7 @@ if ($slug !== '') {
     $q = database()->prepare('SELECT * FROM content WHERE slug=? AND status=? LIMIT 1');
     $q->execute([$slug,'published']);
     $record = $q->fetch();
+    if ($record && !module_enabled($record['kind'])) $record = false;
     if (!$record) http_response_code(404);
 }
 if (!$record) {
@@ -55,7 +56,8 @@ if (!$record) {
         $q->execute([$kind,'published']);
         $entries = $q->fetchAll();
     } else {
-        $entries = database()->query("SELECT * FROM content WHERE status='published' ORDER BY created_at DESC LIMIT 24")->fetchAll();
+        $entries = database()->query("SELECT * FROM content WHERE status='published' ORDER BY created_at DESC LIMIT 100")->fetchAll();
+        $entries = array_slice(array_values(array_filter($entries, static fn (array $item): bool => module_enabled($item['kind']))), 0, 24);
     }
 }
 $metaTitle = $record ? $record['title'] . ' — ' . $siteName : $siteName;
