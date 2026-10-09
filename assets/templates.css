@@ -377,3 +377,14 @@ html[data-theme="light"] .template-editor-tab.is-active{color:#8b482e}
 @media(max-width:900px){.cms-module-layout.cms-has-left.cms-has-right,.cms-module-layout.cms-has-left,.cms-module-layout.cms-has-right{grid-template-columns:minmax(0,1fr)}.cms-module-sidebar{padding:0;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.cms-module-sidebar-left{order:2}.cms-module-sidebar-right{order:3}.cms-module-main{order:1}}
 @media(max-width:680px){.cms-module-row{grid-template-columns:1fr 1fr}.cms-module-row-title{grid-column:1/-1}.cms-modules-catalog{grid-template-columns:1fr}.cms-module-manager{padding:15px}.cms-module-preview-cols{grid-template-columns:1fr 1.5fr 1fr}}
 @media(max-width:400px){.cms-module-row{grid-template-columns:1fr}.cms-module-row-title{grid-column:auto}}
+
+/* Живые боковые виджеты модулей */
+.cms-module-widget{min-width:0;display:flex;flex-direction:column;border:1px solid var(--site-border,var(--gov-border,#d5dae0));background:var(--site-surface,var(--gov-surface,#fff));border-radius:var(--site-radius,6px);overflow:hidden}
+.cms-module-widget h2{font-size:14px!important;font-weight:750;margin:0!important;padding:13px 14px;background:color-mix(in srgb,var(--site-accent,#4f83b7) 13%,var(--site-surface,#fff));border-bottom:1px solid var(--site-border,#d5dae0)}
+.cms-module-widget h2 a{color:var(--site-ink,#172333)!important}
+.cms-module-widget-entry{display:block;padding:11px 13px;font-size:12px;line-height:1.45;border-bottom:1px solid var(--site-border,#d5dae0);color:var(--site-ink,#172333);overflow-wrap:anywhere}
+.cms-module-widget-entry:hover{color:var(--site-accent,#4f83b7)}
+.cms-module-widget p{font-size:12px;margin:8px 13px;color:var(--site-ink,#172333);overflow-wrap:anywhere}
+.cms-module-widget-more{display:block;padding:11px 13px;font-weight:750;font-size:11px;color:var(--site-accent,#4f83b7)!important;margin-top:auto}
+.cms-module-sidebar .cms-module-widget{margin-bottom:3px}
+.government-module-extra .cms-module-widget{--site-surface:var(--gov-surface);--site-border:var(--gov-border);--site-ink:var(--gov-text);--site-accent:var(--gov-blue)}
