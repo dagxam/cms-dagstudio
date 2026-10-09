@@ -39,6 +39,10 @@ jobs:
           coverage: none
       - name: Проверка синтаксиса всех PHP-файлов
         run: find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n 1 php -l
+      - name: Проверка синтаксиса JavaScript
+        run: |
+          node --check assets/theme.js
+          node --check assets/template-palettes.js
       - name: Smoke-тест базы данных
         env:
           DAG_CMS_TEST_MODE: '1'
