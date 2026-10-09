@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var root = document.documentElement;
-  var key = 'dagstudio-cms-theme';
+  var key = root.getAttribute('data-theme-storage-key') || 'dagstudio-cms-theme';
   var current = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
 
   function apply(theme) {
@@ -16,7 +16,12 @@
     var favicon = document.getElementById('dag-favicon');
     if (favicon) favicon.href = current === 'light' ? '/assets/ornament-light.svg' : '/assets/ornament-dark.svg';
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = current === 'light' ? '#f9f6f0' : '#101113';
+    if (meta) {
+      var siteColor = document.body && document.body.classList.contains('site-page')
+        ? getComputedStyle(document.body).getPropertyValue('--site-bg').trim() : '';
+      meta.content = /^#[a-fA-F0-9]{6}$/.test(siteColor)
+        ? siteColor : (current === 'light' ? '#f9f6f0' : '#101113');
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
