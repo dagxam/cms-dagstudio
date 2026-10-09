@@ -4,8 +4,14 @@ if (!defined('DAG_CMS_SITE_VIEW') || $activeTemplate !== 'government') { http_re
 
 $gov=government_layout();
 $govLayout=$gov['layout'];
-$govLeft=in_array($govLayout,['both','swap','left'],true);
-$govRight=in_array($govLayout,['both','swap','right'],true);
+$govLeftModules=cms_module_ids('government','left');
+$govRightModules=cms_module_ids('government','right');
+$govLeft=in_array($govLayout,['both','swap','left'],true) || (bool)$govLeftModules;
+$govRight=in_array($govLayout,['both','swap','right'],true) || (bool)$govRightModules;
+if($govLeft && $govRight && !in_array($govLayout,['both','swap'],true))$govLayout='both';
+elseif($govLeft && !$govRight)$govLayout='left';
+elseif(!$govLeft && $govRight)$govLayout='right';
+elseif(!$govLeft && !$govRight)$govLayout='none';
 $govArticle=isset($record) && is_array($record) ? $record : null;
 $search=trim((string)($_GET['q']??''));
 $govResults=[];
@@ -15,7 +21,8 @@ if ($search!=='' && mb_strlen($search)<=120) {
     $q->execute([$term,$term,$term]);
     $govResults=array_values(array_filter($q->fetchAll(),static fn(array $item): bool => module_enabled($item['kind'])));
 }
-$govSections=$kind!==''?[$kind]:$layout;
+$govSections=$kind!==''?[$kind]:cms_module_ids('government','main');
+$govSections=array_values(array_filter($govSections,static fn(string $id):bool=>cms_module_enabled($id)));
 $govLogo=$siteLogo;
 $govBanner=$heroImage;
 $govTitle=$kind!==''?($moduleLabels[$kind]??$gov['center_title']):$gov['center_title'];
@@ -90,6 +97,9 @@ if ($search!=='')$govTitle='Результаты поиска';
     <button type="submit"><?=h($gov['search_button'])?></button>
   </form>
   <div class="government-quick-actions">
+    <?php foreach(cms_module_ids('government','nav') as $id):?>
+      <a class="government-quick-link" href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
+    <?php endforeach;?>
     <?php foreach($gov['quick_links'] as $quick):?>
     <a class="government-quick-link" href="<?=h($quick['url'])?>"><?=h($quick['label'])?></a>
     <?php endforeach;?>
@@ -105,8 +115,11 @@ if ($search!=='')$govTitle='Результаты поиска';
     <h2 class="government-sidebar-heading"><?=h($gov['left_title'])?></h2>
     <nav class="government-left-nav" aria-label="Разделы администрации">
       <?php foreach($gov['left_menu'] as $link):?><a href="<?=h($link['url'])?>"><?=h($link['label'])?><span aria-hidden="true">›</span></a><?php endforeach;?>
-      <a href="/media.php">Медиатека: фото, видео и документы <span aria-hidden="true">›</span></a>
+
     </nav>
+    <?php if($govLeftModules):?><section class="government-module-extra" aria-label="Модули слева">
+    <?php foreach($govLeftModules as $id):?><?=cms_module_compact($id,'government')?><?php endforeach;?>
+    </section><?php endif;?>
   </aside>
   <?php endif;?>
   <main class="government-main" id="main-content">
@@ -143,6 +156,8 @@ if ($search!=='')$govTitle='Результаты поиска';
             <?php for($i=1;$i<=3;$i++):?><div class="government-feature"><strong><?=h($siteContent['feature_'.$i.'_title'])?></strong><p><?=h($siteContent['feature_'.$i.'_text'])?></p></div><?php endfor;?>
           </div>
         </section>
+        <?php elseif($section==='media'):?>
+        <section class="government-section"><?php cms_module_media_block(); ?></section>
         <?php elseif($section==='contact'):?>
         <section class="government-section" id="contact">
           <h2><?=h($siteContent['contact_title'])?></h2>
@@ -202,10 +217,14 @@ if ($search!=='')$govTitle='Результаты поиска';
     </section>
     <?php endif;?>
     <?php if($gov['office_phone']!==''):?><div class="government-phone"><span>Телефон администрации</span><strong><?=h($gov['office_phone'])?></strong></div><?php endif;?>
+    <?php if($govRightModules):?><section class="government-module-extra" aria-label="Модули справа">
+    <?php foreach($govRightModules as $id):?><?=cms_module_compact($id,'government')?><?php endforeach;?>
+    </section><?php endif;?>
   </aside>
   <?php endif;?>
 </div>
-<footer class="government-footer"><?=cms_age_mark()?><span>© <?=date('Y')?> <?=h($siteName)?>. <?=h($siteContent['footer_text'])?> <?=h($gov['footer_note'])?></span><span>Работает на DAG STUDIO CMS</span></footer>
+<footer class="government-footer"><?=cms_age_mark()?><span>© <?=date('Y')?> <?=h($siteName)?>. <?=h($siteContent['footer_text'])?> <?=h($gov['footer_note'])?></span><span>Работает на DAG STUDIO CMS
+<?php foreach(cms_module_ids('government','footer') as $id):?><?=cms_module_compact($id,'footer')?><?php endforeach;?></span></footer>
 </div>
 <?=cms_age_gate()?>
 </body></html>
