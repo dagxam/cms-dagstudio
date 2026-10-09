@@ -36,7 +36,7 @@ test_check(template_active_sections('store')===$catalog['store']['sections'],'Б
 foreach(['/','/?p=about','/?kind=news','#contact','https://example.ru/page'] as $url) {
     test_check(safe_template_url($url), 'Допустимый адрес '.$url);
 }
-foreach(['javascript:alert(1)','data:text/html,foo','//evil.example','https://example.org/\nheader','/bad link'] as $url) {
+foreach(['javascript:alert(1)','data:text/html,foo','//evil.example',"https://example.org/\nheader",'/bad link'] as $url) {
     test_check(!safe_template_url($url), 'Запрещённый адрес '.$url);
 }
 echo "Шаблоны CMS: тесты успешно завершены.\n";
