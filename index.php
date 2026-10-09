@@ -11,9 +11,14 @@ $kind = (string)($_GET['kind'] ?? '');
 if (!array_key_exists($kind, $types)) $kind = '';
 $message = '';
 $error = '';
+$privacyUrl = config_value('privacy_url');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'contact') {
     verify_token();
+    if ($privacyUrl === '' || empty($_POST['consent'])) {
+        http_response_code(400);
+        $error = 'Отправка обращения требует опубликованной политики и согласия.';
+    } else {
     $name = trim((string)($_POST['name'] ?? ''));
     $email = trim((string)($_POST['email'] ?? ''));
     $body = trim((string)($_POST['body'] ?? ''));
@@ -32,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'conta
             ->execute([$name,$email,$body]);
         $_SESSION['last_contact'] = time();
         $message = 'Спасибо! Ваше обращение сохранено и доступно администратору сайта.';
+    }
     }
 }
 
@@ -98,7 +104,7 @@ $metaDescription = $record ? ($record['summary'] ?: $siteDescription) : $siteDes
 <section class="section-block contact-section" id="contact"><div><div class="eyebrow">ОБРАТНАЯ СВЯЗЬ</div>
 <h2>Свяжитесь с нами</h2><p class="muted">Заполните форму, и ваше сообщение поступит в административную панель.</p>
 <p><?=h(config_value('contact_email'))?></p></div>
-<div class="box contact-form"><?php if($message):?><div class="notice"><?=h($message)?></div><?php endif;?>
+<?php if ($privacyUrl): ?><div class="box contact-form"><?php if($message):?><div class="notice"><?=h($message)?></div><?php endif;?>
 <?php if($error):?><div class="error"><?=h($error)?></div><?php endif;?>
 <form method="post" action="/?kind=<?=h($kind)?>#contact"><?=csrf()?>
 <input type="hidden" name="action" value="contact">
@@ -106,8 +112,9 @@ $metaDescription = $record ? ($record['summary'] ?: $siteDescription) : $siteDes
 <label>Ваше имя<input required maxlength="120" name="name" value="<?=h($_POST['name'] ?? '')?>"></label>
 <label>Электронная почта<input required type="email" name="email" value="<?=h($_POST['email'] ?? '')?>"></label>
 <label>Сообщение<textarea required minlength="10" maxlength="5000" rows="5" name="body"><?=h($_POST['body'] ?? '')?></textarea></label>
+<label class="check privacy-check"><input type="checkbox" name="consent" value="1" required> Даю согласие на обработку указанных данных согласно <a href="<?=h($privacyUrl)?>" target="_blank" rel="noopener noreferrer">политике обработки персональных данных</a>.</label>
 <button class="button" type="submit">Отправить сообщение</button></form>
-</div></section>
+</div><?php else: ?><p class="muted">Онлайн-форма будет доступна после публикации политики обработки персональных данных.</p><?php endif; ?></section>
 <?php endif;?></main>
 <footer class="site-footer"><div class="container footer-inner"><span><?=h($siteName)?> · <?=date('Y')?></span>
 <span>Работает на <strong>DAG STUDIO CMS</strong></span></div></footer>
