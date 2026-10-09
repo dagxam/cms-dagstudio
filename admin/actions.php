@@ -16,6 +16,7 @@ try {
         $kind = (string)($_POST['kind'] ?? '');
         if (!array_key_exists($kind, kinds())) throw new RuntimeException('Неизвестный раздел');
         require_module($kind);
+        if (!module_enabled($kind)) throw new RuntimeException('Модуль отключён в настройках');
         $id = max(0, (int)($_POST['id'] ?? 0));
         if ($id) {
             $q = database()->prepare('SELECT kind FROM content WHERE id=?');
@@ -63,13 +64,19 @@ try {
         $kind = $q->fetchColumn();
         if (!$kind) throw new RuntimeException('Материал не найден');
         require_module((string)$kind);
+        if (!module_enabled((string)$kind)) throw new RuntimeException('Модуль отключён');
         database()->prepare('DELETE FROM content WHERE id=?')->execute([$id]);
         log_action('content.delete', $kind . ':' . $id);
         $_SESSION['flash'] = 'Материал удалён.';
         $back = '/admin/index.php?section=' . urlencode((string)$kind);
     } elseif ($action === 'save_settings') {
         require_module('settings');
+        $modules = $_POST['modules'] ?? [];
+        if (!is_array($modules)) throw new RuntimeException('Неверный список модулей');
+        $modules = array_values(array_intersect(array_keys(kinds()), array_map('strval',$modules)));
+        if (!$modules) throw new RuntimeException('Включите хотя бы один модуль');
         $values = [
+            'enabled_modules'=>json_encode($modules),
             'site_name'=>trim((string)($_POST['site_name'] ?? '')),
             'site_description'=>trim((string)($_POST['site_description'] ?? '')),
             'contact_email'=>trim((string)($_POST['contact_email'] ?? '')),
