@@ -70,3 +70,18 @@ CREATE TABLE IF NOT EXISTS cms_media (
  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
  KEY idx_media_status(status,category,created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Доступ к внешнему видео ограничен только разрешёнными провайдерами VK и Rutube.
+CREATE TABLE IF NOT EXISTS cms_video_links (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ title VARCHAR(190) NOT NULL,
+ description TEXT NULL,
+ provider ENUM('vk','rutube') NOT NULL,
+ embed_url VARCHAR(500) NOT NULL,
+ original_url VARCHAR(500) NOT NULL,
+ age_rating ENUM('0+','6+','12+','16+','18+') NOT NULL DEFAULT '0+',
+ status ENUM('draft','published') NOT NULL DEFAULT 'draft',
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ KEY idx_video_status(status,created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
