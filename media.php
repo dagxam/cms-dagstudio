@@ -66,9 +66,10 @@ $rating=cms_age_rating();
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?=h($item['title']??'Медиатека')?> — <?=h(config_value('site_name','DAG STUDIO CMS'))?></title>
 <meta name="robots" content="index,follow"><link rel="stylesheet" href="/assets/style.css?v=media1">
-<link rel="stylesheet" href="/assets/media.css?v=media1"></head>
-<body class="cms-media-page">
-<header class="cms-media-header"><a href="/">← На главную</a><strong><?=h(config_value('site_name','DAG STUDIO CMS'))?></strong><span class="cms-age-mark"><?=h($rating)?></span></header>
+<link rel="stylesheet" href="/assets/media.css?v=legal2">
+<script src="/assets/accessibility.js?v=legal2" defer></script></head>
+<body class="cms-media-page"<?=cms_accessibility_attributes()?>>
+<header class="cms-media-header"><a href="/">← На главную</a><strong><?=h(config_value('site_name','DAG STUDIO CMS'))?></strong><div class="cms-media-header-actions"><?=cms_accessibility_control()?><?=cms_age_mark()?></div></header>
 <main class="cms-media-public"><div class="cms-media-head"><span class="eyebrow">DAG STUDIO CMS</span><h1><?=$item?h($item['title']):'Медиатека сайта'?></h1>
 <p>Документы, фотографии и видео, опубликованные администрацией сайта.</p></div>
 <?php if($item):?>
@@ -85,7 +86,8 @@ $rating=cms_age_rating();
 <?php endforeach;?></nav>
 <div class="cms-media-grid">
 <?php foreach($files as $f):?><article class="box cms-media-tile">
-<?php if($f['category']==='photo'):?><a href="/media.php?view=<?=(int)$f['id']?>"><img loading="lazy" src="<?=$f['age_rating']==='18+'?'':'/media.php?file='.(int)$f['id']?>" alt="<?=h($f['alt_text']?:$f['title'])?>"></a>
+<?php if($f['category']==='photo'):?><a href="/media.php?view=<?=(int)$f['id']?>">
+<?php if($f['age_rating']==='18+'):?><div class="cms-media-type">18+</div><?php else:?><img loading="lazy" src="/media.php?file=<?=(int)$f['id']?>" alt="<?=h($f['alt_text']?:$f['title'])?>"><?php endif;?></a>
 <?php else:?><div class="cms-media-type"><?=['document'=>'▤','video'=>'▣'][$f['category']]?></div><?php endif;?>
 <span class="cms-age-mark"><?=h($f['age_rating'])?></span><h2><a href="/media.php?view=<?=(int)$f['id']?>"><?=h($f['title'])?></a></h2>
 <p><?=h(mb_strimwidth((string)($f['description']??''),0,150,'…','UTF-8'))?></p>
@@ -95,4 +97,5 @@ $rating=cms_age_rating();
 <?php if(!$files):?><div class="box">Опубликованных файлов пока нет.</div><?php endif;?>
 <?php endif;?>
 </main><footer class="cms-media-footer">© <?=date('Y')?> <?=h(config_value('site_name','DAG STUDIO CMS'))?> · DAG STUDIO CMS · <?=h($rating)?></footer>
+<?=cms_age_gate()?>
 </body></html>
