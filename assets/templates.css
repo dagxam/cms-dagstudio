@@ -475,3 +475,81 @@ html[data-theme="light"] .admin-layout .cms-media-video-editor input,
 html[data-theme="light"] .admin-layout .cms-media-video-editor textarea,
 html[data-theme="light"] .admin-layout .cms-media-video-editor select{background:var(--panel);color:var(--text)}
 @media(max-width:620px){.cms-media-video-editor>form{padding:13px}.cms-media-video-editor>form .two{grid-template-columns:1fr}.cms-users-form{padding:16px}}
+
+
+/* Изображения материалов и редактор обложек — единый компонент четырёх шаблонов. */
+.cms-cover-fieldset{padding:18px 20px;margin:18px 0;border:1px solid var(--border);border-radius:12px;background:var(--panel2)}
+.cms-cover-fieldset legend{font-weight:800;font-size:14px;padding:0 10px;color:var(--text)}
+.cms-cover-editor{display:grid;grid-template-columns:minmax(180px,290px) minmax(0,1fr);gap:22px;align-items:start}
+.cms-cover-editor-preview{display:grid;place-items:center;position:relative;gap:7px;aspect-ratio:16/10;min-height:165px;border-radius:10px;overflow:hidden;border:1px dashed var(--border);background:var(--panel);text-align:center;padding:8px}
+.cms-cover-editor-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.cms-cover-editor-empty{font-size:42px;line-height:1;color:var(--accent-light)}
+.cms-cover-editor-preview .muted{font-size:12px}
+.cms-cover-editor-controls{display:grid;gap:12px}
+.cms-cover-editor-controls label{min-width:0;display:grid;gap:6px;font-weight:680}
+.cms-cover-editor-controls input[type="file"]{width:100%;max-width:100%;padding:12px;background:var(--panel);border:1px dashed var(--border);cursor:pointer}
+.cms-cover-editor-controls input[type="file"]::file-selector-button{border:1px solid var(--accent);border-radius:7px;padding:8px 12px;margin-right:12px;background:var(--accent);color:#17120f;font-weight:800;cursor:pointer}
+.cms-cover-editor-controls .check{display:flex;flex-direction:row;gap:8px;align-items:center;color:var(--text)}
+.cms-cover-editor-controls .check input{width:auto;min-width:18px}
+.cms-admin-cover-thumb{width:78px;height:58px;border:1px solid var(--border);border-radius:8px;display:grid;place-items:center;overflow:hidden;background:var(--panel2);color:var(--muted)}
+.cms-admin-cover-thumb img{width:100%;height:100%;display:block;object-fit:cover}
+.cms-admin-cover-thumb span{font-size:25px}
+.site-page .cms-visual-card{display:flex!important;flex-direction:column;gap:0;padding:0!important;overflow:hidden;isolation:isolate;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;border-radius:var(--site-radius,12px)}
+.site-page .cms-visual-card:hover{transform:translateY(-4px);border-color:var(--site-accent)!important;box-shadow:0 14px 35px color-mix(in srgb,var(--site-ink) 10%,transparent)!important}
+.site-page .cms-card-media{display:block;position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;background:color-mix(in srgb,var(--site-accent) 8%,var(--site-surface))}
+.site-page .cms-card-media img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;transition:transform .4s ease}
+.site-page .cms-visual-card:hover .cms-card-media img{transform:scale(1.055)}
+.site-page .cms-card-media-placeholder{display:grid;place-items:center;width:100%;height:100%;font-size:clamp(34px,5vw,58px);color:var(--site-accent);background:linear-gradient(140deg,color-mix(in srgb,var(--site-accent) 15%,var(--site-surface)),var(--site-surface) 70%);opacity:.7}
+.site-page .cms-card-media-placeholder::before,.site-page .cms-card-media-placeholder::after{content:"";position:absolute;border:1px solid currentColor;opacity:.10;border-radius:50%;width:63%;aspect-ratio:1;transform:translateX(41%)}
+.site-page .cms-card-media-placeholder::after{width:35%;transform:translateX(-140%);opacity:.08}
+.site-page .cms-card-copy{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:clamp(15px,1.7vw,22px);flex:1;min-width:0}
+.site-page .cms-card-copy .card-symbol{display:none}
+.site-page .cms-card-copy .eyebrow{font-size:10px;color:var(--site-accent);font-weight:800;letter-spacing:.08em}
+.site-page .cms-card-copy h3{font-size:clamp(17px,1.5vw,22px);font-weight:750;line-height:1.3;margin:0;overflow-wrap:anywhere;color:var(--site-ink)!important}
+.site-page .cms-card-copy p{font-size:13px;line-height:1.65;margin:0;opacity:.78;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.site-page .cms-card-copy .price{color:var(--site-accent)!important;font-size:21px;font-weight:850;margin-top:auto;letter-spacing:-.025em}
+.site-page .cms-card-copy .card-link{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:12px;font-size:12px;font-weight:800;border-top:1px solid var(--site-border);color:var(--site-accent)}
+.site-page .cms-card-copy .card-link>span{font-size:18px}
+.site-template-store .cms-card-media{aspect-ratio:4/3}
+.site-template-store .cms-card-copy .price{font-size:clamp(20px,2vw,27px)}
+.site-template-store .cms-card-copy .card-link{border-radius:5px;border:1px solid var(--site-accent);padding:10px 12px;color:var(--site-button-ink);background:var(--site-accent)}
+.site-template-company .cms-visual-card{box-shadow:0 10px 30px color-mix(in srgb,var(--site-ink) 7%,transparent)}
+.site-template-organization .cms-visual-card{border-radius:var(--site-radius,8px)}
+.site-page .cms-article-cover{margin:22px 0 28px;width:100%;max-width:100%;border-radius:var(--site-radius,12px);overflow:hidden;border:1px solid var(--site-border);background:var(--site-surface)}
+.site-page .cms-article-cover img{display:block;width:100%;max-height:min(66vh,590px);object-fit:cover;aspect-ratio:16/9}
+.government-page .government-article-cover{margin:14px 0 24px}
+.government-page .government-article-cover img{max-height:500px}
+.government-page .cms-government-material{display:grid;grid-template-columns:clamp(92px,10vw,125px) minmax(0,1fr) auto;align-items:start;gap:16px;padding:17px 0}
+.government-page .cms-government-material-thumb{display:grid;place-items:center;width:100%;aspect-ratio:4/3;border:1px solid var(--gov-border);border-radius:5px;overflow:hidden;background:color-mix(in srgb,var(--gov-blue) 10%,var(--gov-surface));color:var(--gov-blue)!important;text-decoration:none}
+.government-page .cms-government-material-thumb img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .24s ease}
+.government-page .cms-government-material-thumb:hover img{transform:scale(1.06)}
+.government-page .cms-government-material-thumb span{font-size:35px}
+.government-page .cms-government-material-copy{min-width:0}
+.government-page .cms-government-material-copy h3{margin:4px 0 6px;line-height:1.32;font-size:clamp(14px,1.25vw,17px)}
+.government-page .cms-government-material-copy h3 a{color:var(--gov-text)!important}
+.government-page .cms-government-material-copy h3 a:hover{color:var(--gov-blue)!important}
+.government-page .cms-government-material-copy p{font-size:12px;opacity:.78;line-height:1.55}
+.government-page .cms-government-material-copy .price{display:inline-block;margin:6px 0 0;color:var(--gov-blue);font-weight:800}
+.government-page .cms-government-material .government-material-date{font-size:10px;color:var(--gov-text);opacity:.6;white-space:nowrap}
+.cms-module-widget-entry-cover,.cms-inline-module-entry-cover{display:flex!important;align-items:center;gap:10px;min-width:0}
+.cms-module-widget-entry-cover img{display:block;width:55px;height:48px;flex:0 0 55px;object-fit:cover;border-radius:5px}
+.cms-module-widget-symbol,.cms-inline-module-symbol{display:grid;place-items:center;flex:0 0 55px;width:55px;height:48px;border-radius:5px;font-size:21px;background:color-mix(in srgb,var(--site-accent) 11%,var(--site-surface));color:var(--site-accent)}
+.cms-module-widget-entry-cover>span:last-child,.cms-inline-module-entry-cover>span:last-child{flex:1;min-width:0;overflow-wrap:anywhere}
+.cms-inline-module-entry-cover img{display:block;width:86px;height:62px;flex:0 0 86px;object-fit:cover;border-radius:6px}
+.cms-inline-module-entry-cover .cms-inline-module-symbol{width:86px;height:62px;flex-basis:86px}
+@media(max-width:1050px){
+ .government-page .cms-government-material{grid-template-columns:90px minmax(0,1fr)}
+ .government-page .cms-government-material .government-material-date{grid-column:2;white-space:normal}
+}
+@media(max-width:650px){
+ .cms-cover-editor{grid-template-columns:1fr}
+ .cms-cover-editor-preview{max-width:390px}
+ .cms-cover-fieldset{padding:13px}
+ .site-page .cms-visual-card:hover{transform:none}
+ .site-page .cms-article-cover img{max-height:330px}
+ .government-page .cms-government-material{gap:12px;padding:13px 0}
+ .government-page .cms-government-material-thumb span{font-size:26px}
+}
+@media(prefers-reduced-motion:reduce){
+ .site-page .cms-visual-card,.site-page .cms-card-media img,.government-page .cms-government-material-thumb img{transition:none!important}
+}
