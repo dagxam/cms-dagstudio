@@ -34,9 +34,9 @@ $navLinks = $siteContent['header_links'];
   <title><?=h($metaTitle)?></title>
   <link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg">
   <script>var dagDefaultTheme=<?=json_encode(template_default_mode($activeTemplate))?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-template-<?=h($activeTemplate)?>");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
-  <script src="/assets/theme.js" defer></script>
+  <script src="/assets/theme.js?v=palette4" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=templates3">
-  <link rel="stylesheet" href="/assets/templates.css?v=templates3">
+  <link rel="stylesheet" href="/assets/templates.css?v=palette4">
   <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>
 </head>
 <body class="<?=h($siteClass)?>" style="<?=h(template_style($design,$activeTemplate))?>">
