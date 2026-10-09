@@ -270,12 +270,6 @@ function template_style(array $design, ?string $forTemplate = null): string
 {
     // Значения валидируются перед сохранением и дополнительно проверяются при рендеринге.
     $id = ($forTemplate !== null && array_key_exists($forTemplate, template_catalog())) ? $forTemplate : site_template();
-    $default = template_catalog()[$id];
-    $colors = [];
-    foreach (['accent','background','ink'] as $name) {
-        $value = (string)$design[$name];
-        $colors[$name] = preg_match('/^#[0-9a-fA-F]{6}$/D', $value) ? $value : $default[$name];
-    }
     $radius = in_array((string)$design['radius'], ['0','6','12','16','18','24'], true) ? (int)$design['radius'] : 12;
     $width = in_array((string)$design['width'], ['1120','1240','1320','1380','1480'], true) ? (int)$design['width'] : 1320;
     return '--site-radius:' . $radius . 'px' .
