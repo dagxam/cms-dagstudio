@@ -12,7 +12,151 @@ $action = (string)($_POST['action'] ?? '');
 $back = '/admin/index.php';
 
 try {
-    if ($action === 'save_content') {
+    if ($action === 'select_template') {
+        require_module('settings');
+        $id = (string)($_POST['template'] ?? '');
+        if (!array_key_exists($id, template_catalog())) throw new RuntimeException('Шаблон не найден');
+        // Смена шаблона не удаляет контент или пользовательские подписи/логотип.
+        // Визуальные переопределения сбрасываем, чтобы выбранный макет был виден.
+        $pdo = database();
+        $oldContent = json_decode(config_value('template_content', '{}'), true);
+        if (!is_array($oldContent)) $oldContent = [];
+        $query = $pdo->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+        $pdo->beginTransaction();
+        try {
+            foreach (['site_template'=>$id,'site_type'=>$id,'template_design'=>'{}'] as $key=>$value) {
+                $query->execute([$key,$value]);
+            }
+            $required = match($id) {
+                'store'=>['page','product','news'],
+                'government'=>['page','news','service'],
+                'organization'=>['page','news','service'],
+                default=>['page','service','news'],
+            };
+            $modules = json_decode(config_value('enabled_modules','[]'),true);
+            if (!is_array($modules)) $modules = [];
+            $query->execute(['enabled_modules', json_encode(array_values(array_unique(array_merge($modules,$required))),JSON_UNESCAPED_UNICODE)]);
+            $pdo->commit();
+        } catch (Throwable $error) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            throw $error;
+        }
+        log_action('template.change',$id);
+        $_SESSION['flash'] = 'Шаблон «' . template_catalog()[$id]['label'] . '» применён. Материалы и персональные настройки сохранены.';
+        $back='/admin/index.php?section=templates';
+    } elseif ($action === 'save_template_design') {
+        require_module('settings');
+        $options = [
+            'font'=>['montserrat','manrope','system','georgia'],
+            'hero'=>['split','banner','official','centered'],
+            'cards'=>['soft','outlined','elevated'],
+            'header'=>['classic','catalog','official'],
+            'radius'=>['0','6','12','16','18','24'],
+            'width'=>['1120','1240','1320','1380','1480'],
+        ];
+        $design = [];
+        foreach (['accent','background','ink'] as $key) {
+            $value = strtolower(trim((string)($_POST[$key] ?? '')));
+            if (!preg_match('/^#[a-f0-9]{6}$/D', $value)) throw new RuntimeException('Неверный формат цвета.');
+            $design[$key] = $value;
+        }
+        foreach ($options as $key=>$allowedValues) {
+            $value = (string)($_POST[$key] ?? '');
+            if (!in_array($value,$allowedValues,true)) throw new RuntimeException('Недопустимое значение параметра оформления.');
+            $design[$key]=$value;
+        }
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['template_design',json_encode($design,JSON_UNESCAPED_UNICODE)]);
+        log_action('template.design', site_template());
+        $_SESSION['flash']='Оформление сохранено. Цвета, размеры и стиль обновлены на сайте.';
+        $back='/admin/index.php?section=templates';
+    } elseif ($action === 'save_template_content') {
+        require_module('settings');
+        $limits = [
+            'eyebrow'=>140,'title'=>190,'description'=>700,
+            'cta'=>70,'cta_url'=>300,'secondary'=>70,'secondary_url'=>300,
+            'features_title'=>140,'news_title'=>140,'contact_title'=>140,
+            'footer_text'=>220,'phone'=>45,'address'=>240,
+            'feature_1_title'=>90,'feature_1_text'=>240,
+            'feature_2_title'=>90,'feature_2_text'=>240,
+            'feature_3_title'=>90,'feature_3_text'=>240,
+        ];
+        $values = [];
+        foreach ($limits as $key=>$max) {
+            $value = trim((string)($_POST[$key]??''));
+            if (mb_strlen($value)>$max || str_contains($value, "\x00")) {
+                throw new RuntimeException('Некорректное поле: '.$key);
+            }
+            $values[$key]=$value;
+        }
+        if ($values['title']==='') throw new RuntimeException('Заголовок первого экрана не может быть пустым.');
+        foreach (['cta_url','secondary_url'] as $key) {
+            if (!safe_template_url($values[$key])) throw new RuntimeException('Недопустимый адрес кнопки. Используйте /, # или https://.');
+        }
+        $labels=$_POST['nav_label']??[];
+        $urls=$_POST['nav_url']??[];
+        if (!is_array($labels) || !is_array($urls) || count($labels)>4 || count($urls)>4) {
+            throw new RuntimeException('Превышен лимит пунктов меню.');
+        }
+        $nav=[];
+        for ($i=0;$i<4;$i++) {
+            $label=trim((string)($labels[$i]??''));
+            $url=trim((string)($urls[$i]??''));
+            if (mb_strlen($label)>50 || mb_strlen($url)>300 || !safe_template_url($url)) {
+                throw new RuntimeException('Проверьте дополнительные ссылки меню.');
+            }
+            if ($label!=='' && $url!=='') $nav[]=['label'=>$label,'url'=>$url];
+        }
+        $values['header_links']=$nav;
+        $values['logo_path']=template_content()['logo_path'];
+        if (!empty($_POST['remove_logo'])) $values['logo_path']='';
+        if (isset($_FILES['site_logo']) && is_array($_FILES['site_logo']) &&
+            (int)($_FILES['site_logo']['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE) {
+            $file=$_FILES['site_logo'];
+            if ((int)$file['error']!==UPLOAD_ERR_OK || !is_uploaded_file((string)$file['tmp_name']) ||
+                (int)$file['size']<1 || (int)$file['size']>2*1024*1024) {
+                throw new RuntimeException('Не удалось загрузить логотип. Максимум 2 МБ.');
+            }
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $type=$finfo->file((string)$file['tmp_name']);
+            $ext=['image/png'=>'png','image/jpeg'=>'jpg','image/webp'=>'webp'][$type]??null;
+            $image=@getimagesize((string)$file['tmp_name']);
+            if (!$ext || !$image || ($image[0]??0)<1 || ($image[1]??0)<1 ||
+                ($image[0]??0)>2400 || ($image[1]??0)>2400) {
+                throw new RuntimeException('Логотип должен быть настоящим изображением PNG, JPG или WebP до 2400 px.');
+            }
+            $dir=dirname(__DIR__).'/assets/uploads';
+            if (!is_dir($dir) || !is_writable($dir)) throw new RuntimeException('Папка assets/uploads недоступна для записи.');
+            $filename='logo-'.bin2hex(random_bytes(16)).'.'.$ext;
+            if (!move_uploaded_file((string)$file['tmp_name'],$dir.'/'.$filename)) {
+                throw new RuntimeException('Ошибка при сохранении логотипа.');
+            }
+            @chmod($dir.'/'.$filename,0644);
+            $values['logo_path']='/assets/uploads/'.$filename;
+        }
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['template_content',json_encode($values,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
+        log_action('template.content',site_template());
+        $_SESSION['flash']='Тексты, бренд и меню обновлены.';
+        $back='/admin/index.php?section=templates';
+    } elseif ($action === 'save_template_sections') {
+        require_module('settings');
+        $enabled=$_POST['active_sections']??[];
+        $orders=$_POST['section_order']??[];
+        if (!is_array($enabled) || !is_array($orders)) throw new RuntimeException('Неверный список разделов.');
+        $allowed = array_keys(template_sections());
+        $enabled=array_values(array_unique(array_intersect($allowed,array_map('strval',$enabled))));
+        usort($enabled,static function($a,$b) use($orders,$allowed): int {
+            $pa=min(6,max(1,(int)($orders[$a]??6)));
+            $pb=min(6,max(1,(int)($orders[$b]??6)));
+            return ($pa<=>$pb) ?: (array_search($a,$allowed,true)<=>array_search($b,$allowed,true));
+        });
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['template_sections',json_encode($enabled)]);
+        log_action('template.sections',implode(',',$enabled));
+        $_SESSION['flash']='Порядок и видимость блоков сохранены.';
+        $back='/admin/index.php?section=templates';
+    } elseif ($action === 'save_content') {
         $kind = (string)($_POST['kind'] ?? '');
         if (!array_key_exists($kind, kinds())) throw new RuntimeException('Неизвестный раздел');
         require_module($kind);
