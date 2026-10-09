@@ -122,7 +122,7 @@ jobs:
 
           # Следующий шаг запускается в отдельном Node.js процессе.
           with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as out:
-              out.write(f'NODE_EXTRA_CA_CERTS={ca_file}\\n'.replace('\\\\n', '\\n'))
+              out.write('NODE_EXTRA_CA_CERTS=' + str(ca_file) + chr(10))
           print('FTPS: сертификат, имя сервера, авторизация и каталог назначения проверены.')
           PY
       - name: Передача CMS на хостинг (защищённый FTPS)
