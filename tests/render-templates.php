@@ -26,6 +26,19 @@ foreach ([
     'template_content'=>'{}',
     'template_sections'=>'',
 ] as $k=>$v) $up->execute([$k,$v]);
+if(getenv('TEST_MODULE_LAYOUT_TEST')==='1') {
+    $positions=[
+        'page'=>['area'=>'right','order'=>10],
+        'news'=>['area'=>'left','order'=>20],
+        'service'=>['area'=>'nav','order'=>30],
+        'product'=>['area'=>'footer','order'=>40],
+        'media'=>['area'=>'main','order'=>50],
+        'features'=>['area'=>'main','order'=>10],
+        'contact'=>['area'=>'main','order'=>60],
+    ];
+    $up->execute(['cms_modules_enabled',json_encode(array_keys($positions))]);
+    $up->execute(['cms_module_layouts',json_encode([$id=>$positions])]);
+}
 file_put_contents($config,'<?php return '.var_export($c,true).';');
 try {
     $_SERVER['REQUEST_METHOD']='GET';
@@ -53,6 +66,13 @@ try {
         !str_contains($html,'html[data-theme="light"] body.site-page') ||
         !str_contains($html,'html[data-theme="dark"] body.site-page')) {
         throw new RuntimeException('HTML не прошёл проверку для шаблона '.$id);
+    }
+    if(getenv('TEST_MODULE_LAYOUT_TEST')==='1') {
+        foreach(['cms-module-widget-news','cms-module-widget-page',
+                 'cms-media-module-grid','cms-module-link-footer'] as $needle) {
+            if(!str_contains($html,$needle))
+                throw new RuntimeException('Модуль не попал в нужную зону: '.$id.' / '.$needle);
+        }
     }
     if (!str_contains($html,'Шаблон не найден') && strlen($html)<2000) {
         throw new RuntimeException('Недостаточный HTML шаблона '.$id);
