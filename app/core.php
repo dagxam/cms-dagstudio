@@ -47,10 +47,14 @@ function database(): PDO {
     return $pdo;
 }
 function config_value(string $key, string $default = ''): string {
-    $query = database()->prepare('SELECT value FROM settings WHERE name=?');
-    $query->execute([$key]);
-    $result = $query->fetchColumn();
-    return $result === false ? $default : (string)$result;
+    static $cache = [];
+    if (!array_key_exists($key, $cache)) {
+        $query = database()->prepare('SELECT value FROM settings WHERE name=?');
+        $query->execute([$key]);
+        $result = $query->fetchColumn();
+        $cache[$key] = $result === false ? null : (string)$result;
+    }
+    return $cache[$key] ?? $default;
 }
 function account(): ?array {
     if (empty($_SESSION['user_id'])) return null;
