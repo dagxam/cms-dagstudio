@@ -81,13 +81,15 @@ $filter=(string)($_GET['type']??'all');
 if(in_array($filter,['photo','video','document'],true))$files=array_values(array_filter($files,static fn(array $f):bool=>$f['category']===$filter));
 $rating=cms_age_rating();
 ?><!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="ru" data-theme-storage-key="dagstudio-template-<?=h(site_template())?>" data-theme-default="<?=h(template_default_mode(site_template()))?>"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?=h($item['title']??($external['title']??['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'][$requestedCategory]??'Разделы сайта'))?> — <?=h(config_value('site_name','DAG STUDIO CMS'))?></title>
 <meta name="robots" content="index,follow"><link rel="stylesheet" href="/assets/style.css?v=media1">
 <link rel="stylesheet" href="/assets/media.css?v=legal2">
+<script>try{const k='dagstudio-template-<?=h(site_template())?>';const t=localStorage.getItem(k);document.documentElement.dataset.theme=t==='light'||t==='dark'?t:'<?=h(template_default_mode(site_template()))?>'}catch(e){document.documentElement.dataset.theme='<?=h(template_default_mode(site_template()))?>'}</script>
+<script src="/assets/theme.js?v=modules7" defer></script>
 <script src="/assets/accessibility.js?v=legal2" defer></script></head>
 <body class="cms-media-page"<?=cms_accessibility_attributes()?>>
-<header class="cms-media-header"><a href="/">← На главную</a><strong><?=h(config_value('site_name','DAG STUDIO CMS'))?></strong><div class="cms-media-header-actions"><?=cms_accessibility_control()?><?=cms_age_mark()?></div></header>
+<header class="cms-media-header"><a href="/">← На главную</a><strong><?=h(config_value('site_name','DAG STUDIO CMS'))?></strong><div class="cms-media-header-actions"><button class="theme-toggle" type="button" data-theme-toggle aria-label="Переключить цветовую тему" aria-pressed="false">☾/☼</button><?=cms_accessibility_control()?><?=cms_age_mark()?></div></header>
 <main class="cms-media-public"><div class="cms-media-head"><span class="eyebrow">DAG STUDIO CMS</span><h1><?=h($item['title']??($external['title']??(['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'][$requestedCategory]??'Файлы сайта')))?></h1>
 <p>Документы, фотографии и видео, опубликованные администрацией сайта.</p></div>
 <?php if($external):
