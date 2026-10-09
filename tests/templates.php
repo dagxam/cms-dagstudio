@@ -55,6 +55,15 @@ test_check(template_design('store')['palettes']['dark']['accent']==='#fedcba','�
 test_check(str_contains(template_palette_css(template_design('store'),'store'),'--site-bg:#10151a'),'Тёмная тема применяет собственный фон');
 test_check(template_button_text('#ffffff')==='#101820','Тёмный текст на светлой кнопке');
 test_check(template_button_text('#000000')==='#ffffff','Белый текст на тёмной кнопке');
+$attempt = template_design('store');
+$attempt['palettes']['light']['accent'] = 'red; background:url(javascript:alert(1))';
+$attempt['palettes']['dark']['background'] = 'transparent';
+$safeCss = template_palette_css($attempt, 'store');
+test_check(!str_contains($safeCss,'javascript:') && !str_contains($safeCss,'transparent'),
+  'В CSS не попадают недопустимые значения цветов');
+test_check(template_default_mode('company')==='dark' && template_default_mode('government')==='light',
+  'Стандартные темы соответствуют характеру сайтов');
+
 test_check(template_content('store')['title']==='Товары нашей компании','Индивидуальный заголовок магазина');
 test_check(template_active_sections('store')===['product','contact'],'Индивидуальный набор блоков магазина');
 foreach(['/','/?p=about','/?kind=news','#contact','https://example.ru/page'] as $url) {
