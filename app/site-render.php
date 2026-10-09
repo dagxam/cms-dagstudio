@@ -106,7 +106,7 @@ if ($activeTemplate === 'government') {
 
   <div id="materials" class="cms-module-layout <?=($leftModules||$rightModules)?'cms-module-layout-with-sidebars':''?> <?=($leftModules?'cms-has-left ':'').($rightModules?'cms-has-right':'')?>">
   <?php if($leftModules):?><aside class="cms-module-sidebar cms-module-sidebar-left" aria-label="Левая колонка модулей">
-  <?php foreach($leftModules as $id):?><?=cms_module_compact($id,'sidebar')?><?php endforeach;?></aside><?php endif;?>
+  <?php foreach($leftModules as $id):?><?php cms_module_sidebar($id,$activeTemplate); ?><?php endforeach;?></aside><?php endif;?>
   <div class="site-sections cms-module-main">
   <?php foreach($visibleSections as $section): ?>
     <?php if($section==='features'): ?>
@@ -169,7 +169,7 @@ if ($activeTemplate === 'government') {
   <?php endforeach;?>
   </div>
   <?php if($rightModules):?><aside class="cms-module-sidebar cms-module-sidebar-right" aria-label="Правая колонка модулей">
-  <?php foreach($rightModules as $id):?><?=cms_module_compact($id,'sidebar')?><?php endforeach;?></aside><?php endif;?>
+  <?php foreach($rightModules as $id):?><?php cms_module_sidebar($id,$activeTemplate); ?><?php endforeach;?></aside><?php endif;?>
   </div>
 <?php endif;?>
 </main>
