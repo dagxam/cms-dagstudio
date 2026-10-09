@@ -36,10 +36,12 @@ if ($search!=='')$govTitle='Результаты поиска';
 <link rel="stylesheet" href="/assets/style.css?v=government5">
 <link rel="stylesheet" href="/assets/templates.css?v=government5">
 <link rel="stylesheet" href="/assets/government.css?v=government5">
+<link rel="stylesheet" href="/assets/media.css?v=legal2">
+<script src="/assets/accessibility.js?v=legal2" defer></script>
 <style id="dag-site-palettes"><?=template_palette_css($design,'government')?></style>
 </head>
 <body class="site-page site-template-government government-page government-layout-<?=h($govLayout)?>"
-  style="<?=h(template_style($design,'government'))?>;--gov-left-width:<?=h($gov['left_width'])?>px;--gov-right-width:<?=h($gov['right_width'])?>px">
+  <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,'government'))?>;--gov-left-width:<?=h($gov['left_width'])?>px;--gov-right-width:<?=h($gov['right_width'])?>px">
 <?php if($previewMode): ?>
 <div class="site-preview-banner"><strong>Предпросмотр шаблона «Администрация»</strong>. Настройки ещё не применены. <a href="/admin/index.php?section=templates">Вернуться в редактор</a></div>
 <?php endif;?>
@@ -51,7 +53,8 @@ if ($search!=='')$govTitle='Результаты поиска';
     <?php if($gov['office_phone']!==''):?><span>☎ <?=h($gov['office_phone'])?></span><?php endif;?>
   </div>
   <div class="government-utility-actions">
-    <?php if($gov['show_accessibility']==='1'):?><button type="button" class="government-utility-button" data-government-accessibility aria-pressed="false">◉ Для слабовидящих</button><?php endif;?>
+    <?php if($gov['show_accessibility']==='1'):?><?=cms_accessibility_control()?><?php endif;?>
+    <?=cms_age_mark()?>
     <button type="button" class="government-utility-button" data-government-print>▣ Печать</button>
     <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button>
   </div>
@@ -101,6 +104,7 @@ if ($search!=='')$govTitle='Результаты поиска';
     <h2 class="government-sidebar-heading"><?=h($gov['left_title'])?></h2>
     <nav class="government-left-nav" aria-label="Разделы администрации">
       <?php foreach($gov['left_menu'] as $link):?><a href="<?=h($link['url'])?>"><?=h($link['label'])?><span aria-hidden="true">›</span></a><?php endforeach;?>
+      <a href="/media.php">Медиатека: фото, видео и документы <span aria-hidden="true">›</span></a>
     </nav>
   </aside>
   <?php endif;?>
@@ -200,6 +204,7 @@ if ($search!=='')$govTitle='Результаты поиска';
   </aside>
   <?php endif;?>
 </div>
-<footer class="government-footer"><span>© <?=date('Y')?> <?=h($siteName)?>. <?=h($siteContent['footer_text'])?> <?=h($gov['footer_note'])?></span><span>Работает на DAG STUDIO CMS</span></footer>
+<footer class="government-footer"><?=cms_age_mark()?><span>© <?=date('Y')?> <?=h($siteName)?>. <?=h($siteContent['footer_text'])?> <?=h($gov['footer_note'])?></span><span>Работает на DAG STUDIO CMS</span></footer>
 </div>
+<?=cms_age_gate()?>
 </body></html>
