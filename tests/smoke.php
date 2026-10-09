@@ -53,4 +53,14 @@ check((int)$db->query("SELECT COUNT(*) FROM information_schema.tables WHERE tabl
 $db->prepare('INSERT INTO cms_media(category,title,description,alt_text,age_rating,status,filename,original_name,mime,size_bytes) VALUES(?,?,?,?,?,?,?,?,?,?)')
   ->execute(['document','Тестовый документ','Описание PDF','','6+','published',str_repeat('a',32).'.pdf','test.pdf','application/pdf',12345]);
 check((int)$db->query('SELECT COUNT(*) FROM cms_media WHERE status="published"')->fetchColumn()===1,'Публикация файла в базе');
+check((int)$db->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='cms_video_links'")->fetchColumn()===1,'Таблица видеогалереи создана');
+$parsed=cms_video_embed('https://rutube.ru/video/a8b9c0d1e2f34a56b78c9d0e1f2a3b4c/');
+check($parsed!==null && $parsed['provider']==='rutube','Доверенный URL видеоплатформы');
+$db->prepare('INSERT INTO cms_video_links(title,description,provider,embed_url,original_url,age_rating,status) VALUES(?,?,?,?,?,?,?)')
+    ->execute(['Тестовое видео','Первоначальная запись',$parsed['provider'],$parsed['embed'],'https://rutube.ru/video/a8b9c0d1e2f34a56b78c9d0e1f2a3b4c/','12+','draft']);
+$videoId=(int)$db->lastInsertId();
+$db->prepare('UPDATE cms_video_links SET title=?,status=? WHERE id=?')->execute(['Обновлённое видео','published',$videoId]);
+$q=$db->prepare('SELECT title FROM cms_video_links WHERE id=? AND status=?');
+$q->execute([$videoId,'published']);
+check($q->fetchColumn()==='Обновлённое видео','Внешнее видео можно редактировать и публиковать');
 echo "DAG STUDIO CMS: smoke-тест успешно завершён.\n";
