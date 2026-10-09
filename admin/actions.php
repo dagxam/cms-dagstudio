@@ -74,10 +74,27 @@ try {
             'width'=>['1120','1240','1320','1380','1480'],
         ];
         $design = [];
+        $colors = $_POST['palette'] ?? null;
+        if (!is_array($colors) || array_diff(array_keys($colors), ['light','dark'])) {
+            throw new RuntimeException('Настройки цветовых тем некорректны.');
+        }
+        $design['palettes'] = [];
+        foreach (['light','dark'] as $mode) {
+            if (!isset($colors[$mode]) || !is_array($colors[$mode])) {
+                throw new RuntimeException('Не найдены цвета для светлого или тёмного режима.');
+            }
+            foreach (['accent','background','ink','surface','border'] as $key) {
+                $value = $colors[$mode][$key] ?? '';
+                if (!is_string($value) || !preg_match('/^#[a-fA-F0-9]{6}$/D', $value)) {
+                    throw new RuntimeException('Введите цвет в формате #RRGGBB для каждого поля.');
+                }
+                $design['palettes'][$mode][$key] = strtolower($value);
+            }
+        }
+        // Обратная совместимость для старого однопалитрового редактора.
+        $defaultMode = template_default_mode(site_template());
         foreach (['accent','background','ink'] as $key) {
-            $value = strtolower(trim((string)($_POST[$key] ?? '')));
-            if (!preg_match('/^#[a-f0-9]{6}$/D', $value)) throw new RuntimeException('Неверный формат цвета.');
-            $design[$key] = $value;
+            $design[$key] = $design['palettes'][$defaultMode][$key];
         }
         foreach ($options as $key=>$allowedValues) {
             $value = (string)($_POST[$key] ?? '');
