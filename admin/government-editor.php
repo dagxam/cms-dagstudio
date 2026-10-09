@@ -88,6 +88,7 @@ $govLabels=[
   <div class="template-fields">
     <label>Заголовок бокового меню<input name="left_title" maxlength="190" value="<?=h($gov['left_title'])?>"></label>
     <label>Заголовок центральной колонки<input name="center_title" maxlength="190" value="<?=h($gov['center_title'])?>"></label>
+    <label>Дополнительная подпись в подвале<input name="footer_note" maxlength="240" value="<?=h($gov['footer_note'])?>"></label>
     <label class="template-field-wide">Разделы левого меню
       <textarea name="left_menu" rows="11" maxlength="12000"><?=h(government_links_as_text($gov['left_menu']))?></textarea>
       <small>Можно добавлять, удалять, переименовывать и переставлять до 24 пунктов. Ссылки: /?kind=news, /?kind=page, /?p=slug, #contact или https://...</small>
