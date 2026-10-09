@@ -42,6 +42,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 </head>
 <body class="site-page site-template-government government-page government-layout-<?=h($govLayout)?>"
   <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,'government'))?>;--gov-left-width:<?=h($gov['left_width'])?>px;--gov-right-width:<?=h($gov['right_width'])?>px">
+<a class="cms-skip-link" href="#main-content">Перейти к основному содержимому</a>
 <?php if($previewMode): ?>
 <div class="site-preview-banner"><strong>Предпросмотр шаблона «Администрация»</strong>. Настройки ещё не применены. <a href="/admin/index.php?section=templates">Вернуться в редактор</a></div>
 <?php endif;?>
@@ -182,7 +183,7 @@ if ($search!=='')$govTitle='Результаты поиска';
     <?php if($gov['show_leader']==='1'):?>
     <section class="government-widget government-leader">
       <h2><?=h($gov['leader_title'])?></h2>
-      <?php if($gov['leader_image']!==''):?><img class="government-leader-photo" src="<?=h($gov['leader_image'])?>" alt="Фото руководителя" loading="lazy"><?php endif;?>
+      <?php if($gov['leader_image']!==''):?><img class="government-leader-photo" src="<?=h($gov['leader_image'])?>" alt="<?=h($gov['leader_name']!==''?'Фотография: '.$gov['leader_name']:'Фотография руководителя')?>" loading="lazy"><?php endif;?>
       <?php if($gov['leader_initials']!==''):?><strong class="government-leader-initials"><?=h($gov['leader_initials'])?></strong><?php endif;?>
       <?php if($gov['leader_name']!==''):?><p class="government-leader-fullname"><?=h($gov['leader_name'])?></p><?php endif;?>
       <?php if($gov['leader_description']!==''):?><p><?=h($gov['leader_description'])?></p><?php endif;?>
