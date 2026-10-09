@@ -7,11 +7,13 @@ declare(strict_types=1);
  */
 function cms_modules(): array {
     return [
-        'page'=>['label'=>'Страницы и документы','description'=>'Публикации, страницы, нормативная информация','href'=>'/?kind=page'],
+        'page'=>['label'=>'Страницы','description'=>'Статические страницы сайта','href'=>'/?kind=page'],
+        'documents'=>['label'=>'Документы','description'=>'Загруженные файлы PDF и Office','href'=>'/media.php?type=document'],
         'news'=>['label'=>'Новости','description'=>'Последние новости и события','href'=>'/?kind=news'],
         'service'=>['label'=>'Услуги','description'=>'Карточки услуг и направлений','href'=>'/?kind=service'],
         'product'=>['label'=>'Товары','description'=>'Каталог товаров с ценами','href'=>'/?kind=product'],
-        'media'=>['label'=>'Медиатека','description'=>'Документы, фотографии и видео','href'=>'/media.php'],
+        'photos'=>['label'=>'Фотогалерея','description'=>'Альбомы и фотографии','href'=>'/media.php?type=photo'],
+        'videos'=>['label'=>'Видеогалерея','description'=>'Загруженное видео, VK Видео и Rutube','href'=>'/media.php?type=video'],
         'features'=>['label'=>'Преимущества','description'=>'Три редактируемых блока о деятельности','href'=>'/?module=features'],
         'contact'=>['label'=>'Контакты и обращения','description'=>'Контактная информация и форма обращения','href'=>'/?module=contact'],
     ];
@@ -21,9 +23,12 @@ function cms_enabled_module_keys(): array {
     $legacy=json_decode(config_value('enabled_modules','["page","news","service","product"]'),true);
     if(!is_array($legacy))$legacy=['page','news','service','product'];
     $saved=json_decode(config_value('cms_modules_enabled',''),true);
-    if(is_array($saved))return array_values(array_intersect(array_keys(cms_modules()),$saved));
+    if(is_array($saved)){
+        if(in_array('media',$saved,true))$saved=array_merge($saved,['documents','photos','videos']);
+        return array_values(array_intersect(array_keys(cms_modules()),$saved));
+    }
     // Уже установленные сайты сохраняют прежние настройки материалов.
-    return array_values(array_unique(array_merge(array_intersect(array_keys(cms_modules()),$legacy),['media','features','contact'])));
+    return array_values(array_unique(array_merge(array_intersect(array_keys(cms_modules()),$legacy),['documents','photos','videos','features','contact'])));
 }
 function cms_module_enabled(string $id): bool {
     return isset(cms_modules()[$id]) && in_array($id,cms_enabled_module_keys(),true);
@@ -47,7 +52,9 @@ function cms_module_defaults(string $template): array {
         $result[$id]=['area'=>$position===false?'hidden':'main','order'=>$position===false?($index+=10):(($position+1)*10)];
     }
     // Медиатека раньше имела собственную публичную ссылку, но не блок на главной.
-    $result['media']=['area'=>'nav','order'=>50];
+    $result['documents']=['area'=>'nav','order'=>50];
+    $result['photos']=['area'=>'nav','order'=>55];
+    $result['videos']=['area'=>'nav','order'=>60];
     return $result;
 }
 function cms_module_layout_configured(string $template): bool {
@@ -106,8 +113,8 @@ function cms_module_sidebar(string $id,string $template): void {
         foreach($items as $item)
             echo '<a class="cms-module-widget-entry" href="/?p='.rawurlencode($item['slug']).'">'.h($item['title']).'</a>';
         if(!$items)echo '<p>Публикаций пока нет.</p>';
-    }elseif($id==='media') {
-        foreach(array_slice(cms_media_list(true),0,3) as $item)
+    }elseif(in_array($id,['documents','photos','videos'],true)) {
+        foreach(array_slice(array_values(array_filter(cms_media_list(true),static fn(array $item):bool=>$item['category']===['documents'=>'document','photos'=>'photo','videos'=>'video'][$id])),0,3) as $item)
             echo '<a class="cms-module-widget-entry" href="/media.php?view='.(int)$item['id'].'">'.h($item['title']).'</a>';
     }elseif($id==='features') {
         $content=template_content($template);
@@ -122,12 +129,13 @@ function cms_module_sidebar(string $id,string $template): void {
     echo '<a class="cms-module-widget-more" href="'.h(cms_module_href($id)).'">Открыть раздел ↗</a></section>';
 }
 
-function cms_module_media_block(): void {
-    if(!cms_module_enabled('media'))return;
+function cms_module_media_block(string $module='photos'): void {
+    if(!cms_module_enabled($module))return;
     // Только опубликованные материалы, список ограничен числом карточек.
-    $items=array_slice(cms_media_list(true),0,6);
+    $cat=['documents'=>'document','photos'=>'photo','videos'=>'video'][$module]??'photo';
+    $items=array_slice(array_values(array_filter(cms_media_list(true),static fn(array $x):bool=>$x['category']===$cat)),0,6);
     echo '<section class="cms-media-module" id="cms-media-section"><div class="section-heading">'
-        .'<h2>Медиатека</h2><a href="/media.php">Все материалы ↗</a></div><div class="cms-media-module-grid">';
+        .'<h2>'.h(cms_module_label($module)).'</h2><a href="'.h(cms_module_href($module)).'">Все материалы ↗</a></div><div class="cms-media-module-grid">';
     foreach($items as $item) {
         $id=(int)$item['id'];
         echo '<a class="cms-media-module-card" href="/media.php?view='.$id.'">';
