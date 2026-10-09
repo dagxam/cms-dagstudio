@@ -44,6 +44,7 @@ jobs:
           node --check assets/theme.js
           node --check assets/template-palettes.js
           node --check assets/government.js
+          node --check assets/accessibility.js
       - name: Smoke-тест базы данных
         env:
           DAG_CMS_TEST_MODE: '1'
@@ -72,6 +73,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/government.php
+      - name: Возрастная маркировка, доступность и медиатека
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/accessibility-media.php
       - name: Проверка HTML всех четырёх типов сайтов
         env:
           DAG_CMS_TEST_MODE: '1'
@@ -185,5 +190,6 @@ jobs:
             **/assets/uploads/logo-*
             **/assets/uploads/hero-*
             **/assets/uploads/leader-*
+            **/storage/media/**
             **/storage/config.php
             **/storage/*.log
