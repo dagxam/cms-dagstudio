@@ -62,6 +62,29 @@ jobs:
                   if remote_dir:
                       ftp.cwd(remote_dir)
                   ftp.pwd()
+          except ssl.SSLCertVerificationError as exc:
+              print(f'ОШИБКА FTPS: {type(exc).__name__}: {exc}')
+              print('Диагностика публичного сертификата сервера (без отправки логина и пароля):')
+              try:
+                  import subprocess
+                  import tempfile
+                  with FTP_TLS(context=ssl._create_unverified_context(), timeout=15) as info:
+                      info.connect(host, 21)
+                      info.auth()
+                      der_cert = info.sock.getpeercert(binary_form=True)
+                  with tempfile.NamedTemporaryFile(mode='w', suffix='.pem', encoding='ascii') as certfile:
+                      certfile.write(ssl.DER_cert_to_PEM_cert(der_cert))
+                      certfile.flush()
+                      inspected = subprocess.run(
+                          ['openssl', 'x509', '-in', certfile.name, '-noout',
+                           '-subject', '-issuer', '-dates', '-ext', 'subjectAltName',
+                           '-ext', 'authorityInfoAccess'],
+                          capture_output=True, text=True, timeout=10)
+                      print(inspected.stdout[:5000] if inspected.stdout else inspected.stderr[:1000])
+              except Exception as cert_exc:
+                  print(f'Не удалось прочитать сертификат: {type(cert_exc).__name__}')
+              summary('❌ Сертификат FTPS не прошёл проверку доверия. Учётные данные не передавались.')
+              sys.exit(1)
           except Exception as exc:
               print(f'ОШИБКА FTPS: {type(exc).__name__}: {exc}')
               summary('❌ FTPS-подключение, авторизация или доступ к каталогу не подтверждены. Смотрите лог шага.')
