@@ -12,6 +12,8 @@ $layout = template_active_sections($activeTemplate);
 $moduleLabels = kinds();
 $siteLogo = $siteContent['logo_path'];
 if (!preg_match('~^/assets/uploads/logo-[a-f0-9]{32}\\.(png|jpg|webp)$~D', $siteLogo)) $siteLogo = '';
+$heroImage = (string)($siteContent['hero_image_path'] ?? '');
+if (!preg_match('~^/assets/uploads/hero-[a-f0-9]{32}\\.(png|jpg|webp)$~D', $heroImage)) $heroImage = '';
 $visibleSections = $kind !== '' ? [$kind] : $layout;
 $visibleSections = array_values(array_filter($visibleSections, static fn(string $s): bool =>
     $s === 'features' || $s === 'contact' || (array_key_exists($s, $moduleLabels) && module_enabled($s))
@@ -85,7 +87,8 @@ $navLinks = $siteContent['header_links'];
         <?php if($siteContent['secondary']!==''): ?><a class="button button-outline" href="<?=h(safe_template_url($siteContent['secondary_url'])&&$siteContent['secondary_url']!==''?$siteContent['secondary_url']:'#contact')?>"><?=h($siteContent['secondary'])?></a><?php endif;?>
       </div>
     </div>
-    <div class="site-hero-visual" aria-hidden="true">
+    <div class="site-hero-visual <?=$heroImage!==''?'has-custom-hero':''?>" aria-hidden="true">
+      <?php if($heroImage!==''): ?><img class="site-custom-hero-image" src="<?=h($heroImage)?>" alt="" loading="eager"><?php endif;?>
       <div class="site-hero-visual-inner"><img src="/assets/ornament-<?=htmlspecialchars($activeTemplate==='store' || $activeTemplate==='government' || $activeTemplate==='organization' ? 'light' : 'dark',ENT_QUOTES)?>.svg" alt=""></div>
       <span><?=h(template_catalog()[$activeTemplate]['label'])?></span>
     </div>
