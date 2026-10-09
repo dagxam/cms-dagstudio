@@ -24,19 +24,37 @@ foreach($catalog as $id=>$preset){
     $preview=template_design($id);
     test_check(preg_match('/^#[0-9a-fA-F]{6}$/',$preview['accent'])===1,'Цвет шаблона '.$id);
     $markup=template_style($preview,$id);
-    test_check(str_contains($markup,'--site-accent:')&&str_contains($markup,'--site-font:'),'Тема шаблона '.$id);
+    test_check(str_contains($markup,'--site-radius:')&&str_contains($markup,'--site-font:'),'Размеры и шрифты шаблона '.$id);
+    $css=template_palette_css($preview,$id);
+    test_check(str_contains($css,'html[data-theme="light"] body.site-page{') &&
+      str_contains($css,'html[data-theme="dark"] body.site-page{'),'Две отдельные палитры '.$id);
+    test_check(str_contains($css,'--site-surface:') && str_contains($css,'--site-border:') &&
+      str_contains($css,'--site-button-ink:'),'Цвета карточек и кнопок '.$id);
+    foreach(['light','dark'] as $mode) {
+      foreach(['accent','background','ink','surface','border'] as $key) {
+        test_check(preg_match('/^#[0-9a-fA-F]{6}$/',$preview['palettes'][$mode][$key])===1,
+          "Поле $id $mode $key");
+      }
+    }
 }
 test_check(site_template()==='company','Текущий шаблон');
 test_check(template_content()['title']==='Тестовая компания','Редактируемый заголовок');
 test_check(template_content('government')['title']===$catalog['government']['title'],'Предпросмотр показывает тексты выбранного шаблона');
 test_check(template_design()['accent']==='#aa6633','Пользовательский акцент');
+test_check(template_design()['palettes']['dark']['accent']==='#aa6633','Сохранён старый цвет компании в тёмной теме');
+test_check(template_design()['palettes']['light']['accent']!== '#aa6633','Светлая тема не наследует старый тёмный цвет');
 test_check(template_design('store')['accent']===$catalog['store']['accent'],'Изолированный предпросмотр');
 test_check(template_active_sections()===['features','news','contact'],'Порядок блоков');
 test_check(template_active_sections('store')===$catalog['store']['sections'],'Блоки предпросмотра');
-$config['template_design_by_type']='{"store":{"accent":"#112233"}}';
+$config['template_design_by_type']='{"store":{"accent":"#112233","palettes":{"light":{"accent":"#123456","background":"#fefefe","ink":"#101010","surface":"#fafafa","border":"#cccccc"},"dark":{"accent":"#fedcba","background":"#10151a","ink":"#ffffff","surface":"#20272f","border":"#424850"}}}}';
 $config['template_content_by_type']='{"store":{"title":"Товары нашей компании"}}';
 $config['template_sections_by_type']='{"store":["product","contact"]}';
-test_check(template_design('store')['accent']==='#112233','Индивидуальный акцент магазина');
+test_check(template_design('store')['accent']==='#112233','Обратная совместимость старого значения магазина');
+test_check(template_design('store')['palettes']['light']['accent']==='#123456','Независимый акцент светлого магазина');
+test_check(template_design('store')['palettes']['dark']['accent']==='#fedcba','Независимый акцент тёмного магазина');
+test_check(str_contains(template_palette_css(template_design('store'),'store'),'--site-bg:#10151a'),'Тёмная тема применяет собственный фон');
+test_check(template_button_text('#ffffff')==='#101820','Тёмный текст на светлой кнопке');
+test_check(template_button_text('#000000')==='#ffffff','Белый текст на тёмной кнопке');
 test_check(template_content('store')['title']==='Товары нашей компании','Индивидуальный заголовок магазина');
 test_check(template_active_sections('store')===['product','contact'],'Индивидуальный набор блоков магазина');
 foreach(['/','/?p=about','/?kind=news','#contact','https://example.ru/page'] as $url) {
