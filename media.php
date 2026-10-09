@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/app/core.php';
+if(!cms_module_enabled('media')){http_response_code(404);exit('Медиатека отключена.');}
 header('X-Content-Type-Options: nosniff');
 $mediaId=max(0,(int)($_GET['file']??0));
 $showId=max(0,(int)($_GET['view']??0));
