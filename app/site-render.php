@@ -88,6 +88,9 @@ if ($activeTemplate === 'government') {
     <a class="back" href="/?kind=<?=h($record['kind'])?>">← Назад к разделу</a>
     <div class="eyebrow"><?=h($moduleLabels[$record['kind']]??'Материал')?></div>
     <h1><?=h($record['title'])?></h1>
+    <?php $articleCover=cms_content_image((int)$record['id']); if($articleCover):?>
+    <figure class="cms-article-cover"><img src="<?=h(cms_content_image_url((int)$record['id'],$articleCover))?>" alt="<?=h($articleCover['alt_text']?:$record['title'])?>" loading="eager"></figure>
+    <?php endif;?>
     <?php if($record['summary']): ?><p class="lead"><?=h($record['summary'])?></p><?php endif;?>
     <?php if($record['kind']==='product' && $record['price']!==null): ?><p class="price"><?=h(number_format((float)$record['price'],2,',',' '))?> ₽</p><?php endif;?>
     <div class="article-body"><?=nl2br(h($record['body']))?></div>
@@ -158,6 +161,7 @@ if ($activeTemplate === 'government') {
     <?php elseif(isset($moduleLabels[$section]) && module_enabled($section)):
       $q=database()->prepare("SELECT * FROM content WHERE kind=? AND status='published' ORDER BY created_at DESC LIMIT 8");
       $q->execute([$section]);$items=$q->fetchAll();
+      $covers=cms_content_image_map($items);
       $sectionTitle=$section==='news'?$siteContent['news_title']:$moduleLabels[$section];
     ?>
     <section class="section-block site-block site-block-<?=h($section)?>">
@@ -165,13 +169,21 @@ if ($activeTemplate === 'government') {
         <a class="site-see-all" href="/?kind=<?=h($section)?>">Все материалы ↗</a></div>
       <div class="cards site-content-grid">
         <?php foreach($items as $item): ?>
-        <a class="content-card box" href="/?p=<?=rawurlencode($item['slug'])?>">
-          <span class="card-symbol" aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
+        <a class="content-card box cms-visual-card" href="/?p=<?=rawurlencode($item['slug'])?>">
+          <span class="cms-card-media">
+          <?php if(isset($covers[(int)$item['id']])):?>
+            <img src="<?=h(cms_content_image_url((int)$item['id'],$covers[(int)$item['id']]))?>" alt="<?=h($covers[(int)$item['id']]['alt_text']?:$item['title'])?>" loading="lazy" decoding="async">
+          <?php else:?>
+            <span class="cms-card-media-placeholder" aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
+          <?php endif;?>
+          </span>
+          <span class="cms-card-copy"><span class="card-symbol" aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
           <span class="eyebrow"><?=h($moduleLabels[$item['kind']])?></span>
           <h3><?=h($item['title'])?></h3>
           <p><?=h(mb_strimwidth((string)($item['summary'] ?: ($item['body'] ?? '')),0,180,'…','UTF-8'))?></p>
           <?php if($item['kind']==='product' && $item['price']!==null): ?><span class="price"><?=h(number_format((float)$item['price'],2,',',' '))?> ₽</span><?php endif;?>
-          <span class="card-link">Подробнее <span>↗</span></span>
+          <span class="card-link"><?=h(['product'=>'Посмотреть товар','service'=>'Подробнее об услуге','news'=>'Читать новость','page'=>'Открыть страницу'][$item['kind']])?> <span>↗</span></span>
+          </span>
         </a>
         <?php endforeach;?>
       </div>
