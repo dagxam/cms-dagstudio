@@ -22,9 +22,17 @@ function cms_page_module(string $id,string $template): void {
     if(in_array($id,['documents','photos','videos'],true)){cms_module_media_block($id);return;}
     if(in_array($id,['page','news','service','product'],true)) {
         echo '<section class="cms-inline-module"><div class="section-heading"><h2>'.h(cms_module_label($id)).'</h2><a href="'.h(cms_module_href($id)).'">Все материалы ↗</a></div>';
-        $q=database()->prepare("SELECT title,slug,summary FROM content WHERE kind=? AND status='published' ORDER BY created_at DESC LIMIT 5");
+        $q=database()->prepare("SELECT id,title,slug,summary FROM content WHERE kind=? AND status='published' ORDER BY created_at DESC LIMIT 5");
         $q->execute([$id]);
-        foreach($q->fetchAll() as $item) echo '<a class="cms-inline-module-entry" href="/?p='.rawurlencode($item['slug']).'">'.h($item['title']).'</a>';
+        $items=$q->fetchAll();
+        $covers=cms_content_image_map($items);
+        foreach($items as $item){
+            $itemId=(int)$item['id'];
+            echo '<a class="cms-inline-module-entry cms-inline-module-entry-cover" href="/?p='.rawurlencode($item['slug']).'">';
+            if(isset($covers[$itemId]))echo '<img loading="lazy" src="'.h(cms_content_image_url($itemId,$covers[$itemId])).'" alt="">';
+            else echo '<span class="cms-inline-module-symbol" aria-hidden="true">▣</span>';
+            echo '<span>'.h($item['title']).'</span></a>';
+        }
         echo '</section>';
         return;
     }
