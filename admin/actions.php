@@ -558,6 +558,21 @@ try {
             }
             if ($value !== '') $price = number_format((float)$value, 2, '.', '');
         }
+        $coverAlt=$_POST['cover_alt']??'';
+        if(!is_string($coverAlt)||mb_strlen($coverAlt)>300||
+           str_contains($coverAlt,"\x00"))throw new RuntimeException('Описание обложки: не более 300 символов.');
+        $coverAlt=trim($coverAlt);
+        $removeCover=isset($_POST['remove_cover'])&&$_POST['remove_cover']==='1';
+        $incomingCover=$_FILES['cover_image']??null;
+        $hasUpload=is_array($incomingCover)&&
+            (int)($incomingCover['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE;
+        if($hasUpload&&$removeCover)throw new RuntimeException('Выберите загрузку или удаление обложки.');
+        cms_content_images_table();
+        $previousCover=$id?cms_content_image($id):null;
+        $newCover=null;
+        if($hasUpload)$newCover=cms_content_image_upload($incomingCover);
+        database()->beginTransaction();
+        try {
         $fields = [$kind,$title,$slug,$summary,$body,$price,$status];
         if ($id) {
             $fields[] = $id;
@@ -591,8 +606,24 @@ try {
             database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
                 ->execute(['cms_page_options',json_encode($maps,JSON_UNESCAPED_UNICODE)]);
         }
+        if($newCover!==null) {
+            database()->prepare('INSERT INTO content_images(content_id,filename,alt_text) VALUES(?,?,?) ON DUPLICATE KEY UPDATE filename=VALUES(filename),alt_text=VALUES(alt_text)')
+                ->execute([$id,$newCover[0],$coverAlt!==''?$coverAlt:$title]);
+        } elseif($removeCover) {
+            database()->prepare('DELETE FROM content_images WHERE content_id=?')->execute([$id]);
+        } elseif($previousCover && $coverAlt!==(string)$previousCover['alt_text']) {
+            database()->prepare('UPDATE content_images SET alt_text=? WHERE content_id=?')
+                ->execute([$coverAlt!==''?$coverAlt:$title,$id]);
+        }
         log_action('content.save', $kind . ':' . $id);
-        $_SESSION['flash'] = 'Материал сохранён.';
+        database()->commit();
+        if($previousCover && ($newCover!==null || $removeCover))cms_content_image_delete_file($previousCover);
+        }catch(Throwable $exception){
+            if(database()->inTransaction())database()->rollBack();
+            if($newCover!==null)cms_content_image_delete_file(['filename'=>$newCover[0]]);
+            throw $exception;
+        }
+        $_SESSION['flash'] = 'Материал и его оформление сохранены.';
         $back = '/admin/index.php?section=' . urlencode($kind);
     } elseif ($action === 'delete_content') {
         $id = max(0,(int)($_POST['id'] ?? 0));
@@ -602,7 +633,9 @@ try {
         if (!$kind) throw new RuntimeException('Материал не найден');
         require_module((string)$kind);
         if (!module_enabled((string)$kind)) throw new RuntimeException('Модуль отключён');
+        $previousCover=cms_content_image($id);
         database()->prepare('DELETE FROM content WHERE id=?')->execute([$id]);
+        cms_content_image_delete_file($previousCover);
         log_action('content.delete', $kind . ':' . $id);
         $_SESSION['flash'] = 'Материал удалён.';
         $back = '/admin/index.php?section=' . urlencode((string)$kind);
