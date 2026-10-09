@@ -1,18 +1,34 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/app/core.php';
-if(!cms_module_enabled('media')){http_response_code(404);exit('Медиатека отключена.');}
+$requestedCategory=(string)($_GET['type']??'');
+$accessModule=['document'=>'documents','photo'=>'photos','video'=>'videos'][$requestedCategory]??'';
+if($accessModule!==''&&!cms_module_enabled($accessModule)){http_response_code(404);exit('Раздел отключён.');}
+if($accessModule===''){
+    if(!array_filter(['documents','photos','videos'],'cms_module_enabled')){http_response_code(404);exit('Галереи отключены.');}
+}
 header('X-Content-Type-Options: nosniff');
 $mediaId=max(0,(int)($_GET['file']??0));
 $showId=max(0,(int)($_GET['view']??0));
 $preview=account()!==null && allowed('media');
+$externalId=max(0,(int)($_GET['external']??0));
+$external=null;
+if($externalId){
+    cms_video_table();
+    $q=database()->prepare('SELECT * FROM cms_video_links WHERE id=?'.($preview?'':" AND status='published"));
+    $q->execute([$externalId]);$external=$q->fetch()?:null;
+    if(!$external || !cms_module_enabled('videos')){http_response_code(404);exit('Видео не найдено.');}
+}
 $item=($mediaId||$showId)?cms_media_get($mediaId?:$showId,!$preview):null;
 if(($mediaId||$showId)&&!$item){http_response_code(404);exit('Материал не найден.');}
-if($item && $item['age_rating']==='18+' && empty($_SESSION['media_age_confirmed'])) {
+if($item && !cms_module_enabled(['document'=>'documents','photo'=>'photos','video'=>'videos'][$item['category']]??'')){
+    http_response_code(404);exit('Раздел отключён.');
+}
+if((($item && $item['age_rating']==='18+') || ($external && $external['age_rating']==='18+')) && empty($_SESSION['media_age_confirmed'])) {
     if($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['confirm_age'])){
         verify_token();
         $_SESSION['media_age_confirmed']=true;
-        go('/media.php?'.($mediaId?'file='.$mediaId:'view='.$showId));
+        go('/media.php?'.($externalId?'type=video&external='.$externalId:($mediaId?'file='.$mediaId:'view='.$showId)));
     }
     http_response_code(403);
     ?><!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -59,21 +75,29 @@ if($mediaId){
     if($_SERVER['REQUEST_METHOD']==='HEAD')exit;
     readfile($path);exit;
 }
-$files=cms_media_list(true);
+$files=array_values(array_filter(cms_media_list(true),
+    static fn(array $x):bool=>cms_module_enabled(['document'=>'documents','photo'=>'photos','video'=>'videos'][$x['category']]??'')));
 $filter=(string)($_GET['type']??'all');
 if(in_array($filter,['photo','video','document'],true))$files=array_values(array_filter($files,static fn(array $f):bool=>$f['category']===$filter));
 $rating=cms_age_rating();
 ?><!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title><?=h($item['title']??'Медиатека')?> — <?=h(config_value('site_name','DAG STUDIO CMS'))?></title>
+<title><?=h($item['title']??($external['title']??['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'][$requestedCategory]??'Разделы сайта'))?> — <?=h(config_value('site_name','DAG STUDIO CMS'))?></title>
 <meta name="robots" content="index,follow"><link rel="stylesheet" href="/assets/style.css?v=media1">
 <link rel="stylesheet" href="/assets/media.css?v=legal2">
 <script src="/assets/accessibility.js?v=legal2" defer></script></head>
 <body class="cms-media-page"<?=cms_accessibility_attributes()?>>
 <header class="cms-media-header"><a href="/">← На главную</a><strong><?=h(config_value('site_name','DAG STUDIO CMS'))?></strong><div class="cms-media-header-actions"><?=cms_accessibility_control()?><?=cms_age_mark()?></div></header>
-<main class="cms-media-public"><div class="cms-media-head"><span class="eyebrow">DAG STUDIO CMS</span><h1><?=$item?h($item['title']):'Медиатека сайта'?></h1>
+<main class="cms-media-public"><div class="cms-media-head"><span class="eyebrow">DAG STUDIO CMS</span><h1><?=h($item['title']??($external['title']??(['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'][$requestedCategory]??'Файлы сайта')))?></h1>
 <p>Документы, фотографии и видео, опубликованные администрацией сайта.</p></div>
-<?php if($item):?>
+<?php if($external):
+  $embedded=cms_video_embed((string)$external['original_url']);
+?>
+<article class="box cms-media-detail"><span class="cms-age-mark"><?=h($external['age_rating'])?></span>
+<?php if($embedded):?><div class="cms-video-frame"><iframe src="<?=h($embedded['embed'])?>" title="<?=h($external['title'])?>" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><?php endif;?>
+<?php if($external['description']):?><p><?=nl2br(h($external['description']))?></p><?php endif;?>
+<p><a href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Открыть на видеоплатформе ↗</a></p></article>
+<?php elseif($item):?>
 <article class="box cms-media-detail"><span class="cms-age-mark"><?=h($item['age_rating'])?></span>
 <?php if($item['category']==='photo'):?><img src="/media.php?file=<?=(int)$item['id']?>" alt="<?=h($item['alt_text']?:$item['title'])?>">
 <?php elseif($item['category']==='video'):?><video controls preload="metadata" playsinline aria-label="<?=h($item['title'])?>"><source src="/media.php?file=<?=(int)$item['id']?>" type="<?=h($item['mime'])?>">Ваш браузер не поддерживает видео.</video>
@@ -82,10 +106,14 @@ $rating=cms_age_rating();
 <p><a href="/media.php">← Все материалы</a></p></article>
 <?php else:?>
 <nav class="cms-media-filters" aria-label="Тип файлов">
-<?php foreach(['all'=>'Все','document'=>'Документы','photo'=>'Фотоальбом','video'=>'Видео'] as $type=>$label):?>
+<?php foreach(['all'=>'Все','document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'] as $type=>$label): if($type!=='all'&&!cms_module_enabled(['document'=>'documents','photo'=>'photos','video'=>'videos'][$type]))continue;?>
 <a class="<?=$filter===$type?'current':''?>" href="/media.php?type=<?=h($type)?>"><?=h($label)?></a>
 <?php endforeach;?></nav>
 <div class="cms-media-grid">
+<?php if($filter==='video'):
+  foreach(cms_video_links(true) as $v):?>
+  <article class="box cms-media-tile"><div class="cms-media-type">▶</div><span class="cms-age-mark"><?=h($v['age_rating'])?></span><h2><a href="/media.php?type=video&amp;external=<?=(int)$v['id']?>"><?=h($v['title'])?></a></h2><p><?=h(mb_strimwidth((string)$v['description'],0,150,'…','UTF-8'))?></p><a href="/media.php?type=video&amp;external=<?=(int)$v['id']?>">Смотреть видео ↗</a></article>
+  <?php endforeach; endif;?>
 <?php foreach($files as $f):?><article class="box cms-media-tile">
 <?php if($f['category']==='photo'):?><a href="/media.php?view=<?=(int)$f['id']?>">
 <?php if($f['age_rating']==='18+'):?><div class="cms-media-type">18+</div><?php else:?><img loading="lazy" src="/media.php?file=<?=(int)$f['id']?>" alt="<?=h($f['alt_text']?:$f['title'])?>"><?php endif;?></a>
@@ -95,7 +123,7 @@ $rating=cms_age_rating();
 <a href="/media.php?view=<?=(int)$f['id']?>">Открыть ↗</a>
 </article><?php endforeach;?>
 </div>
-<?php if(!$files):?><div class="box">Опубликованных файлов пока нет.</div><?php endif;?>
+<?php if(!$files && !($filter==='video'&&cms_video_links(true))):?><div class="box">Опубликованных материалов пока нет.</div><?php endif;?>
 <?php endif;?>
 </main><footer class="cms-media-footer">© <?=date('Y')?> <?=h(config_value('site_name','DAG STUDIO CMS'))?> · DAG STUDIO CMS · <?=h($rating)?></footer>
 <?=cms_age_gate()?>
