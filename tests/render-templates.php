@@ -41,6 +41,24 @@ if(getenv('TEST_MODULE_LAYOUT_TEST')==='1') {
     $up->execute(['cms_modules_enabled',json_encode(array_keys($positions))]);
     $up->execute(['cms_module_layouts',json_encode([$id=>$positions])]);
 }
+if(getenv('TEST_COVER_IMAGE_TEST')==='1') {
+    $up->execute(['cms_modules_enabled',json_encode(array_keys([
+        'page'=>true,'news'=>true,'service'=>true,'product'=>true,
+        'documents'=>true,'photos'=>true,'videos'=>true,'features'=>true,'contact'=>true
+    ]))]);
+    $placements=[
+        'news'=>['area'=>'main','order'=>10],
+        'page'=>['area'=>'main','order'=>20],
+        'service'=>['area'=>'main','order'=>30],
+        'product'=>['area'=>'main','order'=>40],
+        'documents'=>['area'=>'nav','order'=>50],
+        'photos'=>['area'=>'nav','order'=>55],
+        'videos'=>['area'=>'nav','order'=>60],
+        'features'=>['area'=>'main','order'=>70],
+        'contact'=>['area'=>'main','order'=>80],
+    ];
+    $up->execute(['cms_module_layouts',json_encode([$id=>$placements])]);
+}
 file_put_contents($config,'<?php return '.var_export($c,true).';');
 try {
     $_SERVER['REQUEST_METHOD']='GET';
@@ -77,6 +95,17 @@ try {
             if(!str_contains($html,$needle))
                 throw new RuntimeException('Модуль не попал в нужную зону: '.$id.' / '.$needle);
         }
+    }
+    if(getenv('TEST_COVER_IMAGE_TEST')==='1') {
+        $newsId=(int)$pdo->query("SELECT id FROM content WHERE slug='test-news'")->fetchColumn();
+        if(!$newsId || !str_contains($html,'/content-image.php?id='.$newsId) ||
+           !str_contains($html,'alt="Изображение тестовой новости"')) {
+            throw new RuntimeException('Обложка тестовой новости не показана в шаблоне '.$id);
+        }
+        if($id==='government' && !str_contains($html,'cms-government-material-thumb'))
+            throw new RuntimeException('Муниципальная карточка новости не показана');
+        if($id!=='government' && !str_contains($html,'cms-visual-card'))
+            throw new RuntimeException('Карточка новости с обложкой не показана');
     }
     if (!str_contains($html,'Шаблон не найден') && strlen($html)<2000) {
         throw new RuntimeException('Недостаточный HTML шаблона '.$id);
