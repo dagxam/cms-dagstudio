@@ -6,7 +6,7 @@ header('X-Robots-Tag: noindex, nofollow');
 $me = require_account();
 $section = (string)($_GET['section'] ?? 'dashboard');
 $types = kinds();
-if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages','media','accessibility','modules'],array_keys($types)),true)) $section='dashboard';
+if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages','documents','photos','videos','accessibility','modules','menus'],array_keys($types)),true)) $section='dashboard';
 if ($section === 'edit') {
     $id = max(0,(int)($_GET['id'] ?? 0));
     $record = null;
@@ -21,7 +21,7 @@ if ($section === 'edit') {
     require_module($kind);
     if (!module_enabled($kind)) { http_response_code(404); exit('Модуль отключён'); }
 } elseif ($section !== 'dashboard') {
-    require_module(in_array($section,['accessibility','modules'],true)?'settings':$section);
+    require_module(in_array($section,['accessibility','modules','menus'],true)?'settings':(in_array($section,['documents','photos','videos'],true)?'media':$section));
     if (isset($types[$section]) && !module_enabled($section)) {
         http_response_code(404);
         exit('Модуль отключён');
@@ -43,10 +43,14 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key)) continue; ?>
 <a class="nav-item <?=($section===$key||($section==='edit'&&$kind===$key))?'active':''?>" href="/admin/index.php?section=<?=h($key)?>"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$key]?> <?=h($label)?></a>
 <?php endforeach; ?>
-<?php if (allowed('media')): ?><a class="nav-item <?=$section==='media'?'active':''?>" href="?section=media">▣ Медиатека</a><?php endif; ?>
+<?php if (allowed('media')): ?>
+<?php foreach(['documents'=>'▤ Документы','photos'=>'▧ Фотогалерея','videos'=>'▣ Видеогалерея'] as $key=>$label):
+    if(!cms_module_enabled($key))continue; ?>
+<a class="nav-item <?=$section===$key?'active':''?>" href="?section=<?=h($key)?>"><?=h($label)?></a>
+<?php endforeach; endif; ?>
 <?php if (allowed('messages')): ?><a class="nav-item <?=$section==='messages'?'active':''?>" href="?section=messages">✉ Обращения</a><?php endif; ?>
 <?php if (allowed('users')): ?><a class="nav-item <?=$section==='users'?'active':''?>" href="?section=users">♙ Пользователи</a><?php endif; ?>
-<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='modules'?'active':''?>" href="?section=modules">▦ Модули</a><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Выбор темы сайта</a><a class="nav-item <?=$section==='accessibility'?'active':''?>" href="?section=accessibility">◉ Доступность и возраст</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
+<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='modules'?'active':''?>" href="?section=modules">▦ Модули</a><a class="nav-item <?=$section==='menus'?'active':''?>" href="?section=menus">☷ Главное меню</a><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Выбор темы сайта</a><a class="nav-item <?=$section==='accessibility'?'active':''?>" href="?section=accessibility">◉ Доступность и возраст</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
 <div class="sidebar-bottom"><p class="muted">Вы вошли как<br><strong><?=h($me['name'])?></strong></p>
 <a class="nav-item" href="/" target="_blank" rel="noopener">↗ Открыть сайт</a>
 <form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit">Выйти из аккаунта</button></form></div>
@@ -91,6 +95,9 @@ $row = $record ?: ['title'=>'','slug'=>'','summary'=>'','body'=>'','price'=>'','
 <label>Адрес страницы (латиницей)<input maxlength="190" name="slug" value="<?=h($row['slug'])?>" placeholder="Создаётся из заголовка автоматически"></label>
 <label>Краткое описание<textarea name="summary" rows="3" maxlength="3000"><?=h($row['summary'])?></textarea></label>
 <label>Текст материала<textarea name="body" rows="13" maxlength="100000"><?=h($row['body'])?></textarea></label>
+<?php if ($kind==='page'): ?>
+<?=cms_page_editor_widgets((int)($record['id']??0),site_template())?>
+<?php endif; ?>
 <?php if ($kind==='product'): ?><label>Цена (₽)<input name="price" type="number" step="0.01" min="0" value="<?=h((string)$row['price'])?>"></label><?php endif;?>
 <div class="two"><label>Статус публикации<select name="status">
 <option value="draft" <?=$row['status']==='draft'?'selected':''?>>Черновик</option>
@@ -120,8 +127,11 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <?php elseif ($section==='templates'): ?>
 <?php define('DAG_CMS_ADMIN_VIEW',true); require __DIR__ . '/template-editor.php'; ?>
 
-<?php elseif ($section==='media'): ?>
+<?php elseif (in_array($section,['documents','photos','videos'],true)): ?>
 <?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/media-library.php'; ?>
+
+<?php elseif ($section==='menus'): ?>
+<?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/menu-editor.php'; ?>
 
 <?php elseif ($section==='accessibility'): ?>
 <?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/accessibility-editor.php'; ?>
@@ -144,18 +154,31 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <?php elseif ($section==='users'):
 $rows = database()->query('SELECT id,name,email,role,permissions,active,created_at FROM users ORDER BY id')->fetchAll();
 ?>
-<div class="eyebrow">КОМАНДА</div><h1>Пользователи</h1>
+<div class="eyebrow">КОМАНДА / ДОСТУПЫ</div><div class="heading-row"><div><h1>Пользователи и роли</h1><p class="muted">Управление сотрудниками, разрешениями и статусом доступа к CMS.</p></div><a href="#add-user" class="button">+ Добавить сотрудника</a></div>
 <div class="box table-wrap"><table><thead><tr><th>Имя</th><th>Почта</th><th>Роль</th><th>Разделы</th></tr></thead><tbody>
 <?php foreach($rows as $item): ?><tr><td><?=h($item['name'])?></td><td><?=h($item['email'])?></td>
-<td><?=h($item['role'])?></td><td><?=h(implode(', ',json_decode($item['permissions']??'[]',true)?:[]))?></td></tr><?php endforeach; ?>
+<td><span class="tag <?=$item['role']==='admin'?'tag-green':''?>"><?=$item['role']==='admin'?'Администратор':'Редактор'?></span><br><small class="muted"><?=$item['active']?'Активен':'Заблокирован'?></small></td>
+<td><small><?=h(implode(', ',json_decode($item['permissions']??'[]',true)?:[]))?></small>
+<?php if((int)$item['id']!==(int)$me['id']): ?>
+<details class="cms-user-edit"><summary>Настроить доступ</summary>
+<form method="post" action="/admin/actions.php"><?=csrf()?><input type="hidden" name="action" value="update_user"><input type="hidden" name="user_id" value="<?=(int)$item['id']?>">
+<label>Роль<select name="role"><option value="editor" <?=$item['role']==='editor'?'selected':''?>>Редактор</option><option value="admin" <?=$item['role']==='admin'?'selected':''?>>Администратор</option></select></label>
+<label class="check"><input type="checkbox" name="active" value="1" <?=$item['active']?'checked':''?>> Активен</label>
+<div class="cms-user-permissions">
+<?php foreach(array_merge(array_keys($types),['media']) as $permission):?>
+<label class="check"><input type="checkbox" name="permissions[]" value="<?=h($permission)?>" <?=in_array($permission,json_decode((string)$item['permissions'],true)?:[],true)?'checked':''?>> <?=h($permission==='media'?'Фото, видео и документы':($types[$permission]??$permission))?></label>
+<?php endforeach;?></div>
+<label>Новый пароль (необязательно, от 12 символов)<input name="new_password" type="password" autocomplete="new-password" minlength="12"></label>
+<button class="button" type="submit">Сохранить права</button></form></details>
+<?php else:?><small class="muted">Ваш профиль</small><?php endif;?></td></tr><?php endforeach; ?>
 </tbody></table></div>
-<div class="box form-panel"><h2>Добавить сотрудника</h2><form method="post" action="/admin/actions.php"><?=csrf()?>
+<div class="box form-panel cms-users-form" id="add-user"><h2>Добавить сотрудника</h2><form method="post" action="/admin/actions.php"><?=csrf()?>
 <input type="hidden" name="action" value="create_user">
 <label>Имя<input required name="name"></label><label>E-mail<input required name="email" type="email"></label>
 <label>Временный пароль (от 12 символов)<input required minlength="12" name="password" type="password" autocomplete="new-password"></label>
 <label>Роль<select name="role"><option value="editor">Редактор (с выбранными правами)</option><option value="admin">Администратор (все права)</option></select></label>
 <fieldset><legend>Разрешённые разделы для редактора</legend>
-<?php foreach($types as $type=>$label): ?><label class="check"><input type="checkbox" name="permissions[]" value="<?=h($type)?>"> <?=h($label)?></label><?php endforeach; ?><label class="check"><input type="checkbox" name="permissions[]" value="media"> Медиатека (фото, видео, документы)</label></fieldset>
+<?php foreach($types as $type=>$label): ?><label class="check"><input type="checkbox" name="permissions[]" value="<?=h($type)?>"> <?=h($label)?></label><?php endforeach; ?><label class="check"><input type="checkbox" name="permissions[]" value="media"> Документы, фотографии, видео</label></fieldset>
 <button class="button" type="submit">Добавить пользователя</button></form></div>
 
 <?php elseif ($section==='messages'):
