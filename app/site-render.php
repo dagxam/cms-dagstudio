@@ -59,12 +59,10 @@ if ($activeTemplate === 'government') {
   </a>
   <nav class="site-nav" aria-label="Главное меню">
     <a href="/" <?=$kind===''?'class="current"':''?>>Главная</a>
-    <?php if(!cms_module_layout_configured($activeTemplate)): ?>
-    <?php foreach($moduleLabels as $key=>$label):if(!module_enabled($key))continue;?>
-      <a href="/?kind=<?=h($key)?>"><?=h($label)?></a>
+    <?php $menuUrls=[];foreach(cms_menu_visible($activeTemplate) as $link):$menuUrls[]=$link['url']; ?>
+    <a href="<?=h($link['url'])?>"><?=h($link['label'])?></a>
     <?php endforeach;?>
-    <?php endif;?>
-    <?php foreach(cms_module_ids($activeTemplate,'nav') as $id): ?>
+    <?php foreach(cms_module_ids($activeTemplate,'nav') as $id):if(in_array(cms_module_href($id),$menuUrls,true))continue;?>
     <a href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
     <?php endforeach;?>
     <?php foreach ($navLinks as $link): if(!is_array($link) || !safe_template_url((string)($link['url']??'')))continue; ?>
@@ -81,6 +79,11 @@ if ($activeTemplate === 'government') {
 </div></header>
 <main id="cms-main-content" class="container site-body">
 <?php if($record): ?>
+  <?php $pageConfig=$record['kind']==='page'?cms_page_options((int)$record['id']):null; ?>
+  <?php if($pageConfig):?><div class="cms-page-detail-layout">
+  <?php if($pageConfig['left']):?><aside class="cms-page-detail-sidebar" aria-label="Боковые блоки слева"><?php foreach($pageConfig['left'] as $widget):cms_module_sidebar($widget,$activeTemplate);endforeach;?></aside><?php endif;?>
+  <div class="cms-page-detail-center"><?php cms_page_module($pageConfig['before'],$activeTemplate); ?>
+  <?php endif;?>
   <article class="article-page">
     <a class="back" href="/?kind=<?=h($record['kind'])?>">← Назад к разделу</a>
     <div class="eyebrow"><?=h($moduleLabels[$record['kind']]??'Материал')?></div>
@@ -89,6 +92,9 @@ if ($activeTemplate === 'government') {
     <?php if($record['kind']==='product' && $record['price']!==null): ?><p class="price"><?=h(number_format((float)$record['price'],2,',',' '))?> ₽</p><?php endif;?>
     <div class="article-body"><?=nl2br(h($record['body']))?></div>
   </article>
+  <?php if($pageConfig):cms_page_module($pageConfig['after'],$activeTemplate); ?></div>
+  <?php if($pageConfig['right']):?><aside class="cms-page-detail-sidebar" aria-label="Боковые блоки справа"><?php foreach($pageConfig['right'] as $widget):cms_module_sidebar($widget,$activeTemplate);endforeach;?></aside><?php endif;?>
+  </div><?php endif;?>
 <?php elseif($slug!==''): ?>
   <section class="site-hero site-hero-error"><div class="eyebrow">404 / НЕ НАЙДЕНО</div><h1>Такой страницы нет</h1>
     <p class="lead">Возможно, материал ещё не опубликован.</p><a class="button" href="/">На главную</a></section>
@@ -125,8 +131,8 @@ if ($activeTemplate === 'government') {
         <?php endfor;?>
       </div>
     </section>
-    <?php elseif($section==='media'): ?>
-      <?php cms_module_media_block(); ?>
+    <?php elseif(in_array($section,['documents','photos','videos'],true)): ?>
+      <?php cms_module_media_block($section); ?>
     <?php elseif($section==='contact'): ?>
     <section class="section-block contact-section site-block" id="contact">
       <div><div class="eyebrow">ОБРАТНАЯ СВЯЗЬ</div><h2><?=h($siteContent['contact_title'])?></h2>
