@@ -16,15 +16,34 @@ try {
         require_module('settings');
         $id = (string)($_POST['template'] ?? '');
         if (!array_key_exists($id, template_catalog())) throw new RuntimeException('Шаблон не найден');
-        // Смена шаблона не удаляет контент или пользовательские подписи/логотип.
-        // Визуальные переопределения сбрасываем, чтобы выбранный макет был виден.
+        // Персональные настройки сохраняются отдельно для КАЖДОГО шаблона.
         $pdo = database();
-        $oldContent = json_decode(config_value('template_content', '{}'), true);
-        if (!is_array($oldContent)) $oldContent = [];
+        $previous = site_template();
         $query = $pdo->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+        $designMaps = json_decode(config_value('template_design_by_type','{}'),true);
+        $contentMaps = json_decode(config_value('template_content_by_type','{}'),true);
+        $sectionMaps = json_decode(config_value('template_sections_by_type','{}'),true);
+        if (!is_array($designMaps)) $designMaps=[];
+        if (!is_array($contentMaps)) $contentMaps=[];
+        if (!is_array($sectionMaps)) $sectionMaps=[];
+        if (!array_key_exists($previous,$designMaps)) $designMaps[$previous] = json_decode(config_value('template_design','{}'),true) ?: [];
+        if (!array_key_exists($previous,$contentMaps)) $contentMaps[$previous] = json_decode(config_value('template_content','{}'),true) ?: [];
+        if (!array_key_exists($previous,$sectionMaps)) {
+            $prior = json_decode(config_value('template_sections',''),true);
+            if (is_array($prior)) $sectionMaps[$previous] = $prior;
+        }
         $pdo->beginTransaction();
         try {
-            foreach (['site_template'=>$id,'site_type'=>$id,'template_design'=>'{}'] as $key=>$value) {
+            foreach ([
+                'site_template'=>$id,
+                'site_type'=>$id,
+                'template_design'=>'{}',
+                'template_content'=>'{}',
+                'template_sections'=>'',
+                'template_design_by_type'=>json_encode($designMaps,JSON_UNESCAPED_UNICODE),
+                'template_content_by_type'=>json_encode($contentMaps,JSON_UNESCAPED_UNICODE),
+                'template_sections_by_type'=>json_encode($sectionMaps,JSON_UNESCAPED_UNICODE),
+            ] as $key=>$value) {
                 $query->execute([$key,$value]);
             }
             $required = match($id) {
@@ -65,8 +84,12 @@ try {
             if (!in_array($value,$allowedValues,true)) throw new RuntimeException('Недопустимое значение параметра оформления.');
             $design[$key]=$value;
         }
-        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
-            ->execute(['template_design',json_encode($design,JSON_UNESCAPED_UNICODE)]);
+        $maps=json_decode(config_value('template_design_by_type','{}'),true);
+        if (!is_array($maps)) $maps=[];
+        $maps[site_template()]=$design;
+        $q=database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+        $q->execute(['template_design_by_type',json_encode($maps,JSON_UNESCAPED_UNICODE)]);
+        $q->execute(['template_design',json_encode($design,JSON_UNESCAPED_UNICODE)]);
         log_action('template.design', site_template());
         $_SESSION['flash']='Оформление сохранено. Цвета, размеры и стиль обновлены на сайте.';
         $back='/admin/index.php?section=templates';
@@ -134,8 +157,12 @@ try {
             @chmod($dir.'/'.$filename,0644);
             $values['logo_path']='/assets/uploads/'.$filename;
         }
-        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
-            ->execute(['template_content',json_encode($values,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
+        $maps=json_decode(config_value('template_content_by_type','{}'),true);
+        if (!is_array($maps)) $maps=[];
+        $maps[site_template()]=$values;
+        $q=database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+        $q->execute(['template_content_by_type',json_encode($maps,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
+        $q->execute(['template_content',json_encode($values,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
         log_action('template.content',site_template());
         $_SESSION['flash']='Тексты, бренд и меню обновлены.';
         $back='/admin/index.php?section=templates';
@@ -151,8 +178,12 @@ try {
             $pb=min(6,max(1,(int)($orders[$b]??6)));
             return ($pa<=>$pb) ?: (array_search($a,$allowed,true)<=>array_search($b,$allowed,true));
         });
-        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
-            ->execute(['template_sections',json_encode($enabled)]);
+        $maps=json_decode(config_value('template_sections_by_type','{}'),true);
+        if (!is_array($maps)) $maps=[];
+        $maps[site_template()]=$enabled;
+        $q=database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+        $q->execute(['template_sections_by_type',json_encode($maps)]);
+        $q->execute(['template_sections',json_encode($enabled)]);
         log_action('template.sections',implode(',',$enabled));
         $_SESSION['flash']='Порядок и видимость блоков сохранены.';
         $back='/admin/index.php?section=templates';
