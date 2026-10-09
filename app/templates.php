@@ -67,6 +67,102 @@ function template_catalog(): array
     ];
 }
 
+/**
+ * Палитры хранятся отдельно для светлой/тёмной версии КАЖДОГО шаблона.
+ * Цвета фона, текста, карточек и границ согласованы с назначением сайта.
+ */
+function template_default_palettes(string $id): array
+{
+    $presets = [
+        'organization'=>[
+            'light'=>['accent'=>'#925733','background'=>'#fcfaf7','ink'=>'#292620','surface'=>'#fffdf9','border'=>'#decdbd'],
+            'dark'=>['accent'=>'#d9a478','background'=>'#111b1b','ink'=>'#f4f0e9','surface'=>'#1e2a29','border'=>'#3d514c'],
+        ],
+        'company'=>[
+            'light'=>['accent'=>'#965434','background'=>'#f9f5f0','ink'=>'#1f2931','surface'=>'#fffdf9','border'=>'#e2d4c9'],
+            'dark'=>['accent'=>'#dc8b5f','background'=>'#11161c','ink'=>'#f4efe9','surface'=>'#20262c','border'=>'#514339'],
+        ],
+        'store'=>[
+            'light'=>['accent'=>'#995321','background'=>'#fbf9f6','ink'=>'#24201e','surface'=>'#fffdf9','border'=>'#e8d7c8'],
+            'dark'=>['accent'=>'#f0ad6c','background'=>'#141820','ink'=>'#f8f1e8','surface'=>'#242b33','border'=>'#594b3e'],
+        ],
+        'government'=>[
+            'light'=>['accent'=>'#825437','background'=>'#f6f6f3','ink'=>'#183047','surface'=>'#ffffff','border'=>'#cbd5de'],
+            'dark'=>['accent'=>'#daa57d','background'=>'#112132','ink'=>'#edf3fa','surface'=>'#1b3043','border'=>'#425b70'],
+        ],
+    ];
+    return $presets[$id] ?? $presets['company'];
+}
+
+function template_default_mode(string $id): string
+{
+    return $id === 'company' ? 'dark' : 'light';
+}
+
+/** Нормализация сохраняет прежние настройки для существующих сайтов. */
+function template_design_palettes(array $design, string $id): array
+{
+    $palettes = template_default_palettes($id);
+    $stored = isset($design['palettes']) && is_array($design['palettes'])
+        ? $design['palettes'] : [];
+    foreach (['light','dark'] as $mode) {
+        foreach (['accent','background','ink','surface','border'] as $key) {
+            $value = $stored[$mode][$key] ?? null;
+            if (is_string($value) && preg_match('/^#[a-fA-F0-9]{6}$/D', $value)) {
+                $palettes[$mode][$key] = strtolower($value);
+            }
+        }
+    }
+    // Legacy single-mode colors become colors of the historical default theme.
+    if (!$stored) {
+        $legacy = template_default_mode($id);
+        foreach (['accent','background','ink'] as $key) {
+            $value = $design[$key] ?? null;
+            if (is_string($value) && preg_match('/^#[a-fA-F0-9]{6}$/D', $value)) {
+                $palettes[$legacy][$key] = strtolower($value);
+            }
+        }
+    }
+    return $palettes;
+}
+
+/** Контрастная окраска кнопок для произвольно выбранного акцента. */
+function template_button_text(string $hex): string
+{
+    $rgb = [
+        hexdec(substr($hex,1,2))/255,
+        hexdec(substr($hex,3,2))/255,
+        hexdec(substr($hex,5,2))/255,
+    ];
+    $linear = array_map(static fn(float $v): float =>
+        $v <= .04045 ? $v/12.92 : (($v+.055)/1.055)**2.4, $rgb);
+    $lum = .2126*$linear[0]+.7152*$linear[1]+.0722*$linear[2];
+    return $lum > .179 ? '#101820' : '#ffffff';
+}
+
+function template_palette_css(array $design, ?string $forTemplate = null): string
+{
+    $id = $forTemplate !== null && isset(template_catalog()[$forTemplate])
+        ? $forTemplate : site_template();
+    $palettes = template_design_palettes($design, $id);
+    $output = '';
+    foreach (['light','dark'] as $mode) {
+        $p = $palettes[$mode];
+        $rules = [
+            '--site-accent'=>$p['accent'],
+            '--site-bg'=>$p['background'],
+            '--site-ink'=>$p['ink'],
+            '--site-surface'=>$p['surface'],
+            '--site-border'=>$p['border'],
+            '--site-button-ink'=>template_button_text($p['accent']),
+        ];
+        $declarations = [];
+        foreach ($rules as $key=>$value) $declarations[] = $key.':'.$value;
+        $output .= 'html[data-theme="'.$mode.'"] body.site-page{'.implode(';',$declarations).'}';
+    }
+    return $output;
+}
+
 function template_sections(): array
 {
     return [
@@ -108,6 +204,7 @@ function template_design(?string $forTemplate = null): array
     foreach ($allowed as $key) {
         if (isset($stored[$key]) && is_scalar($stored[$key])) $preset[$key] = (string)$stored[$key];
     }
+    $preset['palettes'] = template_design_palettes($stored, $id);
     return $preset;
 }
 
@@ -181,10 +278,7 @@ function template_style(array $design, ?string $forTemplate = null): string
     }
     $radius = in_array((string)$design['radius'], ['0','6','12','16','18','24'], true) ? (int)$design['radius'] : 12;
     $width = in_array((string)$design['width'], ['1120','1240','1320','1380','1480'], true) ? (int)$design['width'] : 1320;
-    return '--site-accent:' . $colors['accent'] .
-        ';--site-bg:' . $colors['background'] .
-        ';--site-ink:' . $colors['ink'] .
-        ';--site-radius:' . $radius . 'px' .
+    return '--site-radius:' . $radius . 'px' .
         ';--site-width:' . $width . 'px' .
         ';--site-font:' . template_font_stack((string)$design['font']);
 }
