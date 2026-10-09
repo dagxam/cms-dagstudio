@@ -51,7 +51,7 @@ jobs:
   deploy:
     name: Загрузка сайта по FTPS
     needs: check
-    if: github.event_name == 'workflow_dispatch' || vars.FTP_ENABLED == 'true'
+    if: github.event_name == 'workflow_dispatch' || vars.FTP_ENABLED == 'true' || contains(github.event.head_commit.message, '[deploy]')
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -62,12 +62,38 @@ jobs:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          FTP_SERVER_DIR: ${{ vars.FTP_SERVER_DIR }}
+          FTP_SERVER_DIR: '/www/cms.dagstudio.ru/'
         run: |
           test -n "$FTP_SERVER" || { echo "Отсутствует FTP_SERVER"; exit 1; }
           test -n "$FTP_USERNAME" || { echo "Отсутствует FTP_USERNAME"; exit 1; }
           test -n "$FTP_PASSWORD" || { echo "Отсутствует FTP_PASSWORD"; exit 1; }
           test -n "$FTP_SERVER_DIR" || { echo "Не указан FTP_SERVER_DIR"; exit 1; }
+      - name: Безопасная проверка FTPS и точного каталога перед загрузкой
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import ssl
+          from ftplib import FTP_TLS
+
+          host = os.environ['FTP_SERVER'].strip()
+          if '://' in host or '/' in host or ':' in host:
+              raise SystemExit('Неверный формат FTP_SERVER: укажите только имя сервера')
+          directory = '/www/cms.dagstudio.ru/'
+          try:
+              with FTP_TLS(context=ssl.create_default_context(), timeout=25) as ftp:
+                  ftp.connect(host, 21)
+                  ftp.login(os.environ['FTP_USERNAME'], os.environ['FTP_PASSWORD'])
+                  ftp.prot_p()
+                  ftp.cwd(directory)
+                  ftp.pwd()
+          except Exception as exc:
+              raise SystemExit(f'Защищённая проверка FTPS не пройдена ({type(exc).__name__}): {exc}')
+          print('Проверены TLS-сертификат, вход и доступ к /www/cms.dagstudio.ru/. Можно передавать файлы.')
+          PY
       - name: Передача CMS на хостинг (защищённый FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
@@ -77,7 +103,7 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./
-          server-dir: ${{ vars.FTP_SERVER_DIR }}
+          server-dir: /www/cms.dagstudio.ru/
           log-level: minimal
           exclude: |
             **/.git*
@@ -87,3 +113,5 @@ jobs:
             **/vendor/**
             **/README.md
             **/tests/**
+            **/storage/config.php
+            **/storage/*.log
