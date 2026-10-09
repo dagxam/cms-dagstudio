@@ -107,3 +107,5 @@ function log_action(string $action, string $value): void {
     database()->prepare('INSERT INTO audit_log(user_id,action,target) VALUES (?,?,?)')
         ->execute([account()['id'] ?? null, $action, mb_substr($value, 0, 190)]);
 }
+
+require_once __DIR__ . '/templates.php';
