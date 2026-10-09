@@ -72,7 +72,7 @@ SELECT id, email, role, active FROM users ORDER BY id;
 ```bash
 cd /www/cms.dagstudio.ru
 read -r -s -p "Новый пароль администратора: " CMS_NEW_PASSWORD; echo
-printf '%s\\n' "$CMS_NEW_PASSWORD" | php tools/reset-admin.php "admin@example.ru"
+printf '%s\n' "$CMS_NEW_PASSWORD" | php tools/reset-admin.php "admin@example.ru"
 unset CMS_NEW_PASSWORD
 ```
 
