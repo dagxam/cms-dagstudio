@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <input required type="email" name="admin_email" value="<?=h($_POST['admin_email'] ?? '')?>" placeholder="admin@example.ru" autocomplete="email" spellcheck="false">
                 </label>
                 <label class="install-field-wide">Пароль администратора
-                  <input required minlength="12" type="password" name="admin_password" autocomplete="new-password" placeholder="Не менее 12 символов" aria-describedby="install-password-hint">
+                  <span class="password-field"><input id="install-admin-pass" required minlength="12" type="password" name="admin_password" autocomplete="new-password" placeholder="Не менее 12 символов" aria-describedby="install-password-hint"><button type="button" class="password-eye" data-password-toggle aria-controls="install-admin-pass" aria-label="Показать пароль" aria-pressed="false">◎</button></span>
                   <small id="install-password-hint">Пароль администратора отличается от пароля MySQL. Сохраните его для входа.</small>
                 </label>
               </div>
@@ -196,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <input required name="username" value="<?=h($_POST['username'] ?? '')?>" placeholder="db_user" autocomplete="off" spellcheck="false">
                 </label>
                 <label class="install-field-wide">Пароль базы данных
-                  <input type="password" name="db_password" autocomplete="off" placeholder="Пароль пользователя MySQL">
+                  <span class="password-field"><input id="install-db-pass" type="password" name="db_password" autocomplete="off" placeholder="Пароль пользователя MySQL"><button type="button" class="password-eye" data-password-toggle aria-controls="install-db-pass" aria-label="Показать пароль" aria-pressed="false">◎</button></span>
                 </label>
               </div>
             </fieldset>
