@@ -12,7 +12,71 @@ $action = (string)($_POST['action'] ?? '');
 $back = '/admin/index.php';
 
 try {
-    if ($action === 'save_cms_modules') {
+    if ($action === 'save_template_menu') {
+        require_module('settings');
+        $template=(string)($_POST['template']??'');
+        if(!isset(template_catalog()[$template]))throw new RuntimeException('Неизвестный шаблон.');
+        if(!is_string($_POST['menu_lines']??null))throw new RuntimeException('Некорректный список ссылок.');
+        $links=cms_menu_parse($_POST['menu_lines']);
+        $maps=json_decode(config_value('cms_menus_by_type','{}'),true);
+        if(!is_array($maps))$maps=[];
+        $maps[$template]=$links;
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['cms_menus_by_type',json_encode($maps,JSON_UNESCAPED_UNICODE)]);
+        log_action('menu.save',$template);
+        $_SESSION['flash']='Главное меню шаблона сохранено.';
+        $back='/admin/index.php?section=menus&tpl='.rawurlencode($template);
+    } elseif ($action === 'save_video_link') {
+        require_module('media');
+        if(!cms_module_enabled('videos'))throw new RuntimeException('Видеогалерея отключена.');
+        $title=trim((string)($_POST['title']??''));
+        $description=trim((string)($_POST['description']??''));
+        $url=trim((string)($_POST['video_url']??''));
+        $age=(string)($_POST['age_rating']??'0+');
+        $status=(string)($_POST['status']??'draft');
+        $parsed=cms_video_embed($url);
+        if($title===''||mb_strlen($title)>190||mb_strlen($description)>2000||
+           strlen($url)>500||!$parsed||!cms_media_age_valid($age)||!in_array($status,['draft','published'],true))
+            throw new RuntimeException('Введите корректные название, возраст и ссылку VK Видео или Rutube.');
+        cms_video_table();
+        database()->prepare('INSERT INTO cms_video_links(title,description,provider,embed_url,original_url,age_rating,status) VALUES(?,?,?,?,?,?,?)')
+            ->execute([$title,$description,$parsed['provider'],$parsed['embed'],$url,$age,$status]);
+        log_action('video.link.add',$title);
+        $_SESSION['flash']='Видео по ссылке добавлено.';
+        $back='/admin/index.php?section=videos';
+    } elseif ($action === 'delete_video_link') {
+        require_module('media');
+        cms_video_table();
+        $id=max(0,(int)($_POST['video_id']??0));
+        database()->prepare('DELETE FROM cms_video_links WHERE id=?')->execute([$id]);
+        log_action('video.link.delete',(string)$id);
+        $_SESSION['flash']='Ссылка на видео удалена.';
+        $back='/admin/index.php?section=videos';
+    } elseif ($action === 'update_user') {
+        require_module('users');
+        $uid=max(0,(int)($_POST['user_id']??0));
+        if($uid===(int)account()['id'])throw new RuntimeException('Изменить собственную роль или активность здесь нельзя.');
+        $role=(string)($_POST['role']??'');
+        $permissions=$_POST['permissions']??[];
+        $password=(string)($_POST['new_password']??'');
+        $active=isset($_POST['active'])?1:0;
+        if(!in_array($role,['admin','editor'],true)||!is_array($permissions)||
+           count($permissions)>count(kinds())+1||($password!==''&&strlen($password)<12))
+            throw new RuntimeException('Недопустимые роль, права или пароль.');
+        $q=database()->prepare('SELECT id FROM users WHERE id=?');$q->execute([$uid]);
+        if(!$q->fetch())throw new RuntimeException('Сотрудник не найден.');
+        $permissions=array_values(array_intersect([...array_keys(kinds()),'media'],array_map('strval',$permissions)));
+        if($password===''){
+            database()->prepare('UPDATE users SET role=?,permissions=?,active=? WHERE id=?')
+                ->execute([$role,json_encode($permissions),$active,$uid]);
+        }else{
+            database()->prepare('UPDATE users SET role=?,permissions=?,active=?,password_hash=? WHERE id=?')
+                ->execute([$role,json_encode($permissions),$active,password_hash($password,PASSWORD_DEFAULT),$uid]);
+        }
+        log_action('users.update',(string)$uid);
+        $_SESSION['flash']='Роль и права сотрудника обновлены.';
+        $back='/admin/index.php?section=users';
+    } elseif ($action === 'save_cms_modules') {
         require_module('settings');
         $keys=$_POST['enabled']??[];
         if(!is_array($keys) || count($keys)>count(cms_modules())) {
@@ -84,6 +148,10 @@ try {
         require_module('media');
         cms_media_table();
         $category=(string)($_POST['category']??'');
+        if(!isset(['document'=>'documents','photo'=>'photos','video'=>'videos'][$category]) ||
+           !cms_module_enabled(['document'=>'documents','photo'=>'photos','video'=>'videos'][$category]))
+            throw new RuntimeException('Этот медиараздел отключён.');
+
         $title=trim((string)($_POST['title']??''));
         $description=trim((string)($_POST['description']??''));
         $alt=trim((string)($_POST['alt_text']??''));
@@ -109,7 +177,7 @@ try {
         } catch(Throwable $e){@unlink($path);throw $e;}
         log_action('media.upload',$title);
         $_SESSION['flash']='Файл загружен в медиатеку.';
-        $back='/admin/index.php?section=media';
+        $back='/admin/index.php?section='.(['document'=>'documents','photo'=>'photos','video'=>'videos'][$category??($item['category']??'document')]??'documents');
     } elseif ($action === 'update_media') {
         require_module('media');
         $id=max(0,(int)($_POST['media_id']??0));
@@ -127,7 +195,7 @@ try {
             ->execute([$title,$description,$alt,$age,$status,$id]);
         log_action('media.update',(string)$id);
         $_SESSION['flash']='Карточка медиа обновлена.';
-        $back='/admin/index.php?section=media';
+        $back='/admin/index.php?section='.(['document'=>'documents','photo'=>'photos','video'=>'videos'][$category??($item['category']??'document')]??'documents');
     } elseif ($action === 'delete_media') {
         require_module('media');
         $id=max(0,(int)($_POST['media_id']??0));
@@ -139,7 +207,7 @@ try {
             @unlink(dirname(__DIR__).'/storage/media/'.$base);
         log_action('media.delete',(string)$id);
         $_SESSION['flash']='Файл удалён.';
-        $back='/admin/index.php?section=media';
+        $back='/admin/index.php?section='.(['document'=>'documents','photo'=>'photos','video'=>'videos'][$category??($item['category']??'document')]??'documents');
     } elseif ($action === 'save_government_layout') {
         require_module('settings');
         if (site_template()!=='government') {
@@ -481,6 +549,28 @@ try {
             $q = database()->prepare('INSERT INTO content(kind,title,slug,summary,body,price,status,created_by) VALUES (?,?,?,?,?,?,?,?)');
             $q->execute($fields);
             $id = (int)database()->lastInsertId();
+        }
+        if($kind==='page') {
+            $opt=['before'=>'','after'=>'','left'=>[],'right'=>[]];
+            foreach(['before','after'] as $slot){
+                $v=(string)($_POST['page_'.$slot]??'');
+                if($v!==''&&!isset(cms_modules()[$v]))throw new RuntimeException('Недопустимый модуль страницы.');
+                $opt[$slot]=$v;
+            }
+            foreach(['left','right'] as $side){
+                $raw=$_POST['page_'.$side]??[];
+                if(!is_array($raw)||count($raw)>count(cms_modules()))
+                    throw new RuntimeException('Недопустимые боковые блоки.');
+                foreach($raw as $mod){
+                    if(!is_string($mod)||!isset(cms_modules()[$mod]))throw new RuntimeException('Недопустимый боковой модуль.');
+                    if(!in_array($mod,$opt[$side],true))$opt[$side][]=$mod;
+                }
+            }
+            $maps=json_decode(config_value('cms_page_options','{}'),true);
+            if(!is_array($maps))$maps=[];
+            $maps[(string)$id]=$opt;
+            database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+                ->execute(['cms_page_options',json_encode($maps,JSON_UNESCAPED_UNICODE)]);
         }
         log_action('content.save', $kind . ':' . $id);
         $_SESSION['flash'] = 'Материал сохранён.';
