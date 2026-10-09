@@ -46,6 +46,7 @@ if ($activeTemplate === 'government') {
   <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>
 </head>
 <body class="<?=h($siteClass)?>"<?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$activeTemplate))?>">
+<a class="cms-skip-link" href="#cms-main-content">Перейти к основному содержимому</a>
 <?php if($previewMode): ?><div class="site-preview-banner"><strong>Предпросмотр: <?=h(template_catalog()[$activeTemplate]['label'])?></strong> · Это предварительный вид. Шаблон не применён. <a href="/admin/index.php?section=templates">Вернуться к выбору</a></div><?php endif;?>
 <?php if ($activeTemplate==='government'): ?><div class="site-official-bar"><div class="container">ОФИЦИАЛЬНЫЙ САЙТ <span>Информация для граждан и организаций</span></div></div><?php endif;?>
 <header class="site-header"><div class="container header-inner">
@@ -73,7 +74,7 @@ if ($activeTemplate === 'government') {
     <a class="small-link" href="/admin/login.php">Вход</a>
   </div>
 </div></header>
-<main class="container site-body">
+<main id="cms-main-content" class="container site-body">
 <?php if($record): ?>
   <article class="article-page">
     <a class="back" href="/?kind=<?=h($record['kind'])?>">← Назад к разделу</a>
@@ -165,7 +166,7 @@ if ($activeTemplate === 'government') {
   </div>
 <?php endif;?>
 </main>
-<footer class="site-footer"><div class="container footer-inner">
+<footer class="site-footer"><div class="container footer-inner"><?=cms_age_mark()?>
   <div><strong><?=h($siteName)?></strong><br><?=h($siteContent['footer_text'])?></div>
   <div><?=date('Y')?> · Работает на <strong>DAG STUDIO CMS</strong></div>
 </div></footer>
