@@ -729,3 +729,27 @@ html[data-theme="light"] .privacy-check a{color:#a6532c}
  .install-progress-item{font-size:8px}
  .install-brand{font-size:12px!important}
 }
+
+
+/* Обёртки переключателя темы в кабинете и на форме входа */
+.admin-header-controls{display:flex;align-items:center;gap:14px}
+.admin-header-controls .theme-toggle{width:35px;height:35px;flex-basis:35px}
+.auth-theme-bar{position:absolute;top:21px;right:21px;z-index:1}
+.auth-card .brand{max-width:calc(100% - 48px)}
+.auth-page .auth-card{padding-top:38px}
+.site-header .brand{min-width:0}
+.site-header .brand>span:last-child{overflow-wrap:anywhere}
+html[data-theme="light"] .site-page .hero:after{opacity:.11}
+html[data-theme="light"] .site-footer strong{color:#9a502d}
+html[data-theme="light"] .actions a:hover{color:#a6532c}
+html[data-theme="light"] .link-danger{color:#b4423b}
+html[data-theme="light"] .form-panel{background:#fffefa}
+html[data-theme="light"] .check{color:#44382e}
+html[data-theme="light"] .logout:hover{color:#79250e}
+html[data-theme="light"] .message{background:#fffdfa}
+@media(max-width:650px){
+ .admin-header-controls{gap:6px}
+ .site-header .header-inner{flex-wrap:wrap}
+ .site-header .header-actions{margin-left:auto}
+ .auth-card .brand{font-size:13px}
+}
