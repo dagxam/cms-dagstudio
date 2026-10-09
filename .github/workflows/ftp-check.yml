@@ -105,3 +105,56 @@ jobs:
           else:
               summary('⚠️ FTP_ENABLED не равен true: автоматический деплой при push будет пропущен.')
           PY
+
+      - name: Проверка GlobalSign и совпадения имени сервера
+        if: failure()
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import ssl
+          import tempfile
+          import subprocess
+          import urllib.request
+          from pathlib import Path
+          from ftplib import FTP_TLS
+
+          host = os.environ.get('FTP_SERVER', '').strip()
+          if not host or '://' in host or '/' in host or ':' in host:
+              raise SystemExit('Недопустимый формат FTP_SERVER')
+          issuer_url = 'https://secure.globalsign.com/cacert/gsgccr6alphasslca2025.crt'
+          ca_der = urllib.request.urlopen(issuer_url, timeout=20).read()
+          intermediate = subprocess.run(['openssl', 'x509', '-inform', 'DER', '-outform', 'PEM'],
+                                        input=ca_der, capture_output=True, check=True).stdout
+          with FTP_TLS(context=ssl._create_unverified_context(), timeout=20) as ftp:
+              ftp.connect(host, 21)
+              ftp.auth()  # Только получение сертификата, без пароля и логина
+              leaf = ssl.DER_cert_to_PEM_cert(ftp.sock.getpeercert(binary_form=True))
+          with tempfile.TemporaryDirectory() as d:
+              ca_file = Path(d, 'issuer.pem')
+              leaf_file = Path(d, 'server.pem')
+              ca_file.write_bytes(intermediate)
+              leaf_file.write_text(leaf)
+              check = subprocess.run(
+                  ['openssl', 'verify',
+                   '-CAfile', '/etc/ssl/certs/ca-certificates.crt',
+                   '-untrusted', str(ca_file),
+                   '-verify_hostname', host, str(leaf_file)],
+                  capture_output=True, text=True)
+              if check.returncode:
+                  print('Сертификат сервера НЕ прошёл проверку через официальный GlobalSign к системному доверенному корню ИЛИ имя FTP_SERVER не совпадает.')
+                  print((check.stdout + check.stderr)[:1200])
+                  raise SystemExit(1)
+              print('УСПЕХ: цепочка проверена до системного доверенного корня GlobalSign, имя FTP_SERVER совпадает.')
+              ctx = ssl.create_default_context()
+              ctx.load_verify_locations(cafile=str(ca_file))
+              with FTP_TLS(context=ctx, timeout=20) as ftp:
+                  ftp.connect(host, 21)
+                  ftp.login(os.environ.get('FTP_USERNAME',''), os.environ.get('FTP_PASSWORD',''))
+                  ftp.prot_p()
+                  ftp.cwd('/www/cms.dagstudio.ru/')
+              print('Каталог FTPS доступен по проверенному TLS.')
+          PY
