@@ -73,11 +73,15 @@ try {
             'site_name'=>trim((string)($_POST['site_name'] ?? '')),
             'site_description'=>trim((string)($_POST['site_description'] ?? '')),
             'contact_email'=>trim((string)($_POST['contact_email'] ?? '')),
+            'privacy_url'=>trim((string)($_POST['privacy_url'] ?? '')),
             'site_type'=>(string)($_POST['site_type'] ?? ''),
         ];
         if ($values['site_name'] === '' || mb_strlen($values['site_name']) > 150 ||
             mb_strlen($values['site_description']) > 300 ||
             !filter_var($values['contact_email'],FILTER_VALIDATE_EMAIL) ||
+            mb_strlen($values['privacy_url']) > 500 ||
+            ($values['privacy_url'] !== '' && !str_starts_with($values['privacy_url'], '/?p=') &&
+             !str_starts_with($values['privacy_url'], 'https://')) ||
             !in_array($values['site_type'], ['government','company','organization','store'],true)) {
             throw new RuntimeException('Проверьте настройки сайта');
         }
