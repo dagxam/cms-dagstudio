@@ -23,6 +23,10 @@ $siteClass = 'site-page site-template-' . $activeTemplate .
     ' site-cards-' . (in_array($design['cards'],['soft','outlined','elevated'],true)?$design['cards']:'soft') .
     ' site-header-' . (in_array($design['header'],['classic','catalog','official'],true)?$design['header']:'classic');
 $navLinks = $siteContent['header_links'];
+if ($activeTemplate === 'government') {
+    require __DIR__ . '/government-render.php';
+    return;
+}
 ?>
 <!doctype html>
 <html lang="ru" data-theme-storage-key="dagstudio-template-<?=h($activeTemplate)?>" data-theme-default="<?=h(template_default_mode($activeTemplate))?>">
