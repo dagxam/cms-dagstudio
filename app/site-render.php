@@ -142,7 +142,7 @@ $navLinks = $siteContent['header_links'];
           <span class="card-symbol" aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
           <span class="eyebrow"><?=h($moduleLabels[$item['kind']])?></span>
           <h3><?=h($item['title'])?></h3>
-          <p><?=h(mb_strimwidth($item['summary']?:$item['body'],0,180,'…','UTF-8'))?></p>
+          <p><?=h(mb_strimwidth((string)($item['summary'] ?: ($item['body'] ?? '')),0,180,'…','UTF-8'))?></p>
           <?php if($item['kind']==='product' && $item['price']!==null): ?><span class="price"><?=h(number_format((float)$item['price'],2,',',' '))?> ₽</span><?php endif;?>
           <span class="card-link">Подробнее <span>↗</span></span>
         </a>
