@@ -19,7 +19,7 @@ $mediaLinks=$mediaType==='video'?cms_video_links(false):[];
 <label>Название<input name="title" maxlength="190" required></label>
 <label>Описание материала<textarea name="description" rows="3" maxlength="2000" placeholder="Для документов и видео добавьте краткое текстовое описание."></textarea></label>
 <label>Альтернативный текст изображения<input name="alt_text" maxlength="300" placeholder="Что изображено на фотографии?"></label>
-<label>Выбрать файл<input type="file" name="media_file" required accept=".pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png,.webp,.mp4,.webm"></label>
+<label>Выбрать файл<input type="file" name="media_file" required accept="<?=h(['document'=>'.pdf,.docx,.xlsx,.pptx','photo'=>'.jpg,.jpeg,.png,.webp','video'=>'.mp4,.webm'][$mediaType])?>"></label>
 <p class="muted"><?=$mediaType==='video'?'MP4 и WebM до 50 МБ.':($mediaType==='photo'?'JPG, PNG или WebP до 8 МБ.':'PDF, DOCX, XLSX и PPTX до 20 МБ.')?> Ограничение сервера PHP может быть ниже.</p>
 <label class="check"><input type="checkbox" name="publish" value="1"> Опубликовать сразу (иначе будет черновик)</label>
 <button type="submit" class="button">Загрузить материал</button>
