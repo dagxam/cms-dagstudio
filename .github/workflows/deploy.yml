@@ -69,6 +69,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/modules.php
+      - name: Проверка меню, блоков страниц и внешнего видео
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/menus-pages-videos.php
       - name: Проверка выбора шаблона до открытия настроек
         env:
           DAG_CMS_TEST_MODE: '1'
