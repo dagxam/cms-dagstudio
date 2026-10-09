@@ -109,7 +109,7 @@ try {
             'search_placeholder'=>120, 'search_button'=>55,
             'quick_title'=>100, 'quick_url'=>300, 'left_title'=>120,
             'center_title'=>150, 'center_intro'=>5000,
-            'leader_title'=>120, 'leader_name'=>160, 'leader_description'=>1000,
+            'leader_title'=>120, 'leader_name'=>160, 'leader_initials'=>100, 'leader_description'=>1000,
             'schedule_title'=>150, 'schedule_text'=>2000,
             'announcements_title'=>150, 'announcements_text'=>2000,
             'links_title'=>150, 'footer_note'=>240,
