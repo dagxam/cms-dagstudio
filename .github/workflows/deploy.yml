@@ -65,6 +65,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/templates.php
+      - name: Проверка включения и размещения модулей
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/modules.php
       - name: Проверка выбора шаблона до открытия настроек
         env:
           DAG_CMS_TEST_MODE: '1'
@@ -80,6 +84,18 @@ jobs:
       - name: Проверка HTML всех четырёх типов сайтов
         env:
           DAG_CMS_TEST_MODE: '1'
+          TEST_DB_HOST: '127.0.0.1'
+          TEST_DB_NAME: 'dagcms_test'
+          TEST_DB_USER: 'root'
+          TEST_DB_PASS: 'testpassword'
+        run: |
+          for type in organization company store government; do
+            php tests/render-templates.php "$type"
+          done
+      - name: Проверка мест вывода модулей в каждом шаблоне
+        env:
+          DAG_CMS_TEST_MODE: '1'
+          TEST_MODULE_LAYOUT_TEST: '1'
           TEST_DB_HOST: '127.0.0.1'
           TEST_DB_NAME: 'dagcms_test'
           TEST_DB_USER: 'root'
