@@ -118,7 +118,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 
     </nav>
     <?php if($govLeftModules):?><section class="government-module-extra" aria-label="Модули слева">
-    <?php foreach($govLeftModules as $id):?><?=cms_module_compact($id,'government')?><?php endforeach;?>
+    <?php foreach($govLeftModules as $id):?><?php cms_module_sidebar($id,'government'); ?><?php endforeach;?>
     </section><?php endif;?>
   </aside>
   <?php endif;?>
@@ -218,7 +218,7 @@ if ($search!=='')$govTitle='Результаты поиска';
     <?php endif;?>
     <?php if($gov['office_phone']!==''):?><div class="government-phone"><span>Телефон администрации</span><strong><?=h($gov['office_phone'])?></strong></div><?php endif;?>
     <?php if($govRightModules):?><section class="government-module-extra" aria-label="Модули справа">
-    <?php foreach($govRightModules as $id):?><?=cms_module_compact($id,'government')?><?php endforeach;?>
+    <?php foreach($govRightModules as $id):?><?php cms_module_sidebar($id,'government'); ?><?php endforeach;?>
     </section><?php endif;?>
   </aside>
   <?php endif;?>
