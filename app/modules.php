@@ -50,6 +50,11 @@ function cms_module_defaults(string $template): array {
     $result['media']=['area'=>'nav','order'=>50];
     return $result;
 }
+function cms_module_layout_configured(string $template): bool {
+    $maps=json_decode(config_value('cms_module_layouts','{}'),true);
+    return is_array($maps) && isset($maps[$template]) && is_array($maps[$template]);
+}
+
 function cms_module_layout(string $template): array {
     if(!array_key_exists($template,template_catalog()))$template=site_template();
     $default=cms_module_defaults($template);
