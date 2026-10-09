@@ -10,6 +10,10 @@ function cms_menu_defaults(string $template): array {
         ['label'=>'Контакты','url'=>'/?module=contact'],
     ];
 }
+function cms_menu_configured(string $template): bool {
+    $maps=json_decode(config_value('cms_menus_by_type','{}'),true);
+    return is_array($maps) && isset($maps[$template]) && is_array($maps[$template]);
+}
 function cms_menu_for_template(string $template): array {
     if(!isset(template_catalog()[$template]))$template=site_template();
     $maps=json_decode(config_value('cms_menus_by_type','{}'),true);
