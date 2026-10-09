@@ -109,3 +109,4 @@ function log_action(string $action, string $value): void {
 }
 
 require_once __DIR__ . '/templates.php';
+require_once __DIR__ . '/government.php';
