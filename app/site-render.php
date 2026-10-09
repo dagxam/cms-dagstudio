@@ -31,7 +31,7 @@ $navLinks = $siteContent['header_links'];
   <meta name="theme-color" content="<?=h($design['background'])?>">
   <title><?=h($metaTitle)?></title>
   <link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script>
+  <script>var dagDefaultTheme=<?=json_encode(in_array($activeTemplate,['organization','store','government'],true)?'light':'dark')?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-cms-theme");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
   <script src="/assets/theme.js" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=templates3">
   <link rel="stylesheet" href="/assets/templates.css?v=templates3">
