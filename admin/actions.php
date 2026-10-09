@@ -157,6 +157,32 @@ try {
             @chmod($dir.'/'.$filename,0644);
             $values['logo_path']='/assets/uploads/'.$filename;
         }
+        $values['hero_image_path']=template_content()['hero_image_path'];
+        if (!empty($_POST['remove_hero_image'])) $values['hero_image_path']='';
+        if (isset($_FILES['hero_image']) && is_array($_FILES['hero_image']) &&
+            (int)($_FILES['hero_image']['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE) {
+            $file=$_FILES['hero_image'];
+            if ((int)$file['error']!==UPLOAD_ERR_OK || !is_uploaded_file((string)$file['tmp_name']) ||
+                (int)$file['size']<1 || (int)$file['size']>5*1024*1024) {
+                throw new RuntimeException('Не удалось загрузить изображение первого экрана (не более 5 МБ).');
+            }
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $type=$finfo->file((string)$file['tmp_name']);
+            $ext=['image/png'=>'png','image/jpeg'=>'jpg','image/webp'=>'webp'][$type]??null;
+            $image=@getimagesize((string)$file['tmp_name']);
+            if (!$ext || !$image || ($image[0]??0)<1 || ($image[1]??0)<1 ||
+                ($image[0]??0)>4500 || ($image[1]??0)>4500) {
+                throw new RuntimeException('Первый экран поддерживает PNG, JPG или WebP размером до 4500 px.');
+            }
+            $dir=dirname(__DIR__).'/assets/uploads';
+            if (!is_dir($dir) || !is_writable($dir)) throw new RuntimeException('Папка assets/uploads недоступна для записи.');
+            $filename='hero-'.bin2hex(random_bytes(16)).'.'.$ext;
+            if (!move_uploaded_file((string)$file['tmp_name'],$dir.'/'.$filename)) {
+                throw new RuntimeException('Не удалось сохранить изображение первого экрана.');
+            }
+            @chmod($dir.'/'.$filename,0644);
+            $values['hero_image_path']='/assets/uploads/'.$filename;
+        }
         $maps=json_decode(config_value('template_content_by_type','{}'),true);
         if (!is_array($maps)) $maps=[];
         $maps[site_template()]=$values;
