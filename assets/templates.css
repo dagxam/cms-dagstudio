@@ -276,3 +276,49 @@ html[data-theme="light"] .site-page {
 @media(max-width:1260px){.template-palette-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.template-palette-inputs{grid-template-columns:1fr 1fr}}
 @media(max-width:370px){.template-palette-inputs{grid-template-columns:1fr}}
+
+
+/* Двухэтапный интерфейс: сначала выбор шаблона, затем только его параметры. */
+.template-selection-intro{display:flex;align-items:center;gap:17px;margin:30px 0 23px}
+.template-selection-index{width:48px;height:48px;display:grid;place-items:center;flex:0 0 48px;border:1px solid var(--accent);border-radius:13px;font-size:14px;font-weight:850;color:var(--accent-light);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.template-selection-intro h2{font-size:clamp(19px,2vw,25px);margin:0 0 5px}
+.template-selection-intro p{color:var(--muted);font-size:13px;line-height:1.5;margin:0}
+.template-editor-current{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:22px 25px;margin:22px 0 18px;border-color:color-mix(in srgb,var(--accent) 50%,var(--border));background:radial-gradient(ellipse at 100% 0%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 65%),var(--panel);border-radius:14px}
+.template-editor-current-copy{min-width:0}
+.template-editor-step{font-size:10px;color:var(--accent-light);letter-spacing:.13em;font-weight:850}
+.template-editor-current-title{display:flex;align-items:center;gap:15px;margin-top:10px}
+.template-editor-current-icon{flex:0 0 48px;width:48px;height:48px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 15%,transparent);border:1px solid color-mix(in srgb,var(--accent) 37%,transparent);color:var(--accent-light);font-size:27px}
+.template-editor-current-title h2{font-size:clamp(21px,2.2vw,28px);margin:0 0 3px}
+.template-editor-current-title p{font-size:12px;color:var(--muted);margin:0}
+.template-editor-current-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.template-editor-current-actions .button{font-size:12px;padding:11px 15px;white-space:nowrap}
+.template-editor-tabs{display:flex;align-items:center;gap:5px;overflow-x:auto;scrollbar-width:thin;margin:0 0 22px;padding:6px;background:var(--panel2);border:1px solid var(--border);border-radius:12px}
+.template-editor-tab{display:inline-flex;align-items:center;justify-content:center;flex:1 0 auto;min-height:42px;padding:10px 15px;border:1px solid transparent;border-radius:8px;color:var(--muted);font-size:13px;font-weight:700;line-height:1.3;text-align:center;white-space:nowrap;transition:.18s}
+.template-editor-tab:hover{background:color-mix(in srgb,var(--accent) 8%,var(--panel));color:var(--text)}
+.template-editor-tab.is-active{background:var(--panel);border-color:color-mix(in srgb,var(--accent) 42%,var(--border));color:var(--accent-light);box-shadow:0 3px 15px #0001}
+.template-edit-single{display:block;margin-top:0}
+.template-edit-single>.template-edit-card{width:100%;margin:0}
+.template-edit-single .template-palette-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.template-edit-single .template-edit-card{padding:clamp(20px,2.3vw,32px)}
+.template-choice.is-selected .template-choice-actions .button{border-color:var(--accent)}
+.template-choice-actions>.button{font-size:12px;padding:9px 13px;min-height:38px}
+.template-choice-actions form{margin:0}
+html[data-theme="light"] .template-editor-current{background:radial-gradient(ellipse at 100% 0%,#f3e3d6,transparent 66%),var(--panel)}
+html[data-theme="light"] .template-editor-tab.is-active{color:#8b482e}
+@media(max-width:900px){
+ .template-editor-current{align-items:flex-start;flex-direction:column}
+ .template-editor-tabs{justify-content:flex-start}
+ .template-editor-tab{flex:0 0 auto}
+ .template-edit-single .template-palette-grid{grid-template-columns:1fr}
+}
+@media(max-width:540px){
+ .template-editor-current{padding:16px}
+ .template-editor-current-actions{width:100%}
+ .template-editor-current-actions .button{flex:1}
+ .template-selection-intro{gap:11px}
+ .template-selection-index{width:41px;height:41px;flex-basis:41px}
+ .template-editor-current-icon{width:42px;height:42px;flex-basis:42px}
+ .template-editor-current-title p{max-width:240px}
+ .template-editor-tabs{padding:4px}
+ .template-editor-tab{font-size:12px;min-height:39px}
+}
