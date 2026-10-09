@@ -41,9 +41,11 @@ if ($activeTemplate === 'government') {
   <script src="/assets/theme.js?v=palette4" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=templates3">
   <link rel="stylesheet" href="/assets/templates.css?v=palette4">
+  <link rel="stylesheet" href="/assets/media.css?v=legal2">
+  <script src="/assets/accessibility.js?v=legal2" defer></script>
   <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>
 </head>
-<body class="<?=h($siteClass)?>" style="<?=h(template_style($design,$activeTemplate))?>">
+<body class="<?=h($siteClass)?>"<?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$activeTemplate))?>">
 <?php if($previewMode): ?><div class="site-preview-banner"><strong>Предпросмотр: <?=h(template_catalog()[$activeTemplate]['label'])?></strong> · Это предварительный вид. Шаблон не применён. <a href="/admin/index.php?section=templates">Вернуться к выбору</a></div><?php endif;?>
 <?php if ($activeTemplate==='government'): ?><div class="site-official-bar"><div class="container">ОФИЦИАЛЬНЫЙ САЙТ <span>Информация для граждан и организаций</span></div></div><?php endif;?>
 <header class="site-header"><div class="container header-inner">
@@ -58,11 +60,14 @@ if ($activeTemplate === 'government') {
     <?php foreach ($moduleLabels as $key=>$label): if(!module_enabled($key))continue; ?>
     <a href="/?kind=<?=h($key)?>" <?=$kind===$key?'class="current"':''?>><?=h($label)?></a>
     <?php endforeach;?>
+    <a href="/media.php">Медиатека</a>
     <?php foreach ($navLinks as $link): if(!is_array($link) || !safe_template_url((string)($link['url']??'')))continue; ?>
     <a href="<?=h((string)$link['url'])?>"><?=h((string)($link['label']??''))?></a>
     <?php endforeach;?>
   </nav>
   <div class="header-actions">
+    <?=cms_accessibility_control()?>
+    <?=cms_age_mark()?>
     <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button>
     <?php if($activeTemplate==='store' && module_enabled('product')): ?><a class="small-link shop-shortcut" href="/?kind=product">Каталог ↗</a><?php endif;?>
     <a class="small-link" href="/admin/login.php">Вход</a>
@@ -164,4 +169,5 @@ if ($activeTemplate === 'government') {
   <div><strong><?=h($siteName)?></strong><br><?=h($siteContent['footer_text'])?></div>
   <div><?=date('Y')?> · Работает на <strong>DAG STUDIO CMS</strong></div>
 </div></footer>
+<?=cms_age_gate()?>
 </body></html>
