@@ -39,10 +39,23 @@ try {
            strlen($url)>500||!$parsed||!cms_media_age_valid($age)||!in_array($status,['draft','published'],true))
             throw new RuntimeException('Введите корректные название, возраст и ссылку VK Видео или Rutube.');
         cms_video_table();
-        database()->prepare('INSERT INTO cms_video_links(title,description,provider,embed_url,original_url,age_rating,status) VALUES(?,?,?,?,?,?,?)')
-            ->execute([$title,$description,$parsed['provider'],$parsed['embed'],$url,$age,$status]);
-        log_action('video.link.add',$title);
-        $_SESSION['flash']='Видео по ссылке добавлено.';
+        $videoId=max(0,(int)($_POST['video_id']??0));
+        if($videoId>0) {
+            $q=database()->prepare('UPDATE cms_video_links SET title=?,description=?,provider=?,embed_url=?,original_url=?,age_rating=?,status=? WHERE id=?');
+            $q->execute([$title,$description,$parsed['provider'],$parsed['embed'],$url,$age,$status,$videoId]);
+            if($q->rowCount()===0) {
+                $found=database()->prepare('SELECT id FROM cms_video_links WHERE id=?');
+                $found->execute([$videoId]);
+                if(!$found->fetchColumn())throw new RuntimeException('Видео не найдено.');
+            }
+            log_action('video.link.update',(string)$videoId);
+            $_SESSION['flash']='Видео и его параметры сохранены.';
+        }else{
+            database()->prepare('INSERT INTO cms_video_links(title,description,provider,embed_url,original_url,age_rating,status) VALUES(?,?,?,?,?,?,?)')
+                ->execute([$title,$description,$parsed['provider'],$parsed['embed'],$url,$age,$status]);
+            log_action('video.link.add',$title);
+            $_SESSION['flash']='Видео по ссылке добавлено.';
+        }
         $back='/admin/index.php?section=videos';
     } elseif ($action === 'delete_video_link') {
         require_module('media');
@@ -63,8 +76,14 @@ try {
         if(!in_array($role,['admin','editor'],true)||!is_array($permissions)||
            count($permissions)>count(kinds())+1||($password!==''&&strlen($password)<12))
             throw new RuntimeException('Недопустимые роль, права или пароль.');
-        $q=database()->prepare('SELECT id FROM users WHERE id=?');$q->execute([$uid]);
-        if(!$q->fetch())throw new RuntimeException('Сотрудник не найден.');
+        $q=database()->prepare('SELECT id,role,active FROM users WHERE id=?');$q->execute([$uid]);
+        $targetUser=$q->fetch();
+        if(!$targetUser)throw new RuntimeException('Сотрудник не найден.');
+        if($targetUser['role']==='admin' && (int)$targetUser['active']===1 &&
+            ($role!=='admin' || $active!==1)) {
+            $count=(int)database()->query("SELECT COUNT(*) FROM users WHERE role='admin' AND active=1")->fetchColumn();
+            if($count<=1)throw new RuntimeException('Нельзя заблокировать или понизить в роли последнего активного администратора.');
+        }
         $permissions=array_values(array_intersect([...array_keys(kinds()),'media'],array_map('strval',$permissions)));
         if($password===''){
             database()->prepare('UPDATE users SET role=?,permissions=?,active=? WHERE id=?')
