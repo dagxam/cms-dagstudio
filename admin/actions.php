@@ -12,7 +12,89 @@ $action = (string)($_POST['action'] ?? '');
 $back = '/admin/index.php';
 
 try {
-    if ($action === 'select_template') {
+    if ($action === 'save_government_layout') {
+        require_module('settings');
+        if (site_template()!=='government') {
+            throw new RuntimeException('Настройки доступны только для шаблона «Администрация».');
+        }
+        $defaults=government_defaults();
+        $updated=government_layout();
+        $fields=[
+            'name'=>120, 'name_detail'=>240, 'location'=>240,
+            'working_hours'=>150, 'office_phone'=>80, 'top_note'=>180,
+            'banner_title'=>180, 'banner_text'=>360,
+            'search_placeholder'=>120, 'search_button'=>55,
+            'quick_title'=>100, 'quick_url'=>300, 'left_title'=>120,
+            'center_title'=>150, 'center_intro'=>5000,
+            'leader_title'=>120, 'leader_name'=>160, 'leader_description'=>1000,
+            'schedule_title'=>150, 'schedule_text'=>2000,
+            'announcements_title'=>150, 'announcements_text'=>2000,
+            'links_title'=>150, 'footer_note'=>240,
+        ];
+        foreach($fields as $key=>$limit) {
+            if (!isset($_POST[$key]) || !is_string($_POST[$key]) ||
+                mb_strlen($_POST[$key])>$limit || str_contains($_POST[$key], "\x00")) {
+                throw new RuntimeException('Проверьте поле: '.$key);
+            }
+            $updated[$key]=trim($_POST[$key]);
+        }
+        if ($updated['quick_url']!=='' && !safe_template_url($updated['quick_url'])) {
+            throw new RuntimeException('Некорректный адрес интернет-приёмной.');
+        }
+        $layout=(string)($_POST['layout']??'');
+        if (!in_array($layout,['both','swap','left','right','none'],true)) {
+            throw new RuntimeException('Неверное расположение колонок.');
+        }
+        $updated['layout']=$layout;
+        foreach(['left_width','right_width'] as $key) {
+            $width=(string)($_POST[$key]??'');
+            if (!in_array($width,['200','220','240','260','280','300'],true)) {
+                throw new RuntimeException('Неверная ширина колонки.');
+            }
+            $updated[$key]=$width;
+        }
+        foreach(['show_topbar','show_banner','show_search','show_date','show_accessibility',
+            'show_leader','show_schedule','show_announcements','show_links'] as $key) {
+            $updated[$key]=isset($_POST[$key]) && $_POST[$key]==='1'?'1':'0';
+        }
+        foreach(['left_menu'=>24,'right_links'=>12,'quick_links'=>12] as $key=>$max) {
+            if (!isset($_POST[$key]) || !is_string($_POST[$key])) {
+                throw new RuntimeException('Ошибка редактирования списка: '.$key);
+            }
+            $updated[$key]=government_parse_link_text($_POST[$key],$max);
+        }
+        if (!empty($_POST['remove_leader_photo'])) $updated['leader_image']='';
+        if (isset($_FILES['leader_photo']) && is_array($_FILES['leader_photo']) &&
+            (int)($_FILES['leader_photo']['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE) {
+            $file=$_FILES['leader_photo'];
+            if ((int)$file['error']!==UPLOAD_ERR_OK ||
+                !is_uploaded_file((string)($file['tmp_name']??'')) ||
+                (int)$file['size']<1 || (int)$file['size']>2*1024*1024) {
+                throw new RuntimeException('Фотография руководителя: максимальный размер 2 МБ.');
+            }
+            $fileInfo=new finfo(FILEINFO_MIME_TYPE);
+            $type=$fileInfo->file((string)$file['tmp_name']);
+            $ext=['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'][$type]??null;
+            $dimensions=@getimagesize((string)$file['tmp_name']);
+            if (!$ext || !$dimensions || ($dimensions[0]??0)<1 ||
+                ($dimensions[1]??0)<1 || ($dimensions[0]??0)>2800 || ($dimensions[1]??0)>2800) {
+                throw new RuntimeException('Нужно изображение JPEG, PNG или WebP до 2800 пикселей.');
+            }
+            $dir=dirname(__DIR__).'/assets/uploads';
+            if (!is_dir($dir) || !is_writable($dir)) throw new RuntimeException('Каталог assets/uploads недоступен для записи.');
+            $filename='leader-'.bin2hex(random_bytes(16)).'.'.$ext;
+            if (!move_uploaded_file((string)$file['tmp_name'],$dir.'/'.$filename)) {
+                throw new RuntimeException('Не удалось сохранить фотографию руководителя.');
+            }
+            @chmod($dir.'/'.$filename,0644);
+            $updated['leader_image']='/assets/uploads/'.$filename;
+        }
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['government_layout',json_encode($updated,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
+        log_action('government.layout','saved');
+        $_SESSION['flash']='Шапка, боковые колонки и содержимое администрации сохранены.';
+        $back='/admin/index.php?section=templates#government-editor';
+    } elseif ($action === 'select_template') {
         require_module('settings');
         $id = (string)($_POST['template'] ?? '');
         if (!array_key_exists($id, template_catalog())) throw new RuntimeException('Шаблон не найден');
