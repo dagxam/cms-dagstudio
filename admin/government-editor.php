@@ -102,7 +102,8 @@ $govLabels=[
   <legend>Правый информационный столбец</legend>
   <div class="template-fields">
     <label>Заголовок руководителя<input name="leader_title" maxlength="190" value="<?=h($gov['leader_title'])?>"></label>
-    <label>ФИО руководителя<input name="leader_name" maxlength="190" value="<?=h($gov['leader_name'])?>"></label>
+    <label>ФИО руководителя<input name="leader_name" maxlength="160" value="<?=h($gov['leader_name'])?>" placeholder="Иванов Иван Иванович"></label>
+    <label>Фамилия и инициалы (кратко)<input name="leader_initials" maxlength="100" value="<?=h($gov['leader_initials'])?>" placeholder="Иванов И. И."></label>
     <label class="template-field-wide">Описание должности / краткая информация
       <textarea name="leader_description" rows="2" maxlength="5000"><?=h($gov['leader_description'])?></textarea>
     </label>
