@@ -90,6 +90,33 @@ function cms_module_compact(string $id, string $style='plain'): string {
     return '<a class="cms-module-link cms-module-link-'.h($style).'" href="'.h($url).'">'
         .'<span>'.h($title).'</span><span aria-hidden="true">↗</span></a>';
 }
+/** Мини-виджет модуля в боковой колонке с настоящим содержимым. */
+function cms_module_sidebar(string $id,string $template): void {
+    if(!cms_module_enabled($id))return;
+    echo '<section class="cms-module-widget cms-module-widget-'.h($id).'"><h2>'
+        .'<a href="'.h(cms_module_href($id)).'">'.h(cms_module_label($id)).'</a></h2>';
+    if(array_key_exists($id,kinds())) {
+        $q=database()->prepare("SELECT title,slug FROM content WHERE kind=? AND status='published' ORDER BY created_at DESC LIMIT 3");
+        $q->execute([$id]);$items=$q->fetchAll();
+        foreach($items as $item)
+            echo '<a class="cms-module-widget-entry" href="/?p='.rawurlencode($item['slug']).'">'.h($item['title']).'</a>';
+        if(!$items)echo '<p>Публикаций пока нет.</p>';
+    }elseif($id==='media') {
+        foreach(array_slice(cms_media_list(true),0,3) as $item)
+            echo '<a class="cms-module-widget-entry" href="/media.php?view='.(int)$item['id'].'">'.h($item['title']).'</a>';
+    }elseif($id==='features') {
+        $content=template_content($template);
+        for($i=1;$i<=3;$i++)if(($content['feature_'.$i.'_title']??'')!=='')
+            echo '<p>'.h($content['feature_'.$i.'_title']).'</p>';
+    }elseif($id==='contact') {
+        $email=config_value('contact_email');
+        if($email!=='')echo '<p>'.h($email).'</p>';
+        $details=template_content($template);
+        if(($details['phone']??'')!=='')echo '<p>'.h($details['phone']).'</p>';
+    }
+    echo '<a class="cms-module-widget-more" href="'.h(cms_module_href($id)).'">Открыть раздел ↗</a></section>';
+}
+
 function cms_module_media_block(): void {
     if(!cms_module_enabled('media'))return;
     // Только опубликованные материалы, список ограничен числом карточек.
