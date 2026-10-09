@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-label="Горы Дагестана и крепость">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#13161b"/><stop offset=".53" stop-color="#432c28"/><stop offset=".77" stop-color="#bd794e"/><stop offset="1" stop-color="#dbb18c"/></linearGradient>
+ <linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#433c3b"/><stop offset="1" stop-color="#10161c"/></linearGradient>
+ <linearGradient id="foreground" x2="0" y2="1"><stop stop-color="#302a27"/><stop offset=".65" stop-color="#131820"/><stop offset="1" stop-color="#080b0f"/></linearGradient>
+ <radialGradient id="sun"><stop stop-color="#ffd4a0" stop-opacity=".85"/><stop offset=".6" stop-color="#cf7742" stop-opacity=".35"/><stop offset="1" stop-color="#bb6d3e" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="700" fill="url(#sky)"/>
+<ellipse cx="765" cy="365" rx="410" ry="200" fill="url(#sun)"/>
+<path d="M0 420 75 390 165 404 238 345 315 388 378 343 429 360 514 309 572 360 639 320 692 350 768 300 835 367 896 334 961 365 1022 345 1110 397 1200 374 1200 700 0 700Z" fill="#aa8172" opacity=".6"/>
+<path d="M0 467 80 448 138 397 186 433 252 380 308 446 376 385 450 422 507 370 592 421 646 388 725 427 790 364 851 420 945 370 1035 428 1110 391 1200 432 1200 700 0 700Z" fill="#594f51" opacity=".85"/>
+<path d="M0 516 74 497 132 446 198 501 267 430 340 485 389 444 450 497 512 432 588 488 670 442 764 499 828 439 908 496 1019 448 1120 504 1200 457 1200 700 0 700Z" fill="url(#ridge)"/>
+<path d="M0 420 60 359 101 358 136 315 180 326 198 262 242 263 275 310 290 290 322 306 349 374 371 426 427 447 492 480 550 548 0 700Z" fill="#201d1e"/>
+<path d="M40 452 88 380 134 362 166 344 191 297 214 307 241 333 260 365 299 390 340 440 321 466 274 431 241 387 210 371 187 403 142 388 104 455Z" fill="#68554a" opacity=".75"/>
+<!-- A stylised silhouette of traditional mountain fortress towers -->
+<g fill="#554036" stroke="#1e1718" stroke-width="5">
+ <path d="M33 435 33 368 54 365 54 330 88 330 88 349 113 349 113 306 145 306 145 339 170 339 170 362 187 362 187 435Z"/>
+ <path d="M90 350 90 260 99 260 99 246 111 246 111 257 120 257 120 244 133 244 133 259 142 259 142 350Z"/>
+ <path d="M183 337 183 279 194 279 194 269 209 269 209 280 225 280 225 266 239 266 239 281 251 281 251 337Z"/>
+</g>
+<g fill="#0c1014"><rect x="106" y="287" width="9" height="25"/><rect x="128" y="287" width="7" height="25"/><rect x="197" y="302" width="8" height="20"/><rect x="224" y="300" width="8" height="20"/><rect x="66" y="363" width="10" height="17"/><rect x="146" y="368" width="11" height="23"/></g>
+<path d="M0 553 90 541 190 532 272 553 360 526 461 551 566 510 647 542 771 512 871 558 983 529 1089 553 1200 520 1200 700 0 700Z" fill="url(#foreground)"/>
+<path d="M580 700 668 631 750 589 803 569 851 574 878 585 831 606 754 623 711 651 691 700Z" fill="#b5794e" opacity=".45"/>
+<path d="M720 700 759 638 796 627 845 615 911 602" fill="none" stroke="#e8a26a" stroke-opacity=".6" stroke-width="5"/>
+<g stroke="#070b0e" stroke-width="14" opacity=".65"><path d="M15 695 33 625 48 696M120 700 139 611 153 700M204 700 219 639 243 700M356 700 365 652 382 700M1030 700 1042 629 1058 700"/></g>
+</svg>
