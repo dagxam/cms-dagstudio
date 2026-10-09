@@ -1,0 +1,59 @@
+<?php
+declare(strict_types=1);
+require dirname(__DIR__) . '/app/core.php';
+header('Cache-Control: no-store');
+header('X-Robots-Tag: noindex, nofollow');
+if (!installed()) go('/install.php');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+    verify_token();
+    unset($_SESSION['user_id']);
+    session_regenerate_id(true);
+    go('/admin/login.php');
+}
+if (account()) go('/admin/index.php');
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_token();
+    $email = mb_strtolower(trim((string)($_POST['email'] ?? '')));
+    $password = (string)($_POST['password'] ?? '');
+    $ip = (string)($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    $fingerprint = hash('sha256', $email . '|' . $ip);
+    $pdo = database();
+    $q = $pdo->prepare('SELECT COUNT(*) FROM login_attempts WHERE fingerprint=? AND created_at>DATE_SUB(NOW(),INTERVAL 15 MINUTE)');
+    $q->execute([$fingerprint]);
+    if ((int)$q->fetchColumn() >= 7) {
+        http_response_code(429);
+        $error = 'Слишком много попыток. Попробуйте через 15 минут.';
+    } else {
+        $q = $pdo->prepare('SELECT id,password_hash FROM users WHERE email=? AND active=1 LIMIT 1');
+        $q->execute([$email]);
+        $record = $q->fetch();
+        if ($record && password_verify($password, $record['password_hash'])) {
+            $pdo->prepare('DELETE FROM login_attempts WHERE fingerprint=?')->execute([$fingerprint]);
+            if (password_needs_rehash($record['password_hash'], PASSWORD_DEFAULT)) {
+                $pdo->prepare('UPDATE users SET password_hash=? WHERE id=?')
+                    ->execute([password_hash($password,PASSWORD_DEFAULT),$record['id']]);
+            }
+            session_regenerate_id(true);
+            $_SESSION['user_id'] = (int)$record['id'];
+            go('/admin/index.php');
+        }
+        $pdo->prepare('INSERT INTO login_attempts(fingerprint) VALUES (?)')->execute([$fingerprint]);
+        $error = 'Неверная почта или пароль.';
+    }
+}
+?><!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Вход — DAG STUDIO CMS</title>
+<link rel="stylesheet" href="/assets/style.css"></head>
+<body class="auth-page"><main class="auth-card box">
+<div class="brand"><span class="brand-icon">D</span> DAG STUDIO <b>CMS</b></div>
+<h1>Панель управления</h1><p class="muted">Войдите для управления вашим сайтом.</p>
+<?php if (isset($_GET['installed'])): ?><div class="notice">CMS установлена. Войдите под учётной записью администратора.</div><?php endif; ?>
+<?php if ($error): ?><div class="error"><?=h($error)?></div><?php endif; ?>
+<form method="post"><?=csrf()?>
+<label>Электронная почта<input required type="email" name="email" autocomplete="username"></label>
+<label>Пароль<input required type="password" name="password" autocomplete="current-password"></label>
+<button class="button" type="submit">Войти в CMS</button></form>
+<a class="back" href="/">← Перейти на сайт</a></main></body></html>
