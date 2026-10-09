@@ -116,6 +116,10 @@ function cms_module_sidebar(string $id,string $template): void {
     }elseif(in_array($id,['documents','photos','videos'],true)) {
         foreach(array_slice(array_values(array_filter(cms_media_list(true),static fn(array $item):bool=>$item['category']===['documents'=>'document','photos'=>'photo','videos'=>'video'][$id])),0,3) as $item)
             echo '<a class="cms-module-widget-entry" href="/media.php?view='.(int)$item['id'].'">'.h($item['title']).'</a>';
+        if($id==='videos') {
+            foreach(array_slice(cms_video_links(true),0,3) as $v)
+                echo '<a class="cms-module-widget-entry" href="/media.php?type=video&amp;external='.(int)$v['id'].'">'.h($v['title']).'</a>';
+        }
     }elseif($id==='features') {
         $content=template_content($template);
         for($i=1;$i<=3;$i++)if(($content['feature_'.$i.'_title']??'')!=='')
@@ -144,6 +148,13 @@ function cms_module_media_block(string $module='photos'): void {
         else echo '<span class="cms-media-module-icon" aria-hidden="true">▤</span>';
         echo '<strong>'.h($item['title']).'</strong><small>'.h($item['age_rating']).'</small></a>';
     }
-    if(!$items)echo '<p class="muted">Опубликованных материалов пока нет.</p>';
+    if($module==='videos') {
+        foreach(array_slice(cms_video_links(true),0,6) as $item) {
+            echo '<a class="cms-media-module-card" href="/media.php?type=video&amp;external='.(int)$item['id'].'">'
+            .'<span class="cms-media-module-icon" aria-hidden="true">▶</span><strong>'.h($item['title']).'</strong>'
+            .'<small>'.h($item['age_rating']).'</small></a>';
+        }
+    }
+    if(!$items && ($module!=='videos'||!cms_video_links(true)))echo '<p class="muted">Опубликованных материалов пока нет.</p>';
     echo '</div></section>';
 }
