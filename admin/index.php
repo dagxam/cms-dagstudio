@@ -121,7 +121,7 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <?php define('DAG_CMS_ADMIN_VIEW',true); require __DIR__ . '/template-editor.php'; ?>
 
 <?php elseif ($section==='media'): ?>
-<?php require __DIR__.'/media-library.php'; ?>
+<?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/media-library.php'; ?>
 
 <?php elseif ($section==='accessibility'): ?>
 <?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/accessibility-editor.php'; ?>
