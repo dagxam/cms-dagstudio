@@ -19,7 +19,14 @@ if ($section === 'edit') {
     } else $kind = (string)($_GET['kind'] ?? 'page');
     if (!array_key_exists($kind,$types)) { http_response_code(404); exit('Раздел не найден'); }
     require_module($kind);
-} elseif ($section !== 'dashboard') require_module($section);
+    if (!module_enabled($kind)) { http_response_code(404); exit('Модуль отключён'); }
+} elseif ($section !== 'dashboard') {
+    require_module($section);
+    if (isset($types[$section]) && !module_enabled($section)) {
+        http_response_code(404);
+        exit('Модуль отключён');
+    }
+}
 $flash = $_SESSION['flash'] ?? '';
 $flashError = $_SESSION['flash_error'] ?? '';
 unset($_SESSION['flash'],$_SESSION['flash_error']);
@@ -33,7 +40,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <a class="brand" href="/admin/index.php"><span class="brand-icon">D</span> <span>DAG STUDIO <b>CMS</b></span></a>
 <span class="nav-label">УПРАВЛЕНИЕ</span>
 <a class="nav-item <?=$section==='dashboard'?'active':''?>" href="/admin/index.php">◫ Обзор</a>
-<?php foreach($types as $key=>$label): if(!allowed($key)) continue; ?>
+<?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key)) continue; ?>
 <a class="nav-item <?=($section===$key||($section==='edit'&&$kind===$key))?'active':''?>" href="/admin/index.php?section=<?=h($key)?>"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$key]?> <?=h($label)?></a>
 <?php endforeach; ?>
 <?php if (allowed('messages')): ?><a class="nav-item <?=$section==='messages'?'active':''?>" href="?section=messages">✉ Обращения</a><?php endif; ?>
@@ -51,7 +58,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <?php if ($section==='dashboard'):
 $counts=[];
 foreach ($types as $key=>$label) {
-    if (!allowed($key)) continue;
+    if (!allowed($key) || !module_enabled($key)) continue;
     $q=database()->prepare('SELECT COUNT(*) FROM content WHERE kind=?');
     $q->execute([$key]);
     $counts[$key]=(int)$q->fetchColumn();
@@ -65,7 +72,7 @@ foreach ($types as $key=>$label) {
 </div>
 <div class="box welcome"><h2>Ваш сайт под контролем</h2>
 <p class="muted">Начните с создания страницы или новости. Для новой установки выберите тип сайта в разделе настроек.</p>
-<?php foreach($types as $key=>$label): if(!allowed($key))continue;?>
+<?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key))continue;?>
 <a class="button button-outline" href="?section=edit&kind=<?=h($key)?>">+ <?=h($label)?></a>
 <?php endforeach; ?></div>
 
@@ -120,7 +127,12 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <label>Тип сайта<select name="site_type">
 <?php foreach(['government'=>'Администрация','company'=>'Компания','organization'=>'Организация','store'=>'Интернет-магазин'] as $type=>$label):?>
 <option value="<?=h($type)?>" <?=config_value('site_type')===$type?'selected':''?>><?=h($label)?></option><?php endforeach;?>
-</select></label><button class="button" type="submit">Сохранить настройки</button></form></div>
+</select></label>
+<fieldset><legend>Активные модули сайта</legend>
+<?php foreach($types as $type=>$label): ?>
+<label class="check"><input type="checkbox" name="modules[]" value="<?=h($type)?>" <?=module_enabled($type)?'checked':''?>> <?=h($label)?></label>
+<?php endforeach; ?></fieldset>
+<button class="button" type="submit">Сохранить настройки</button></form></div>
 
 <?php elseif ($section==='users'):
 $rows = database()->query('SELECT id,name,email,role,permissions,active,created_at FROM users ORDER BY id')->fetchAll();
