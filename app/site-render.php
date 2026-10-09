@@ -41,7 +41,7 @@ if ($activeTemplate === 'government') {
   <script>var dagDefaultTheme=<?=json_encode(template_default_mode($activeTemplate))?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-template-<?=h($activeTemplate)?>");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
   <script src="/assets/theme.js?v=palette4" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=templates3">
-  <link rel="stylesheet" href="/assets/templates.css?v=modules7">
+  <link rel="stylesheet" href="/assets/templates.css?v=modules8">
   <link rel="stylesheet" href="/assets/media.css?v=legal2">
   <script src="/assets/accessibility.js?v=legal2" defer></script>
   <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>
