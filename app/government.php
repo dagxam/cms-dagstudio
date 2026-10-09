@@ -22,6 +22,7 @@ function government_defaults(): array
         'center_intro'=>'Добро пожаловать на официальный сайт. Здесь публикуются новости, документы, сведения о работе администрации и информация для жителей.',
         'leader_title'=>'Глава администрации',
         'leader_name'=>'',
+        'leader_initials'=>'',
         'leader_description'=>'',
         'leader_image'=>'',
         'schedule_title'=>'График приёма',
