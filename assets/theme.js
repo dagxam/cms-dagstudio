@@ -1,0 +1,32 @@
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  var key = 'dagstudio-cms-theme';
+  var current = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+
+  function apply(theme) {
+    current = theme === 'light' ? 'light' : 'dark';
+    root.setAttribute('data-theme', current);
+    root.style.colorScheme = current;
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
+      button.setAttribute('aria-label', current === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему');
+      button.setAttribute('title', current === 'dark' ? 'Светлая тема' : 'Тёмная тема');
+      button.setAttribute('aria-pressed', String(current === 'light'));
+    });
+    var favicon = document.getElementById('dag-favicon');
+    if (favicon) favicon.href = current === 'light' ? '/assets/ornament-light.svg' : '/assets/ornament-dark.svg';
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = current === 'light' ? '#f9f6f0' : '#101113';
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    apply(current);
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var next = current === 'dark' ? 'light' : 'dark';
+        try { localStorage.setItem(key, next); } catch (ignored) {}
+        apply(next);
+      });
+    });
+  });
+}());
