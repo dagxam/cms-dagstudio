@@ -98,10 +98,7 @@ function kinds(): array {
     return ['page'=>'Страницы','news'=>'Новости','service'=>'Услуги','product'=>'Товары'];
 }
 function module_enabled(string $name): bool {
-    if (!array_key_exists($name, kinds())) return false;
-    $stored = config_value('enabled_modules', '["page","news","service","product"]');
-    $modules = json_decode($stored, true);
-    return is_array($modules) && in_array($name, $modules, true);
+    return cms_module_enabled($name);
 }
 function log_action(string $action, string $value): void {
     database()->prepare('INSERT INTO audit_log(user_id,action,target) VALUES (?,?,?)')
@@ -113,3 +110,5 @@ require_once __DIR__ . '/government.php';
 
 require_once __DIR__ . '/compliance.php';
 require_once __DIR__ . '/media.php';
+
+require_once __DIR__ . '/modules.php';
