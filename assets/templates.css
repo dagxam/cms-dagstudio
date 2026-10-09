@@ -553,3 +553,23 @@ html[data-theme="light"] .admin-layout .cms-media-video-editor select{background
 @media(prefers-reduced-motion:reduce){
  .site-page .cms-visual-card,.site-page .cms-card-media img,.government-page .cms-government-material-thumb img{transition:none!important}
 }
+
+/* Фото, видео и новости используют палитру выбранного шаблона. */
+.site-page .cms-card-copy .cms-card-date{font-size:11px;line-height:1.35;font-variant-numeric:tabular-nums;color:var(--site-ink);opacity:.63;margin-top:-5px}
+.cms-cover-editor-preview.has-preview .cms-cover-editor-empty,
+.cms-cover-editor-preview.has-preview>.muted{display:none!important}
+.site-page .cms-media-module-card{overflow:hidden;transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease;min-height:180px}
+.site-page .cms-media-module-card img{width:100%;aspect-ratio:4/3;height:auto;max-height:165px;object-fit:cover}
+.site-page .cms-media-module-card:hover{border-color:var(--site-accent);transform:translateY(-2px);box-shadow:0 8px 22px color-mix(in srgb,var(--site-ink) 9%,transparent)}
+.site-page .cms-media-module-card strong{font-size:13px;line-height:1.4;color:var(--site-ink)}
+.site-page .cms-media-module-icon{font-size:43px;min-height:125px;border-radius:7px}
+.site-template-store .cms-media-module-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+.site-template-store .cms-media-module-card{border-radius:var(--site-radius,10px)}
+.government-page .cms-media-module{padding:8px 0 18px}
+.government-page .cms-media-module-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,155px),1fr));gap:12px}
+.government-page .cms-media-module-card{border:1px solid var(--gov-border);background:var(--gov-bg);border-radius:5px}
+.government-page .cms-media-module-card:hover{border-color:var(--gov-blue)}
+.government-page .cms-media-module-card strong{font-size:12px}
+html[data-theme="dark"] .cms-cover-editor-preview{background:color-mix(in srgb,var(--panel) 93%,var(--accent) 7%)}
+html[data-theme="light"] .cms-cover-editor-preview{background:color-mix(in srgb,var(--panel) 95%,var(--accent) 5%)}
+@media(prefers-reduced-motion:reduce){.site-page .cms-media-module-card{transition:none!important}}
