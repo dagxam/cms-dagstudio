@@ -50,8 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query = $pdo->prepare('INSERT INTO users(email,name,password_hash,role) VALUES (?,?,?,?)');
         $query->execute([$adminEmail,$adminName,password_hash($adminPass,PASSWORD_DEFAULT),'admin']);
         $query = $pdo->prepare('INSERT INTO settings(name,value) VALUES (?,?)');
+        $defaultModules = $siteType === 'store' ? ['page','news','product'] : ['page','news','service'];
         foreach ([
             'site_name'=>$siteName, 'site_type'=>$siteType,
+            'enabled_modules'=>json_encode($defaultModules),
             'site_description'=>'Официальный сайт', 'contact_email'=>$adminEmail
         ] as $name=>$value) $query->execute([$name,$value]);
         $values = ['host'=>$host,'port'=>$port,'name'=>$dbName,'user'=>$dbUser,'pass'=>$dbPass];
