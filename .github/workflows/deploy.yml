@@ -43,6 +43,7 @@ jobs:
         run: |
           node --check assets/theme.js
           node --check assets/template-palettes.js
+          node --check assets/government.js
       - name: Smoke-тест базы данных
         env:
           DAG_CMS_TEST_MODE: '1'
@@ -63,6 +64,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/templates.php
+      - name: Проверка настроек официального сайта
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/government.php
       - name: Проверка HTML всех четырёх типов сайтов
         env:
           DAG_CMS_TEST_MODE: '1'
@@ -175,5 +180,6 @@ jobs:
             **/tests/**
             **/assets/uploads/logo-*
             **/assets/uploads/hero-*
+            **/assets/uploads/leader-*
             **/storage/config.php
             **/storage/*.log
