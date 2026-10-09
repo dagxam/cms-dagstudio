@@ -129,7 +129,10 @@ function template_content(?string $forTemplate = null): array
         'feature_3_title'=>'Открытость', 'feature_3_text'=>'Всегда на связи с вами.',
         'logo_path'=>'', 'header_links'=>[],
     ];
-    $data = json_decode(config_value('template_content', '{}'), true);
+    $maps = json_decode(config_value('template_content_by_type', '{}'), true);
+    $data = is_array($maps) && isset($maps[$id]) && is_array($maps[$id])
+        ? $maps[$id]
+        : ($id === site_template() ? json_decode(config_value('template_content', '{}'), true) : []);
     if (!is_array($data)) $data = [];
     foreach ($defaults as $key => $value) {
         if ($key === 'header_links') {
