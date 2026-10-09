@@ -90,6 +90,13 @@ if ($search!=='')$govTitle='Результаты поиска';
   <div class="government-masthead-note"><span><?=h($gov['top_note'])?></span><strong><?=h($gov['banner_title'])?></strong></div>
   <?php endif;?>
 </header>
+<nav class="government-custom-menu" aria-label="Главное меню администрации">
+<?php $govMenuUrls=[]; foreach(cms_menu_visible('government') as $link):$govMenuUrls[]=$link['url'];?>
+<a href="<?=h($link['url'])?>"><?=h($link['label'])?></a>
+<?php endforeach;?>
+<?php foreach(cms_module_ids('government','nav') as $id):if(in_array(cms_module_href($id),$govMenuUrls,true))continue;?>
+<a href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
+<?php endforeach;?></nav>
 <?php if($gov['show_search']==='1'):?>
 <div class="government-searchbar">
   <form method="get" action="/" role="search" class="government-search">
@@ -98,9 +105,6 @@ if ($search!=='')$govTitle='Результаты поиска';
     <button type="submit"><?=h($gov['search_button'])?></button>
   </form>
   <div class="government-quick-actions">
-    <?php foreach(cms_module_ids('government','nav') as $id):?>
-      <a class="government-quick-link" href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
-    <?php endforeach;?>
     <?php foreach($gov['quick_links'] as $quick):?>
     <a class="government-quick-link" href="<?=h($quick['url'])?>"><?=h($quick['label'])?></a>
     <?php endforeach;?>
@@ -125,12 +129,20 @@ if ($search!=='')$govTitle='Результаты поиска';
   <?php endif;?>
   <main class="government-main" id="main-content">
     <?php if($govArticle):?>
+      <?php $pageConfig=$govArticle['kind']==='page'?cms_page_options((int)$govArticle['id']):null; ?>
+      <?php if($pageConfig):?><div class="cms-page-detail-layout">
+      <?php if($pageConfig['left']):?><aside class="cms-page-detail-sidebar" aria-label="Боковые блоки слева"><?php foreach($pageConfig['left'] as $widget):cms_module_sidebar($widget,'government');endforeach;?></aside><?php endif;?>
+      <div class="cms-page-detail-center"><?php cms_page_module($pageConfig['before'],'government'); ?>
+      <?php endif;?>
       <div class="government-breadcrumb"><a href="/">Главная</a><span>›</span><?=h($govArticle['title'])?></div>
       <h1><?=h($govArticle['title'])?></h1>
       <?php if(!empty($govArticle['summary'])):?><p class="government-lead"><?=h((string)$govArticle['summary'])?></p><?php endif;?>
       <div class="government-article-body"><?=nl2br(h((string)($govArticle['body']??'')))?></div>
       <?php if($govArticle['kind']==='product' && $govArticle['price']!==null):?><strong class="price"><?=h(number_format((float)$govArticle['price'],2,',',' '))?> ₽</strong><?php endif;?>
       <a class="government-return" href="/">← Вернуться на главную</a>
+      <?php if($pageConfig):cms_page_module($pageConfig['after'],'government'); ?></div>
+      <?php if($pageConfig['right']):?><aside class="cms-page-detail-sidebar" aria-label="Боковые блоки справа"><?php foreach($pageConfig['right'] as $widget):cms_module_sidebar($widget,'government');endforeach;?></aside><?php endif;?>
+      </div><?php endif;?>
     <?php elseif($slug!==''):?>
       <h1>Страница не найдена</h1><p>Материал не опубликован или адрес изменился.</p><a class="government-return" href="/">Вернуться на главную</a>
     <?php elseif($search!==''):?>
@@ -157,8 +169,8 @@ if ($search!=='')$govTitle='Результаты поиска';
             <?php for($i=1;$i<=3;$i++):?><div class="government-feature"><strong><?=h($siteContent['feature_'.$i.'_title'])?></strong><p><?=h($siteContent['feature_'.$i.'_text'])?></p></div><?php endfor;?>
           </div>
         </section>
-        <?php elseif($section==='media'):?>
-        <section class="government-section"><?php cms_module_media_block(); ?></section>
+        <?php elseif(in_array($section,['documents','photos','videos'],true)):?>
+        <section class="government-section"><?php cms_module_media_block($section); ?></section>
         <?php elseif($section==='contact'):?>
         <section class="government-section" id="contact">
           <h2><?=h($siteContent['contact_title'])?></h2>
