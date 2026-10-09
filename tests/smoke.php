@@ -49,4 +49,8 @@ check($q->fetchColumn() === 'Проверочная новость', 'Публи
 $db->prepare('INSERT INTO messages(name,email,body) VALUES (?,?,?)')
     ->execute(['Тест','test@example.test','Проверка обратной связи']);
 check((int)$db->query('SELECT COUNT(*) FROM messages')->fetchColumn() === 1, 'Сообщения');
+check((int)$db->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='cms_media'")->fetchColumn() === 1,'Таблица медиатеки создана');
+$db->prepare('INSERT INTO cms_media(category,title,description,alt_text,age_rating,status,filename,original_name,mime,size_bytes) VALUES(?,?,?,?,?,?,?,?,?,?)')
+  ->execute(['document','Тестовый документ','Описание PDF','','6+','published',str_repeat('a',32).'.pdf','test.pdf','application/pdf',12345]);
+check((int)$db->query('SELECT COUNT(*) FROM cms_media WHERE status="published"')->fetchColumn()===1,'Публикация файла в базе');
 echo "DAG STUDIO CMS: smoke-тест успешно завершён.\n";
