@@ -6,7 +6,7 @@ header('X-Robots-Tag: noindex, nofollow');
 $me = require_account();
 $section = (string)($_GET['section'] ?? 'dashboard');
 $types = kinds();
-if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages','media','accessibility'],array_keys($types)),true)) $section='dashboard';
+if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages','media','accessibility','modules'],array_keys($types)),true)) $section='dashboard';
 if ($section === 'edit') {
     $id = max(0,(int)($_GET['id'] ?? 0));
     $record = null;
@@ -46,7 +46,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <?php if (allowed('media')): ?><a class="nav-item <?=$section==='media'?'active':''?>" href="?section=media">▣ Медиатека</a><?php endif; ?>
 <?php if (allowed('messages')): ?><a class="nav-item <?=$section==='messages'?'active':''?>" href="?section=messages">✉ Обращения</a><?php endif; ?>
 <?php if (allowed('users')): ?><a class="nav-item <?=$section==='users'?'active':''?>" href="?section=users">♙ Пользователи</a><?php endif; ?>
-<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Выбор темы сайта</a><a class="nav-item <?=$section==='accessibility'?'active':''?>" href="?section=accessibility">◉ Доступность и возраст</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
+<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='modules'?'active':''?>" href="?section=modules">▦ Модули</a><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Выбор темы сайта</a><a class="nav-item <?=$section==='accessibility'?'active':''?>" href="?section=accessibility">◉ Доступность и возраст</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
 <div class="sidebar-bottom"><p class="muted">Вы вошли как<br><strong><?=h($me['name'])?></strong></p>
 <a class="nav-item" href="/" target="_blank" rel="noopener">↗ Открыть сайт</a>
 <form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit">Выйти из аккаунта</button></form></div>
@@ -126,6 +126,9 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <?php elseif ($section==='accessibility'): ?>
 <?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/accessibility-editor.php'; ?>
 
+<?php elseif ($section==='modules'): ?>
+<?php if(!defined('DAG_CMS_ADMIN_VIEW'))define('DAG_CMS_ADMIN_VIEW',true);require __DIR__.'/module-manager.php'; ?>
+
 <?php elseif ($section==='settings'): ?>
 <div class="eyebrow">ПАРАМЕТРЫ САЙТА</div><h1>Основные настройки</h1>
 <div class="box form-panel"><form method="post" action="/admin/actions.php"><?=csrf()?>
@@ -135,10 +138,7 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <label>Контактный e-mail<input name="contact_email" type="email" required value="<?=h(config_value('contact_email'))?>"></label>
 <label>URL политики обработки персональных данных<input name="privacy_url" maxlength="500" placeholder="/?p=privacy" value="<?=h(config_value('privacy_url'))?>"></label><p class="muted">Пока этот адрес не задан, форма обращений отключена.</p>
 <div class="settings-template-note"><strong>Текущий тип: <?=h(template_catalog()[site_template()]['label'])?></strong><p class="muted">Тип и оформление сайта меняются в разделе <a href="?section=templates">«Шаблоны и дизайн»</a>.</p><input type="hidden" name="site_type" value="<?=h(config_value('site_type'))?>"></div>
-<fieldset><legend>Активные модули сайта</legend>
-<?php foreach($types as $type=>$label): ?>
-<label class="check"><input type="checkbox" name="modules[]" value="<?=h($type)?>" <?=module_enabled($type)?'checked':''?>> <?=h($label)?></label>
-<?php endforeach; ?></fieldset>
+<div class="settings-template-note"><strong>Управление модулями вынесено в отдельный раздел.</strong><p class="muted"><a href="/admin/index.php?section=modules">Открыть включение, отключение и расположение модулей →</a></p></div>
 <button class="button" type="submit">Сохранить настройки</button></form></div>
 
 <?php elseif ($section==='users'):
