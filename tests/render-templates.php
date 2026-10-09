@@ -36,7 +36,11 @@ try {
     if (!str_contains($html,'site-template-'.$id) ||
         !str_contains($html,'id="site-main-title"') ||
         !str_contains($html,'site-sections') ||
-        !str_contains($html,'/assets/templates.css')) {
+        !str_contains($html,'/assets/templates.css') ||
+        !str_contains($html,'dag-site-palettes') ||
+        !str_contains($html,'data-theme-storage-key="dagstudio-template-'.$id.'"') ||
+        !str_contains($html,'html[data-theme="light"] body.site-page') ||
+        !str_contains($html,'html[data-theme="dark"] body.site-page')) {
         throw new RuntimeException('HTML не прошёл проверку для шаблона '.$id);
     }
     if (!str_contains($html,'Шаблон не найден') && strlen($html)<2000) {
