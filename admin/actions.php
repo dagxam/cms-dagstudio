@@ -12,7 +12,90 @@ $action = (string)($_POST['action'] ?? '');
 $back = '/admin/index.php';
 
 try {
-    if ($action === 'save_government_layout') {
+    if ($action === 'save_compliance') {
+        require_module('settings');
+        $age=(string)($_POST['site_age_rating']??'');
+        if(!cms_media_age_valid($age))throw new RuntimeException('Недопустимая возрастная категория.');
+        $opts=[];
+        $opts['enabled']=isset($_POST['vision_enabled'])?'1':'0';
+        foreach([
+            'font_scale'=>['125','150','175','200'],
+            'contrast'=>['high','blackwhite','yellowblack'],
+            'line_spacing'=>['normal','wide'],
+            'letter_spacing'=>['normal','wide'],
+        ] as $key=>$options){
+            $v=(string)($_POST[$key]??'');
+            if(!in_array($v,$options,true))throw new RuntimeException('Недопустимый параметр доступности: '.$key);
+            $opts[$key]=$v;
+        }
+        foreach(['show_images','underlines','grayscale'] as $key)$opts[$key]=isset($_POST[$key])?'1':'0';
+        $q=database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+        $q->execute(['site_age_rating',$age]);
+        $q->execute(['accessibility_options',json_encode($opts,JSON_UNESCAPED_UNICODE)]);
+        log_action('compliance.update',$age);
+        $_SESSION['flash']='Возрастная маркировка и настройки доступности сохранены.';
+        $back='/admin/index.php?section=accessibility';
+    } elseif ($action === 'upload_media') {
+        require_module('media');
+        cms_media_table();
+        $category=(string)($_POST['category']??'');
+        $title=trim((string)($_POST['title']??''));
+        $description=trim((string)($_POST['description']??''));
+        $alt=trim((string)($_POST['alt_text']??''));
+        $age=(string)($_POST['age_rating']??'0+');
+        if($title===''||mb_strlen($title)>190||mb_strlen($description)>2000||
+            mb_strlen($alt)>300||!cms_media_age_valid($age))throw new RuntimeException('Проверьте описание и возрастную маркировку.');
+        if($category==='photo'&&$alt==='')throw new RuntimeException('Для фотографии нужен альтернативный текст.');
+        $file=$_FILES['media_file']??[];
+        if(!is_array($file))throw new RuntimeException('Выберите файл.');
+        [$mime,$ext,$size,$original]=cms_media_upload_validation($file,$category);
+        $dir=dirname(__DIR__).'/storage/media';
+        if(!is_dir($dir)&&!mkdir($dir,0700,true)&&!is_dir($dir))
+            throw new RuntimeException('Не удалось создать каталог медиатеки.');
+        if(!is_writable($dir))throw new RuntimeException('Каталог медиатеки недоступен для записи.');
+        $filename=bin2hex(random_bytes(16)).'.'.$ext;
+        $path=$dir.'/'.$filename;
+        if(!move_uploaded_file((string)$file['tmp_name'],$path))
+            throw new RuntimeException('Не удалось сохранить файл.');
+        @chmod($path,0600);
+        try {
+            database()->prepare('INSERT INTO cms_media(category,title,description,alt_text,age_rating,status,filename,original_name,mime,size_bytes) VALUES(?,?,?,?,?,?,?,?,?,?)')
+                ->execute([$category,$title,$description,$alt,$age,isset($_POST['publish'])?'published':'draft',$filename,$original,$mime,$size]);
+        } catch(Throwable $e){@unlink($path);throw $e;}
+        log_action('media.upload',$title);
+        $_SESSION['flash']='Файл загружен в медиатеку.';
+        $back='/admin/index.php?section=media';
+    } elseif ($action === 'update_media') {
+        require_module('media');
+        $id=max(0,(int)($_POST['media_id']??0));
+        $item=cms_media_get($id,false);
+        if(!$item)throw new RuntimeException('Файл не найден.');
+        $title=trim((string)($_POST['title']??''));
+        $description=trim((string)($_POST['description']??''));
+        $alt=trim((string)($_POST['alt_text']??''));
+        $age=(string)($_POST['age_rating']??'');
+        $status=(string)($_POST['status']??'');
+        if($title===''||mb_strlen($title)>190||mb_strlen($description)>2000||mb_strlen($alt)>300||
+            !cms_media_age_valid($age)||!in_array($status,['draft','published'],true)||
+            ($item['category']==='photo'&&$alt===''))throw new RuntimeException('Проверьте данные медиа.');
+        database()->prepare('UPDATE cms_media SET title=?,description=?,alt_text=?,age_rating=?,status=? WHERE id=?')
+            ->execute([$title,$description,$alt,$age,$status,$id]);
+        log_action('media.update',(string)$id);
+        $_SESSION['flash']='Карточка медиа обновлена.';
+        $back='/admin/index.php?section=media';
+    } elseif ($action === 'delete_media') {
+        require_module('media');
+        $id=max(0,(int)($_POST['media_id']??0));
+        $item=cms_media_get($id,false);
+        if(!$item)throw new RuntimeException('Файл не найден.');
+        database()->prepare('DELETE FROM cms_media WHERE id=?')->execute([$id]);
+        $base=(string)$item['filename'];
+        if(preg_match('/^[a-f0-9]{32}\\.(jpg|png|webp|pdf|docx|xlsx|pptx|mp4|webm)$/D',$base))
+            @unlink(dirname(__DIR__).'/storage/media/'.$base);
+        log_action('media.delete',(string)$id);
+        $_SESSION['flash']='Файл удалён.';
+        $back='/admin/index.php?section=media';
+    } elseif ($action === 'save_government_layout') {
         require_module('settings');
         if (site_template()!=='government') {
             throw new RuntimeException('Настройки доступны только для шаблона «Администрация».');
