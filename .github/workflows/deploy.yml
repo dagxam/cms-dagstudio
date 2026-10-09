@@ -211,5 +211,6 @@ jobs:
             **/assets/uploads/hero-*
             **/assets/uploads/leader-*
             **/storage/media/**
+            **/storage/content-images/**
             **/storage/config.php
             **/storage/*.log
