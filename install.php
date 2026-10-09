@@ -84,37 +84,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#111214">
   <title>Установка — DAG STUDIO CMS</title>
-  <link rel="stylesheet" href="/assets/style.css">
+  <link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('dagstudio-cms-theme')==='light'?'light':'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
+  <script src="/assets/theme.js" defer></script>
+  <link rel="stylesheet" href="/assets/style.css?v=ornament2">
 </head>
 <body class="install-page">
 <div class="install-shell">
   <header class="install-header">
-    <div class="brand install-brand"><span class="brand-icon" aria-hidden="true">D</span><span>DAG STUDIO <b>CMS</b></span></div>
-    <span class="install-header-tag"><span class="install-header-dot" aria-hidden="true"></span> Первичная настройка системы</span>
-  </header>
-
-  <main class="install-main">
+    <a class="brand install-brand" href="/"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span><span>DAG STUDIO <b>CMS</b></span></a>
+    <div class="install-header-actions">
+      <span class="install-header-tag"><span class="install-header-dot" aria-hidden="true"></span> СОВРЕМЕННАЯ CMS · ДАГЕСТАНСКИЙ ХАРАКТЕР</span>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span aria-hidden="true" class="theme-toggle-dark">☾</span><span aria-hidden="true" class="theme-toggle-light">☼</span></button>
+    </div>
+  </header>  <main class="install-main">
     <aside class="install-aside" aria-labelledby="install-welcome">
-      <div>
-        <p class="install-kicker">НАСТРОЙКА САЙТА / 01</p>
-        <h1 id="install-welcome">Ваш сайт<br><span>начинается здесь.</span></h1>
-        <p class="install-lead">Универсальная платформа для администраций, компаний, организаций и интернет-магазинов.</p>
+      <div class="install-hero-art" aria-hidden="true"></div>
+      <div class="install-hero-content">
+        <div class="install-hero-logo" aria-hidden="true">
+          <img class="logo-on-dark" src="/assets/ornament-dark.svg" alt="">
+          <img class="logo-on-light" src="/assets/ornament-light.svg" alt="">
+        </div>
+        <h1 id="install-welcome">DAG STUDIO <span>CMS</span></h1>
+        <div class="install-ornament-line" aria-hidden="true"><i></i><b>◇</b><i></i></div>
+        <p class="install-hero-kicker">СОВРЕМЕННАЯ СИСТЕМА УПРАВЛЕНИЯ САЙТАМИ</p>
+        <p class="install-lead">Простая установка. Мощные возможности.<br>Создавайте современные сайты, управляйте контентом и развивайте проекты вместе с DAG STUDIO CMS.</p>
       </div>
-      <div class="install-roadmap" aria-label="Этапы первоначальной настройки">
-        <div class="install-roadmap-item"><span class="install-roadmap-number">01</span><div><strong>Основные сведения</strong><span>Название и назначение сайта</span></div></div>
-        <div class="install-roadmap-item"><span class="install-roadmap-number">02</span><div><strong>Подключение MySQL</strong><span>Безопасное хранение данных</span></div></div>
-        <div class="install-roadmap-item"><span class="install-roadmap-number">03</span><div><strong>Доступ администратора</strong><span>Ваша первая учётная запись</span></div></div>
+      <div class="install-feature-grid" aria-label="Преимущества CMS">
+        <div class="install-feature"><span aria-hidden="true">▣</span><strong>Гибкое<br>управление</strong></div>
+        <div class="install-feature"><span aria-hidden="true">◇</span><strong>Современная<br>архитектура</strong></div>
+        <div class="install-feature"><span aria-hidden="true">♢</span><strong>Надёжная<br>защита</strong></div>
+        <div class="install-feature"><span aria-hidden="true">⚙</span><strong>Расширяемые<br>возможности</strong></div>
       </div>
-      <p class="install-aside-note">DAG STUDIO <span>— цифровые решения с характером.</span></p>
+      <p class="install-aside-note"><span>ИДЕИ</span> <i>·</i> <span>КОНТЕНТ</span> <i>·</i> <span>ЛЮДИ</span> <i>·</i> <span>ВОЗМОЖНОСТИ</span></p>
     </aside>
 
     <section class="install-panel" aria-labelledby="install-form-title">
+      <div class="install-progress" aria-label="Этапы установки">
+        <span class="install-progress-item is-current"><b>1</b><span>Основные сведения</span></span>
+        <span class="install-progress-item"><b>2</b><span>База данных</span></span>
+        <span class="install-progress-item"><b>3</b><span>Администратор</span></span>
+        <span class="install-progress-item"><b>4</b><span>Завершение</span></span>
+      </div>
       <div class="install-panel-header">
-        <div>
-          <p class="install-panel-overline">МАСТЕР УСТАНОВКИ</p>
-          <h2 id="install-form-title">Настройте вашу CMS</h2>
-          <p class="install-panel-subtitle">Заполните параметры сайта и создайте учётную запись администратора.</p>
-        </div>
+        <p class="install-panel-overline">ПЕРВЫЙ ЗАПУСК · DAG STUDIO CMS</p>
+        <h2 id="install-form-title">Установка <em>DAG STUDIO CMS</em></h2>
+        <p class="install-panel-subtitle">Заполните параметры для первоначальной настройки. Это займёт всего несколько минут.</p>
+      </div>
         <span class="install-version">DAG CMS / SETUP</span>
       </div>
 
@@ -142,30 +158,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </label>
               </div>
             </fieldset>
-
-            <fieldset class="install-group">
-              <legend><span class="install-step">02</span> База данных MySQL</legend>
-              <div class="install-input-grid">
-                <label>Хост MySQL
-                  <input required maxlength="255" name="host" value="<?=h($_POST['host'] ?? 'localhost')?>" placeholder="localhost" autocomplete="off" spellcheck="false">
-                </label>
-                <label>Порт
-                  <input required type="number" min="1" max="65535" name="port" value="<?=h((string)($_POST['port'] ?? '3306'))?>" inputmode="numeric">
-                </label>
-                <label>Имя базы данных
-                  <input required name="database" value="<?=h($_POST['database'] ?? '')?>" placeholder="database_name" autocomplete="off" spellcheck="false">
-                </label>
-                <label>Пользователь MySQL
-                  <input required name="username" value="<?=h($_POST['username'] ?? '')?>" placeholder="db_user" autocomplete="off" spellcheck="false">
-                </label>
-                <label class="install-field-wide">Пароль базы данных
-                  <input type="password" name="db_password" autocomplete="off" placeholder="Пароль пользователя MySQL">
-                </label>
-              </div>
-            </fieldset>
-          </div>
-
-          <div class="install-form-column">
             <fieldset class="install-group install-admin-group">
               <legend><span class="install-step">03</span> Администратор сайта</legend>
               <p class="install-group-lead">Эти данные используются только для входа в панель управления CMS.</p>
@@ -187,16 +179,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               </div>
             </fieldset>
           </div>
+          <div class="install-form-column">
+            <fieldset class="install-group">
+              <legend><span class="install-step">02</span> База данных MySQL</legend>
+              <div class="install-input-grid">
+                <label>Хост MySQL
+                  <input required maxlength="255" name="host" value="<?=h($_POST['host'] ?? 'localhost')?>" placeholder="localhost" autocomplete="off" spellcheck="false">
+                </label>
+                <label>Порт
+                  <input required type="number" min="1" max="65535" name="port" value="<?=h((string)($_POST['port'] ?? '3306'))?>" inputmode="numeric">
+                </label>
+                <label>Имя базы данных
+                  <input required name="database" value="<?=h($_POST['database'] ?? '')?>" placeholder="database_name" autocomplete="off" spellcheck="false">
+                </label>
+                <label>Пользователь MySQL
+                  <input required name="username" value="<?=h($_POST['username'] ?? '')?>" placeholder="db_user" autocomplete="off" spellcheck="false">
+                </label>
+                <label class="install-field-wide">Пароль базы данных
+                  <input type="password" name="db_password" autocomplete="off" placeholder="Пароль пользователя MySQL">
+                </label>
+              </div>
+            </fieldset>
+            <div class="install-safety-card">
+              <div class="install-safety-symbol" aria-hidden="true">◇</div>
+              <div><strong>Всё для вашего сайта</strong><p>После установки вы получите панель управления, публикацию материалов, роли пользователей и настройку разделов.</p></div>
+            </div>
+          </div>
         </div>
         <div class="install-form-footer">
-          <p>Проверьте реквизиты MySQL и данные администратора перед запуском.</p>
-          <button class="button install-submit" type="submit">Создать сайт <span aria-hidden="true">↗</span></button>
+          <p>Данные подключения будут храниться только на сервере. Сохраните пароль администратора для последующего входа.</p>
+          <button class="button install-submit" type="submit"><span aria-hidden="true">✦</span> Создать сайт <span aria-hidden="true">→</span></button>
         </div>
       </form>
     </section>
   </main>
 
-  <footer class="install-footer"><span>© DAG STUDIO CMS</span><span>Первичная настройка веб-сайта</span></footer>
+  <footer class="install-footer"><span>© DAG STUDIO CMS · Создано с уважением к традициям</span><span>Технологии развиваются. Ценности остаются.</span></footer>
 </div>
 </body>
 </html>
