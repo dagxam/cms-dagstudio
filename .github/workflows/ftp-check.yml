@@ -21,7 +21,7 @@ jobs:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          FTP_SERVER_DIR: ${{ vars.FTP_SERVER_DIR }}
+          FTP_SERVER_DIR: '/www/cms.dagstudio.ru/'
           FTP_ENABLED: ${{ vars.FTP_ENABLED }}
         run: |
           python3 - <<'PY'
