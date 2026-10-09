@@ -16,6 +16,17 @@ jobs:
   check:
     name: Проверка PHP
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: testpassword
+          MYSQL_DATABASE: dagcms_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -ptestpassword"
+          --health-interval=10s --health-timeout=5s --health-retries=12
     steps:
       - name: Получение файлов проекта
         uses: actions/checkout@v4
@@ -24,9 +35,18 @@ jobs:
         with:
           php-version: '8.4'
           tools: none
+          extensions: pdo_mysql, mbstring
           coverage: none
       - name: Проверка синтаксиса всех PHP-файлов
         run: find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n 1 php -l
+      - name: Smoke-тест базы данных
+        env:
+          DAG_CMS_TEST_MODE: '1'
+          TEST_DB_HOST: '127.0.0.1'
+          TEST_DB_NAME: 'dagcms_test'
+          TEST_DB_USER: 'root'
+          TEST_DB_PASS: 'testpassword'
+        run: php tests/smoke.php
 
   deploy:
     name: Загрузка сайта по FTPS
