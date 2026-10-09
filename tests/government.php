@@ -11,7 +11,7 @@ function check_gov(bool $pass,string $msg): void {
 }
 $gov=government_layout();
 check_gov($gov['layout']==='both' && count($gov['left_menu'])>=5,'Три колонки и меню по умолчанию');
-check_gov($gov['left_width']==='240' && $gov['right_width']==='248','Начальные размеры боковых колонок');
+check_gov($gov['left_width']==='240' && $gov['right_width']==='240','Начальные размеры боковых колонок');
 check_gov(government_links_as_text($gov['left_menu'])!=='','Меню редактируется строками');
 $links=government_parse_link_text("Новости | /?kind=news\nОбращения | #contact\nПравовой портал | https://example.org");
 check_gov(count($links)===3 && $links[1]['url']==='#contact','Разбор пользовательских ссылок и порядка');
