@@ -21,6 +21,18 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     apply(current);
+
+    document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var input = document.getElementById(button.getAttribute('aria-controls'));
+        if (!input) return;
+        var visible = input.type === 'password';
+        input.type = visible ? 'text' : 'password';
+        button.setAttribute('aria-label', visible ? 'Скрыть пароль' : 'Показать пароль');
+        button.setAttribute('aria-pressed', String(visible));
+        button.textContent = visible ? '◉' : '◎';
+      });
+    });
     document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
       button.addEventListener('click', function () {
         var next = current === 'dark' ? 'light' : 'dark';
