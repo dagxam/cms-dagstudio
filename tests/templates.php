@@ -28,11 +28,17 @@ foreach($catalog as $id=>$preset){
 }
 test_check(site_template()==='company','Текущий шаблон');
 test_check(template_content()['title']==='Тестовая компания','Редактируемый заголовок');
-test_check(template_content('government')['title']==='Тестовая компания','Предпросмотр сохраняет пользовательский текст');
+test_check(template_content('government')['title']===$catalog['government']['title'],'Предпросмотр показывает тексты выбранного шаблона');
 test_check(template_design()['accent']==='#aa6633','Пользовательский акцент');
 test_check(template_design('store')['accent']===$catalog['store']['accent'],'Изолированный предпросмотр');
 test_check(template_active_sections()===['features','news','contact'],'Порядок блоков');
 test_check(template_active_sections('store')===$catalog['store']['sections'],'Блоки предпросмотра');
+$config['template_design_by_type']='{"store":{"accent":"#112233"}}';
+$config['template_content_by_type']='{"store":{"title":"Товары нашей компании"}}';
+$config['template_sections_by_type']='{"store":["product","contact"]}';
+test_check(template_design('store')['accent']==='#112233','Индивидуальный акцент магазина');
+test_check(template_content('store')['title']==='Товары нашей компании','Индивидуальный заголовок магазина');
+test_check(template_active_sections('store')===['product','contact'],'Индивидуальный набор блоков магазина');
 foreach(['/','/?p=about','/?kind=news','#contact','https://example.ru/page'] as $url) {
     test_check(safe_template_url($url), 'Допустимый адрес '.$url);
 }
