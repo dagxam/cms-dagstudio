@@ -30,13 +30,14 @@ $navLinks = $siteContent['header_links'];
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="<?=h(mb_substr($metaDescription,0,250))?>">
-  <meta name="theme-color" content="<?=h($design['background'])?>">
+  <meta name="theme-color" content="<?=h($design['palettes'][template_default_mode($activeTemplate)]['background'])?>">
   <title><?=h($metaTitle)?></title>
   <link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg">
   <script>var dagDefaultTheme=<?=json_encode(in_array($activeTemplate,['organization','store','government'],true)?'light':'dark')?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-cms-theme");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
   <script src="/assets/theme.js" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=templates3">
   <link rel="stylesheet" href="/assets/templates.css?v=templates3">
+  <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>
 </head>
 <body class="<?=h($siteClass)?>" style="<?=h(template_style($design,$activeTemplate))?>">
 <?php if($previewMode): ?><div class="site-preview-banner"><strong>Предпросмотр: <?=h(template_catalog()[$activeTemplate]['label'])?></strong> · Это предварительный вид. Шаблон не применён. <a href="/admin/index.php?section=templates">Вернуться к выбору</a></div><?php endif;?>
