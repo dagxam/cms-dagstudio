@@ -12,8 +12,8 @@ function cms_modules(): array {
         'service'=>['label'=>'Услуги','description'=>'Карточки услуг и направлений','href'=>'/?kind=service'],
         'product'=>['label'=>'Товары','description'=>'Каталог товаров с ценами','href'=>'/?kind=product'],
         'media'=>['label'=>'Медиатека','description'=>'Документы, фотографии и видео','href'=>'/media.php'],
-        'features'=>['label'=>'Преимущества','description'=>'Три редактируемых блока о деятельности','href'=>'/#features'],
-        'contact'=>['label'=>'Контакты и обращения','description'=>'Контактная информация и форма обращения','href'=>'/#contact'],
+        'features'=>['label'=>'Преимущества','description'=>'Три редактируемых блока о деятельности','href'=>'/?module=features'],
+        'contact'=>['label'=>'Контакты и обращения','description'=>'Контактная информация и форма обращения','href'=>'/?module=contact'],
     ];
 }
 
