@@ -53,9 +53,9 @@ function template_catalog(): array
         'government' => [
             'label'=>'Администрация', 'caption'=>'Официальный сайт',
             'description'=>'Строгая структура: новости, документы, услуги и обращения граждан.',
-            'accent'=>'#9e6747', 'background'=>'#f6f6f3', 'ink'=>'#183047',
+            'accent'=>'#4f83b7', 'background'=>'#f7f9fb', 'ink'=>'#344b60',
             'font'=>'system', 'hero'=>'official', 'cards'=>'outlined', 'header'=>'official',
-            'radius'=>'6', 'width'=>'1320',
+            'radius'=>'6', 'width'=>'1480',
             'eyebrow'=>'Официальный информационный портал',
             'title'=>'Открытость. Развитие. Ответственность.',
             'description_text'=>'Актуальные новости, официальная информация, документы и электронные обращения.',
@@ -87,8 +87,8 @@ function template_default_palettes(string $id): array
             'dark'=>['accent'=>'#f0ad6c','background'=>'#141820','ink'=>'#f8f1e8','surface'=>'#242b33','border'=>'#594b3e'],
         ],
         'government'=>[
-            'light'=>['accent'=>'#825437','background'=>'#f6f6f3','ink'=>'#183047','surface'=>'#ffffff','border'=>'#cbd5de'],
-            'dark'=>['accent'=>'#daa57d','background'=>'#112132','ink'=>'#edf3fa','surface'=>'#1b3043','border'=>'#425b70'],
+            'light'=>['accent'=>'#4f83b7','background'=>'#f7f9fb','ink'=>'#344b60','surface'=>'#ffffff','border'=>'#d4e0eb'],
+            'dark'=>['accent'=>'#86b4e1','background'=>'#132333','ink'=>'#eaf2f9','surface'=>'#213a50','border'=>'#42617a'],
         ],
     ];
     return $presets[$id] ?? $presets['company'];
