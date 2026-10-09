@@ -64,6 +64,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/templates.php
+      - name: Проверка выбора шаблона до открытия настроек
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/template-editor.php
       - name: Проверка настроек официального сайта
         env:
           DAG_CMS_TEST_MODE: '1'
