@@ -492,7 +492,7 @@ try {
             !in_array($role,['admin','editor'],true) || !is_array($permissions)) {
             throw new RuntimeException('Проверьте поля пользователя');
         }
-        $permissions = array_values(array_intersect(array_keys(kinds()),array_map('strval',$permissions)));
+        $permissions = array_values(array_intersect([...array_keys(kinds()),'media'],array_map('strval',$permissions)));
         $q = database()->prepare('INSERT INTO users(email,name,password_hash,role,permissions) VALUES (?,?,?,?,?)');
         $q->execute([$email,$name,password_hash($password,PASSWORD_DEFAULT),$role,json_encode($permissions)]);
         log_action('users.create', $email);
