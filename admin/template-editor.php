@@ -138,11 +138,11 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
         </select></label>
         <label>Скругление элементов<select name="radius">
           <?php foreach(['0'=>'Без скругления','6'=>'6 px','12'=>'12 px','16'=>'16 px','18'=>'18 px','24'=>'24 px'] as $key=>$label): ?>
-          <option value="<?=h($key)?>" <?=$design['radius']===$key?'selected':''?>><?=h($label)?></option><?php endforeach;?>
+          <option value="<?=h((string)$key)?>" <?=$design['radius']===(string)$key?'selected':''?>><?=h($label)?></option><?php endforeach;?>
         </select></label>
         <label>Ширина контента<select name="width">
           <?php foreach(['1120'=>'Узкая • 1120 px','1240'=>'Обычная • 1240 px','1320'=>'Широкая • 1320 px','1380'=>'Широкая + • 1380 px','1480'=>'Максимальная • 1480 px'] as $key=>$label): ?>
-          <option value="<?=h($key)?>" <?=$design['width']===$key?'selected':''?>><?=h($label)?></option><?php endforeach;?>
+          <option value="<?=h((string)$key)?>" <?=$design['width']===(string)$key?'selected':''?>><?=h($label)?></option><?php endforeach;?>
         </select></label>
       </div>
       <p class="muted template-tip">Вы можете изменить любой параметр, не затрагивая опубликованные материалы и базу данных.</p>
