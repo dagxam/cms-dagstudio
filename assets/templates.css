@@ -322,3 +322,58 @@ html[data-theme="light"] .template-editor-tab.is-active{color:#8b482e}
  .template-editor-tabs{padding:4px}
  .template-editor-tab{font-size:12px;min-height:39px}
 }
+
+
+/* Конструктор модулей DAG STUDIO CMS */
+.cms-module-manager{padding:clamp(20px,2.4vw,30px);margin:24px 0;border-radius:15px}
+.cms-module-manager-heading{display:flex;align-items:start;gap:16px;margin-bottom:22px}
+.cms-module-manager-heading h2{margin:0 0 5px;font-size:22px}
+.cms-module-manager-heading p{font-size:13px;margin:0;max-width:740px}
+.cms-modules-catalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,305px),1fr));gap:12px;margin-bottom:22px}
+.cms-modules-option{display:flex;align-items:center;gap:12px;padding:16px;min-width:0;border:1px solid var(--border);background:var(--panel2);border-radius:11px;cursor:pointer;margin:0}
+.cms-modules-option:hover{border-color:var(--accent)}
+.cms-modules-icon{width:45px;height:45px;display:grid;place-items:center;flex-shrink:0;border-radius:10px;background:color-mix(in srgb,var(--accent) 13%,transparent);font-size:22px;color:var(--accent-light)}
+.cms-modules-info{display:grid;gap:3px;flex:1;min-width:0}
+.cms-modules-info strong{font-size:14px}
+.cms-modules-info small{color:var(--muted);font-size:11px;line-height:1.5}
+.cms-modules-option input{appearance:auto;accent-color:var(--accent);width:20px;height:20px;flex:0 0 20px}
+.cms-module-template-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.cms-module-template-tabs a{padding:10px 14px;border:1px solid var(--border);background:var(--panel2);border-radius:9px;font-size:12px;font-weight:700}
+.cms-module-template-tabs a.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel));color:var(--accent-light)}
+.cms-module-preview{display:grid;gap:6px;padding:15px;margin:0 0 20px;border:1px dashed var(--border);border-radius:11px}
+.cms-module-preview-top,.cms-module-preview-footer{background:color-mix(in srgb,var(--accent) 14%,var(--panel));border-radius:5px;padding:7px;text-align:center;font-size:11px;font-weight:700}
+.cms-module-preview-cols{display:grid;grid-template-columns:1fr 2.3fr 1fr;gap:6px}
+.cms-module-preview-cols>div{background:var(--panel2);border:1px solid var(--border);border-radius:5px;min-height:55px;padding:12px 5px;text-align:center;font-size:11px}
+.cms-module-rows{display:grid;gap:10px;margin:16px 0 23px}
+.cms-module-row{display:grid;grid-template-columns:minmax(170px,1fr) minmax(195px,1.2fr) 90px;gap:13px;align-items:end;padding:12px 15px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
+.cms-module-row-title{display:grid;gap:5px;padding-bottom:6px}
+.cms-module-row-title strong{font-size:14px}
+.cms-module-on,.cms-module-off{font-size:11px}
+.cms-module-on{color:#27875c}.cms-module-off{color:var(--muted)}
+.cms-module-row label{font-size:11px;color:var(--muted);margin:0}
+.cms-module-row label select,.cms-module-row label input{width:100%;margin-top:5px;min-height:41px}
+.cms-module-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(14px,2vw,26px)}
+.cms-module-layout.cms-has-left{grid-template-columns:minmax(160px,.25fr) minmax(0,1fr)}
+.cms-module-layout.cms-has-right{grid-template-columns:minmax(0,1fr) minmax(160px,.25fr)}
+.cms-module-layout.cms-has-left.cms-has-right{grid-template-columns:minmax(160px,.24fr) minmax(0,1fr) minmax(160px,.24fr)}
+.cms-module-sidebar{min-width:0;display:grid;align-content:start;gap:9px;padding:23px 0}
+.cms-module-main{min-width:0}
+.cms-module-link{display:flex;align-items:center;justify-content:space-between;gap:9px;text-decoration:none}
+.cms-module-link-sidebar{padding:14px 15px;background:var(--site-surface);border:1px solid var(--site-border);border-radius:var(--site-radius,8px);color:var(--site-ink);font-size:13px;font-weight:700}
+.cms-module-link-sidebar:hover{border-color:var(--site-accent);color:var(--site-accent)}
+.cms-module-link-government{padding:12px;background:var(--gov-surface);border:1px solid var(--gov-border);border-radius:4px;font-weight:650;font-size:12px;color:var(--gov-blue)}
+.government-module-extra{display:grid;gap:8px;margin-top:12px}
+.cms-module-link-footer{display:inline-flex;gap:5px;font-size:12px;margin:8px 10px 0 0;color:inherit}
+.cms-media-module{padding:35px 0;border-top:1px solid var(--site-border,#ddd)}
+.cms-media-module .section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cms-media-module .section-heading h2{margin:0}
+.cms-media-module .section-heading a{font-size:12px;color:var(--site-accent,#4f83b7)}
+.cms-media-module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:12px;margin-top:17px}
+.cms-media-module-card{display:flex;flex-direction:column;gap:7px;padding:12px;min-width:0;background:var(--site-surface);color:var(--site-ink);border:1px solid var(--site-border);border-radius:var(--site-radius,7px);text-decoration:none}
+.cms-media-module-card img{width:100%;height:100px;object-fit:cover;border-radius:5px}
+.cms-media-module-icon{display:grid;place-items:center;height:100px;font-size:39px;background:color-mix(in srgb,var(--site-accent) 12%,transparent)}
+.cms-media-module-card strong{font-size:13px;line-height:1.35}
+.cms-media-module-card small{font-size:11px;color:var(--site-accent)}
+@media(max-width:900px){.cms-module-layout.cms-has-left.cms-has-right,.cms-module-layout.cms-has-left,.cms-module-layout.cms-has-right{grid-template-columns:minmax(0,1fr)}.cms-module-sidebar{padding:0;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.cms-module-sidebar-left{order:2}.cms-module-sidebar-right{order:3}.cms-module-main{order:1}}
+@media(max-width:680px){.cms-module-row{grid-template-columns:1fr 1fr}.cms-module-row-title{grid-column:1/-1}.cms-modules-catalog{grid-template-columns:1fr}.cms-module-manager{padding:15px}.cms-module-preview-cols{grid-template-columns:1fr 1.5fr 1fr}}
+@media(max-width:400px){.cms-module-row{grid-template-columns:1fr}.cms-module-row-title{grid-column:auto}}
