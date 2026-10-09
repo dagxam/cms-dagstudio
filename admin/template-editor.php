@@ -17,7 +17,8 @@ $sections = template_active_sections();
 <div class="template-gallery">
 <?php foreach ($catalog as $code => $tpl): ?>
   <article class="template-choice box <?=$selectedTemplate===$code?'is-selected':''?>">
-    <div class="template-visual template-visual-<?=h($code)?>" style="--sample-accent:<?=h($tpl['accent'])?>;--sample-bg:<?=h($tpl['background'])?>;--sample-ink:<?=h($tpl['ink'])?>">
+    <?php $samplePalettes=template_design($code)['palettes']; $sampleMode=template_default_mode($code); $sample=$samplePalettes[$sampleMode]; ?>
+    <div class="template-visual template-visual-<?=h($code)?>" style="--sample-accent:<?=h($sample['accent'])?>;--sample-bg:<?=h($sample['background'])?>;--sample-ink:<?=h($sample['ink'])?>">
       <div class="template-mini-top"><span class="template-mini-mark">◈</span><span class="template-mini-lines">━━━━ &nbsp; ━━━ &nbsp; ━━</span></div>
       <div class="template-mini-hero">
         <span class="template-mini-kicker"><?=h($tpl['eyebrow'])?></span>
@@ -25,6 +26,10 @@ $sections = template_active_sections();
         <i></i>
       </div>
       <div class="template-mini-tiles"><span></span><span></span><span></span></div>
+    </div>
+    <div class="template-choice-palettes" aria-label="Цвета светлой и тёмной темы">
+      <span><i style="--swatch:<?=h($samplePalettes['light']['background'])?>"></i> Светлая</span>
+      <span><i style="--swatch:<?=h($samplePalettes['dark']['background'])?>"></i> Тёмная</span>
     </div>
     <div class="template-choice-body">
       <div class="template-choice-name"><h3><?=h($tpl['label'])?></h3>
@@ -67,10 +72,14 @@ $sections = template_active_sections();
           <div class="template-palette-inputs">
             <?php foreach (['accent'=>'Акцентный цвет','background'=>'Фон сайта','ink'=>'Цвет текста','surface'=>'Карточки и меню','border'=>'Границы блоков'] as $key=>$label): ?>
             <label><?=h($label)?><span class="template-palette-color-line">
-              <input type="color" name="palette[<?=h($mode)?>][<?=h($key)?>]" value="<?=h($palette[$key])?>" data-palette-color="<?=h($key)?>">
+              <input type="color" name="palette[<?=h($mode)?>][<?=h($key)?>]" value="<?=h($palette[$key])?>" data-palette-color="<?=h($key)?>" data-default-color="<?=h(template_default_palettes($selectedTemplate)[$mode][$key])?>">
               <span class="template-palette-hex"><?=h(strtoupper($palette[$key]))?></span>
             </span></label>
             <?php endforeach; ?>
+          </div>
+          <div class="template-palette-bottom">
+            <span class="template-palette-contrast" data-palette-contrast></span>
+            <button type="button" class="template-palette-reset" data-palette-reset>Вернуть стандартные цвета</button>
           </div>
         </fieldset>
         <?php endforeach; ?>
