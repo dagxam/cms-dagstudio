@@ -34,10 +34,10 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Панель управления — DAG STUDIO CMS</title>
-<link rel="stylesheet" href="/assets/style.css"></head>
+<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=ornament2"></head>
 <body class="admin-layout">
 <aside class="sidebar">
-<a class="brand" href="/admin/index.php"><span class="brand-icon">D</span> <span>DAG STUDIO <b>CMS</b></span></a>
+<a class="brand" href="/admin/index.php"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span>DAG STUDIO <b>CMS</b></span></a>
 <span class="nav-label">УПРАВЛЕНИЕ</span>
 <a class="nav-item <?=$section==='dashboard'?'active':''?>" href="/admin/index.php">◫ Обзор</a>
 <?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key)) continue; ?>
@@ -50,7 +50,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <a class="nav-item" href="/" target="_blank" rel="noopener">↗ Открыть сайт</a>
 <form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit">Выйти из аккаунта</button></form></div>
 </aside>
-<div class="workspace"><header class="topbar"><span class="topbar-brand">Панель управления <span class="muted">/ <?=h($section==='dashboard'?'Обзор':($types[$section]??ucfirst($section)))?></span></span><span class="user-pill"><?=h($me['name'])?> · <?=h($me['role'])?></span></header>
+<div class="workspace"><header class="topbar"><span class="topbar-brand">Панель управления <span class="muted">/ <?=h($section==='dashboard'?'Обзор':($types[$section]??ucfirst($section)))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button><span class="user-pill"><?=h($me['name'])?> · <?=h($me['role'])?></span></div></header>
 <main class="main">
 <?php if ($flash): ?><div class="notice"><?=h($flash)?></div><?php endif; ?>
 <?php if ($flashError): ?><div class="error"><?=h($flashError)?></div><?php endif; ?>
