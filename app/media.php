@@ -2,7 +2,7 @@
 declare(strict_types=1);
 function cms_media_formats(): array {
  return [
- 'photo'=>['jpg'=>'image/jpeg','png'=>'image/png','webp'=>'image/webp'],
+ 'photo'=>['jpg'=>'image/jpeg','jpeg'=>'image/jpeg','png'=>'image/png','webp'=>'image/webp'],
  'document'=>['pdf'=>'application/pdf','docx'=>'application/vnd.openxmlformats-officedocument.wordprocessingml.document','xlsx'=>'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','pptx'=>'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
  'video'=>['mp4'=>'video/mp4','webm'=>'video/webm'],
  ];
@@ -70,5 +70,6 @@ function cms_media_upload_validation(array $file,string $category): array {
             ($ext==='webm'&&bin2hex(substr($header,0,4))!=='1a45dfa3'))
             throw new RuntimeException('Неверная структура видео.');
     }
+    if($ext==='jpeg')$ext='jpg';
     return [$expected,$ext,$size,$original];
 }
