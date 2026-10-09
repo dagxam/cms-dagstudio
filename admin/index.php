@@ -83,16 +83,36 @@ foreach ($types as $key=>$label) {
 
 <?php elseif ($section==='edit'):
 $row = $record ?: ['title'=>'','slug'=>'','summary'=>'','body'=>'','price'=>'','status'=>'draft'];
+$cover=$record?cms_content_image((int)$record['id']):null;
 ?>
 <div class="eyebrow">РЕДАКТОР МАТЕРИАЛОВ</div>
 <a class="back" href="?section=<?=h($kind)?>">← Вернуться к списку</a>
 <h1><?=$record?'Редактирование':'Новый материал'?></h1>
-<div class="box form-panel"><form method="post" action="/admin/actions.php">
+<div class="box form-panel cms-content-editor"><form method="post" action="/admin/actions.php" enctype="multipart/form-data">
 <?=csrf()?><input type="hidden" name="action" value="save_content">
 <input type="hidden" name="id" value="<?=h((string)($record['id']??0))?>">
 <input type="hidden" name="kind" value="<?=h($kind)?>">
 <label>Название<input required maxlength="250" name="title" value="<?=h($row['title'])?>"></label>
 <label>Адрес страницы (латиницей)<input maxlength="190" name="slug" value="<?=h($row['slug'])?>" placeholder="Создаётся из заголовка автоматически"></label>
+<fieldset class="cms-cover-fieldset">
+<legend>Изображение материала</legend>
+<div class="cms-cover-editor">
+  <div class="cms-cover-editor-preview">
+    <?php if($cover):?><img src="<?=h(cms_content_image_url((int)$record['id'],$cover))?>" alt="<?=h($cover['alt_text']?:$row['title'])?>" loading="lazy">
+    <?php else:?><span class="cms-cover-editor-empty" aria-hidden="true">▧</span><span class="muted">Обложка пока не загружена</span><?php endif;?>
+  </div>
+  <div class="cms-cover-editor-controls">
+    <label>Загрузить обложку (JPG, PNG, WebP)
+      <input name="cover_image" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+    </label>
+    <small class="muted">До 8 МБ. Рекомендуемый формат — горизонтальное изображение 16:9, не менее 1200 × 675 пикселей. На телефонах изображение подстраивается автоматически.</small>
+    <label>Описание фотографии для слабовидящих
+      <input name="cover_alt" maxlength="300" value="<?=h($cover['alt_text']??'')?>" placeholder="Например: открытие нового здания школы">
+    </label>
+    <?php if($cover):?><label class="check"><input type="checkbox" name="remove_cover" value="1"> Удалить текущую обложку</label><?php endif;?>
+  </div>
+</div>
+</fieldset>
 <label>Краткое описание<textarea name="summary" rows="3" maxlength="3000"><?=h($row['summary'])?></textarea></label>
 <label>Текст материала<textarea name="body" rows="13" maxlength="100000"><?=h($row['body'])?></textarea></label>
 <?php if ($kind==='page'): ?>
@@ -108,12 +128,16 @@ $row = $record ?: ['title'=>'','slug'=>'','summary'=>'','body'=>'','price'=>'','
 <?php elseif (isset($types[$section])):
 $q = database()->prepare('SELECT id,title,slug,status,updated_at FROM content WHERE kind=? ORDER BY updated_at DESC LIMIT 100');
 $q->execute([$section]);$rows=$q->fetchAll();
+$covers=cms_content_image_map($rows);
 ?>
 <div class="heading-row"><div><div class="eyebrow">УПРАВЛЕНИЕ КОНТЕНТОМ</div><h1><?=h($types[$section])?></h1>
 <p class="muted">Редактируйте и публикуйте материалы вашего сайта.</p></div>
 <a class="button" href="?section=edit&kind=<?=h($section)?>">+ Добавить</a></div>
-<div class="box table-wrap"><table><thead><tr><th>Материал</th><th>Статус</th><th>Обновлён</th><th>Действия</th></tr></thead>
+<div class="box table-wrap"><table><thead><tr><th>Фото</th><th>Материал</th><th>Статус</th><th>Обновлён</th><th>Действия</th></tr></thead>
 <tbody><?php foreach($rows as $item): ?><tr>
+<td><div class="cms-admin-cover-thumb">
+<?php if(isset($covers[(int)$item['id']])):?><img src="<?=h(cms_content_image_url((int)$item['id'],$covers[(int)$item['id']]))?>" alt="" loading="lazy">
+<?php else:?><span aria-hidden="true">▧</span><?php endif;?></div></td>
 <td><strong><?=h($item['title'])?></strong><small class="muted"><?=h($item['slug'])?></small></td>
 <td><span class="tag <?=$item['status']==='published'?'tag-green':''?>"><?=h($item['status']==='published'?'Опубликовано':'Черновик')?></span></td>
 <td><?=h($item['updated_at'])?></td>
