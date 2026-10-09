@@ -55,6 +55,10 @@ jobs:
           TEST_DB_USER: 'root'
           TEST_DB_PASS: 'testpassword'
         run: php tests/password-recovery.php
+      - name: Тест четырёх шаблонов и конструктора
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/templates.php
 
 
   deploy:
@@ -154,5 +158,6 @@ jobs:
             **/vendor/**
             **/README.md
             **/tests/**
+            **/assets/uploads/logo-*
             **/storage/config.php
             **/storage/*.log
