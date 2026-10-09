@@ -68,7 +68,7 @@ jobs:
           test -n "$FTP_USERNAME" || { echo "Отсутствует FTP_USERNAME"; exit 1; }
           test -n "$FTP_PASSWORD" || { echo "Отсутствует FTP_PASSWORD"; exit 1; }
           test -n "$FTP_SERVER_DIR" || { echo "Не указан FTP_SERVER_DIR"; exit 1; }
-      - name: Безопасная проверка FTPS и точного каталога перед загрузкой
+      - name: Подготовка подтверждённой цепочки сертификатов GlobalSign и проверка FTPS
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -77,22 +77,53 @@ jobs:
           python3 - <<'PY'
           import os
           import ssl
+          import subprocess
+          import urllib.request
+          from pathlib import Path
           from ftplib import FTP_TLS
 
           host = os.environ['FTP_SERVER'].strip()
           if '://' in host or '/' in host or ':' in host:
-              raise SystemExit('Неверный формат FTP_SERVER: укажите только имя сервера')
-          directory = '/www/cms.dagstudio.ru/'
-          try:
-              with FTP_TLS(context=ssl.create_default_context(), timeout=25) as ftp:
-                  ftp.connect(host, 21)
-                  ftp.login(os.environ['FTP_USERNAME'], os.environ['FTP_PASSWORD'])
-                  ftp.prot_p()
-                  ftp.cwd(directory)
-                  ftp.pwd()
-          except Exception as exc:
-              raise SystemExit(f'Защищённая проверка FTPS не пройдена ({type(exc).__name__}): {exc}')
-          print('Проверены TLS-сертификат, вход и доступ к /www/cms.dagstudio.ru/. Можно передавать файлы.')
+              raise SystemExit('Неверный формат FTP_SERVER: только имя сервера')
+          issuer_url = 'https://secure.globalsign.com/cacert/gsgccr6alphasslca2025.crt'
+          ca_der = urllib.request.urlopen(issuer_url, timeout=25).read()
+          intermediate = subprocess.run(
+              ['openssl', 'x509', '-inform', 'DER', '-outform', 'PEM'],
+              input=ca_der, capture_output=True, check=True).stdout
+
+          # Получаем только публичный сертификат. На этом этапе пароль не передаётся.
+          with FTP_TLS(context=ssl._create_unverified_context(), timeout=20) as probe:
+              probe.connect(host, 21)
+              probe.auth()
+              leaf = ssl.DER_cert_to_PEM_cert(probe.sock.getpeercert(binary_form=True))
+
+          ca_file = Path('/tmp/dagstudio-ftps-globalsign-intermediate.pem')
+          leaf_file = Path('/tmp/dagstudio-ftps-leaf.pem')
+          ca_file.write_bytes(intermediate)
+          leaf_file.write_text(leaf)
+          verification = subprocess.run(
+              ['openssl', 'verify',
+               '-CAfile', '/etc/ssl/certs/ca-certificates.crt',
+               '-untrusted', str(ca_file),
+               '-verify_hostname', host, str(leaf_file)],
+              capture_output=True, text=True)
+          if verification.returncode != 0:
+              raise SystemExit('Сертификат FTPS не прошёл проверку имени сервера и цепочки к доверенному корню: ' + (verification.stderr + verification.stdout)[:500])
+
+          # Повторное защищённое соединение: с проверкой сертификата, логином и каталогом.
+          ctx = ssl.create_default_context()
+          ctx.load_verify_locations(cafile=str(ca_file))
+          with FTP_TLS(context=ctx, timeout=25) as ftp:
+              ftp.connect(host, 21)
+              ftp.login(os.environ['FTP_USERNAME'], os.environ['FTP_PASSWORD'])
+              ftp.prot_p()
+              ftp.cwd('/www/cms.dagstudio.ru/')
+              ftp.pwd()
+
+          # Следующий шаг запускается в отдельном Node.js процессе.
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as out:
+              out.write(f'NODE_EXTRA_CA_CERTS={ca_file}\\n'.replace('\\\\n', '\\n'))
+          print('FTPS: сертификат, имя сервера, авторизация и каталог назначения проверены.')
           PY
       - name: Передача CMS на хостинг (защищённый FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
@@ -101,6 +132,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
+          security: strict
           port: 21
           local-dir: ./
           server-dir: /www/cms.dagstudio.ru/
