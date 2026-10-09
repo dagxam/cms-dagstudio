@@ -21,7 +21,7 @@ if ($section === 'edit') {
     require_module($kind);
     if (!module_enabled($kind)) { http_response_code(404); exit('Модуль отключён'); }
 } elseif ($section !== 'dashboard') {
-    require_module($section==='accessibility'?'settings':$section);
+    require_module(in_array($section,['accessibility','modules'],true)?'settings':$section);
     if (isset($types[$section]) && !module_enabled($section)) {
         http_response_code(404);
         exit('Модуль отключён');
