@@ -45,6 +45,7 @@ jobs:
           node --check assets/template-palettes.js
           node --check assets/government.js
           node --check assets/accessibility.js
+          node --check assets/content-editor.js
       - name: Smoke-тест базы данных
         env:
           DAG_CMS_TEST_MODE: '1'
