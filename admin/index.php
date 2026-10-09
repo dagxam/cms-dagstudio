@@ -6,7 +6,7 @@ header('X-Robots-Tag: noindex, nofollow');
 $me = require_account();
 $section = (string)($_GET['section'] ?? 'dashboard');
 $types = kinds();
-if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages'],array_keys($types)),true)) $section='dashboard';
+if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages','media','accessibility'],array_keys($types)),true)) $section='dashboard';
 if ($section === 'edit') {
     $id = max(0,(int)($_GET['id'] ?? 0));
     $record = null;
@@ -21,7 +21,7 @@ if ($section === 'edit') {
     require_module($kind);
     if (!module_enabled($kind)) { http_response_code(404); exit('Модуль отключён'); }
 } elseif ($section !== 'dashboard') {
-    require_module($section);
+    require_module($section==='accessibility'?'settings':$section);
     if (isset($types[$section]) && !module_enabled($section)) {
         http_response_code(404);
         exit('Модуль отключён');
@@ -43,9 +43,10 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key)) continue; ?>
 <a class="nav-item <?=($section===$key||($section==='edit'&&$kind===$key))?'active':''?>" href="/admin/index.php?section=<?=h($key)?>"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$key]?> <?=h($label)?></a>
 <?php endforeach; ?>
+<?php if (allowed('media')): ?><a class="nav-item <?=$section==='media'?'active':''?>" href="?section=media">▣ Медиатека</a><?php endif; ?>
 <?php if (allowed('messages')): ?><a class="nav-item <?=$section==='messages'?'active':''?>" href="?section=messages">✉ Обращения</a><?php endif; ?>
 <?php if (allowed('users')): ?><a class="nav-item <?=$section==='users'?'active':''?>" href="?section=users">♙ Пользователи</a><?php endif; ?>
-<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Выбор темы сайта</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
+<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Выбор темы сайта</a><a class="nav-item <?=$section==='accessibility'?'active':''?>" href="?section=accessibility">◉ Доступность и возраст</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
 <div class="sidebar-bottom"><p class="muted">Вы вошли как<br><strong><?=h($me['name'])?></strong></p>
 <a class="nav-item" href="/" target="_blank" rel="noopener">↗ Открыть сайт</a>
 <form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit">Выйти из аккаунта</button></form></div>
@@ -119,6 +120,12 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <?php elseif ($section==='templates'): ?>
 <?php define('DAG_CMS_ADMIN_VIEW',true); require __DIR__ . '/template-editor.php'; ?>
 
+<?php elseif ($section==='media'): ?>
+<?php require __DIR__.'/media-library.php'; ?>
+
+<?php elseif ($section==='accessibility'): ?>
+<?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/accessibility-editor.php'; ?>
+
 <?php elseif ($section==='settings'): ?>
 <div class="eyebrow">ПАРАМЕТРЫ САЙТА</div><h1>Основные настройки</h1>
 <div class="box form-panel"><form method="post" action="/admin/actions.php"><?=csrf()?>
@@ -148,7 +155,7 @@ $rows = database()->query('SELECT id,name,email,role,permissions,active,created_
 <label>Временный пароль (от 12 символов)<input required minlength="12" name="password" type="password" autocomplete="new-password"></label>
 <label>Роль<select name="role"><option value="editor">Редактор (с выбранными правами)</option><option value="admin">Администратор (все права)</option></select></label>
 <fieldset><legend>Разрешённые разделы для редактора</legend>
-<?php foreach($types as $type=>$label): ?><label class="check"><input type="checkbox" name="permissions[]" value="<?=h($type)?>"> <?=h($label)?></label><?php endforeach; ?></fieldset>
+<?php foreach($types as $type=>$label): ?><label class="check"><input type="checkbox" name="permissions[]" value="<?=h($type)?>"> <?=h($label)?></label><?php endforeach; ?><label class="check"><input type="checkbox" name="permissions[]" value="media"> Медиатека (фото, видео, документы)</label></fieldset>
 <button class="button" type="submit">Добавить пользователя</button></form></div>
 
 <?php elseif ($section==='messages'):
