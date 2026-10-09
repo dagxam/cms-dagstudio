@@ -17,6 +17,6 @@ $mime=['jpg'=>'image/jpeg','png'=>'image/png','webp'=>'image/webp'][pathinfo($pa
 if($mime===null){http_response_code(404);exit;}
 header('Content-Type: '.$mime);
 header('Content-Length: '.filesize($path));
-header('Cache-Control: public, max-age=300');
+header($content['status']==='published' ? 'Cache-Control: public, max-age=60' : 'Cache-Control: private, no-store');
 header('X-Content-Type-Options: nosniff');
 if($_SERVER['REQUEST_METHOD']!=='HEAD')readfile($path);
