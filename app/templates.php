@@ -127,7 +127,7 @@ function template_content(?string $forTemplate = null): array
         'feature_1_title'=>'Надёжность', 'feature_1_text'=>'Мы выполняем свои обязательства.',
         'feature_2_title'=>'Качество', 'feature_2_text'=>'Внимание к каждой детали.',
         'feature_3_title'=>'Открытость', 'feature_3_text'=>'Всегда на связи с вами.',
-        'logo_path'=>'', 'header_links'=>[],
+        'logo_path'=>'', 'hero_image_path'=>'', 'header_links'=>[],
     ];
     $maps = json_decode(config_value('template_content_by_type', '{}'), true);
     $data = is_array($maps) && isset($maps[$id]) && is_array($maps[$id])
