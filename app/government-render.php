@@ -21,7 +21,8 @@ if ($search!=='' && mb_strlen($search)<=120) {
     $q->execute([$term,$term,$term]);
     $govResults=array_values(array_filter($q->fetchAll(),static fn(array $item): bool => module_enabled($item['kind'])));
 }
-$govSections=$kind!==''?[$kind]:cms_module_ids('government','main');
+$requestedWidget=(string)($_GET['module']??'');
+$govSections=$kind!==''?[$kind]:((in_array($requestedWidget,['features','contact'],true)&&cms_module_enabled($requestedWidget))?[$requestedWidget]:cms_module_ids('government','main'));
 $govSections=array_values(array_filter($govSections,static fn(string $id):bool=>cms_module_enabled($id)));
 $govLogo=$siteLogo;
 $govBanner=$heroImage;
@@ -164,7 +165,7 @@ if ($search!=='')$govTitle='Результаты поиска';
           <?php if($message!==''):?><div class="notice" role="status"><?=h($message)?></div><?php endif;?>
           <?php if($error!==''):?><div class="error" role="alert"><?=h($error)?></div><?php endif;?>
           <?php if($privacyUrl!==''):?>
-          <form class="government-contact" method="post" action="/#contact"><?=csrf()?>
+          <form class="government-contact" method="post" action="/?module=contact#contact"><?=csrf()?>
             <input type="hidden" name="action" value="contact">
             <div class="honeypot" aria-hidden="true"><label>Сайт<input tabindex="-1" name="website" autocomplete="off"></label></div>
             <label>Ваше имя<input required name="name" maxlength="120" value="<?=h($_POST['name']??'')?>"></label>
