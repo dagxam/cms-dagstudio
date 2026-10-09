@@ -95,9 +95,11 @@ function site_template(): string
     return array_key_exists($selected, template_catalog()) ? $selected : 'company';
 }
 
-function template_design(): array
+function template_design(?string $forTemplate = null): array
 {
-    $preset = template_catalog()[site_template()];
+    $id = ($forTemplate !== null && array_key_exists($forTemplate, template_catalog())) ? $forTemplate : site_template();
+    $preset = template_catalog()[$id];
+    if ($id !== site_template()) return $preset;
     $stored = json_decode(config_value('template_design', '{}'), true);
     if (!is_array($stored)) $stored = [];
     $allowed = ['accent','background','ink','font','hero','cards','header','radius','width'];
@@ -107,9 +109,10 @@ function template_design(): array
     return $preset;
 }
 
-function template_content(): array
+function template_content(?string $forTemplate = null): array
 {
-    $preset = template_catalog()[site_template()];
+    $id = ($forTemplate !== null && array_key_exists($forTemplate, template_catalog())) ? $forTemplate : site_template();
+    $preset = template_catalog()[$id];
     $defaults = [
         'eyebrow'=>$preset['eyebrow'], 'title'=>$preset['title'],
         'description'=>$preset['description_text'],
@@ -136,9 +139,11 @@ function template_content(): array
     return $defaults;
 }
 
-function template_active_sections(): array
+function template_active_sections(?string $forTemplate = null): array
 {
-    $original = template_catalog()[site_template()]['sections'];
+    $id = ($forTemplate !== null && array_key_exists($forTemplate, template_catalog())) ? $forTemplate : site_template();
+    $original = template_catalog()[$id]['sections'];
+    if ($id !== site_template()) return $original;
     $stored = json_decode(config_value('template_sections', ''), true);
     if (!is_array($stored)) return $original;
     $allowed = array_keys(template_sections());
@@ -157,10 +162,11 @@ function template_font_stack(string $font): string
     };
 }
 
-function template_style(array $design): string
+function template_style(array $design, ?string $forTemplate = null): string
 {
     // Значения валидируются перед сохранением и дополнительно проверяются при рендеринге.
-    $default = template_catalog()[site_template()];
+    $id = ($forTemplate !== null && array_key_exists($forTemplate, template_catalog())) ? $forTemplate : site_template();
+    $default = template_catalog()[$id];
     $colors = [];
     foreach (['accent','background','ink'] as $name) {
         $value = (string)$design[$name];
