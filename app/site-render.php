@@ -14,10 +14,10 @@ $siteLogo = $siteContent['logo_path'];
 if (!preg_match('~^/assets/uploads/logo-[a-f0-9]{32}\\.(png|jpg|webp)$~D', $siteLogo)) $siteLogo = '';
 $heroImage = (string)($siteContent['hero_image_path'] ?? '');
 if (!preg_match('~^/assets/uploads/hero-[a-f0-9]{32}\\.(png|jpg|webp)$~D', $heroImage)) $heroImage = '';
-$visibleSections = $kind !== '' ? [$kind] : $layout;
-$visibleSections = array_values(array_filter($visibleSections, static fn(string $s): bool =>
-    $s === 'features' || $s === 'contact' || (array_key_exists($s, $moduleLabels) && module_enabled($s))
-));
+$visibleSections = $kind !== '' ? [$kind] : cms_module_ids($activeTemplate,'main');
+$visibleSections = array_values(array_filter($visibleSections, static fn(string $s): bool => cms_module_enabled($s)));
+$leftModules=cms_module_ids($activeTemplate,'left');
+$rightModules=cms_module_ids($activeTemplate,'right');
 $siteClass = 'site-page site-template-' . $activeTemplate .
     ' site-hero-' . (in_array($design['hero'],['split','banner','official','centered'],true)?$design['hero']:'split') .
     ' site-cards-' . (in_array($design['cards'],['soft','outlined','elevated'],true)?$design['cards']:'soft') .
@@ -58,10 +58,9 @@ if ($activeTemplate === 'government') {
   </a>
   <nav class="site-nav" aria-label="Главное меню">
     <a href="/" <?=$kind===''?'class="current"':''?>>Главная</a>
-    <?php foreach ($moduleLabels as $key=>$label): if(!module_enabled($key))continue; ?>
-    <a href="/?kind=<?=h($key)?>" <?=$kind===$key?'class="current"':''?>><?=h($label)?></a>
+    <?php foreach(cms_module_ids($activeTemplate,'nav') as $id): ?>
+    <a href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
     <?php endforeach;?>
-    <a href="/media.php">Медиатека</a>
     <?php foreach ($navLinks as $link): if(!is_array($link) || !safe_template_url((string)($link['url']??'')))continue; ?>
     <a href="<?=h((string)$link['url'])?>"><?=h((string)($link['label']??''))?></a>
     <?php endforeach;?>
@@ -105,10 +104,13 @@ if ($activeTemplate === 'government') {
     </div>
   </section>
 
-  <div id="materials" class="site-sections">
+  <div id="materials" class="cms-module-layout <?=($leftModules||$rightModules)?'cms-module-layout-with-sidebars':''?> <?=($leftModules?'cms-has-left ':'').($rightModules?'cms-has-right':'')?>">
+  <?php if($leftModules):?><aside class="cms-module-sidebar cms-module-sidebar-left" aria-label="Левая колонка модулей">
+  <?php foreach($leftModules as $id):?><?=cms_module_compact($id,'sidebar')?><?php endforeach;?></aside><?php endif;?>
+  <div class="site-sections cms-module-main">
   <?php foreach($visibleSections as $section): ?>
     <?php if($section==='features'): ?>
-    <section class="section-block site-block site-benefits">
+    <section class="section-block site-block site-benefits" id="features">
       <div class="section-heading"><div><div class="eyebrow">НАШ ПОДХОД</div><h2><?=h($siteContent['features_title'])?></h2></div></div>
       <div class="cards site-feature-cards">
         <?php for($i=1;$i<=3;$i++): ?>
@@ -117,6 +119,8 @@ if ($activeTemplate === 'government') {
         <?php endfor;?>
       </div>
     </section>
+    <?php elseif($section==='media'): ?>
+      <?php cms_module_media_block(); ?>
     <?php elseif($section==='contact'): ?>
     <section class="section-block contact-section site-block" id="contact">
       <div><div class="eyebrow">ОБРАТНАЯ СВЯЗЬ</div><h2><?=h($siteContent['contact_title'])?></h2>
@@ -164,11 +168,15 @@ if ($activeTemplate === 'government') {
     <?php endif;?>
   <?php endforeach;?>
   </div>
+  <?php if($rightModules):?><aside class="cms-module-sidebar cms-module-sidebar-right" aria-label="Правая колонка модулей">
+  <?php foreach($rightModules as $id):?><?=cms_module_compact($id,'sidebar')?><?php endforeach;?></aside><?php endif;?>
+  </div>
 <?php endif;?>
 </main>
 <footer class="site-footer"><div class="container footer-inner"><?=cms_age_mark()?>
   <div><strong><?=h($siteName)?></strong><br><?=h($siteContent['footer_text'])?></div>
-  <div><?=date('Y')?> · Работает на <strong>DAG STUDIO CMS</strong></div>
+  <div><?=date('Y')?> · Работает на <strong>DAG STUDIO CMS</strong>
+  <?php foreach(cms_module_ids($activeTemplate,'footer') as $id):?><?=cms_module_compact($id,'footer')?><?php endforeach;?></div>
 </div></footer>
 <?=cms_age_gate()?>
 </body></html>
