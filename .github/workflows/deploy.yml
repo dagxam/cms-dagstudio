@@ -96,6 +96,18 @@ jobs:
           for type in organization company store government; do
             php tests/render-templates.php "$type"
           done
+      - name: Проверка карточек новостей с фотографиями во всех шаблонах
+        env:
+          DAG_CMS_TEST_MODE: '1'
+          TEST_COVER_IMAGE_TEST: '1'
+          TEST_DB_HOST: '127.0.0.1'
+          TEST_DB_NAME: 'dagcms_test'
+          TEST_DB_USER: 'root'
+          TEST_DB_PASS: 'testpassword'
+        run: |
+          for type in organization company store government; do
+            php tests/render-templates.php "$type"
+          done
       - name: Проверка мест вывода модулей в каждом шаблоне
         env:
           DAG_CMS_TEST_MODE: '1'
