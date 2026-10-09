@@ -93,7 +93,7 @@ try {
             ->execute(['government_layout',json_encode($updated,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
         log_action('government.layout','saved');
         $_SESSION['flash']='Шапка, боковые колонки и содержимое администрации сохранены.';
-        $back='/admin/index.php?section=templates#government-editor';
+        $back='/admin/index.php?section=templates&view=edit&tab=government#government-editor';
     } elseif ($action === 'select_template') {
         require_module('settings');
         $id = (string)($_POST['template'] ?? '');
@@ -144,7 +144,7 @@ try {
         }
         log_action('template.change',$id);
         $_SESSION['flash'] = 'Шаблон «' . template_catalog()[$id]['label'] . '» применён. Материалы и персональные настройки сохранены.';
-        $back='/admin/index.php?section=templates';
+        $back='/admin/index.php?section=templates&view=edit&tab=appearance';
     } elseif ($action === 'save_template_design') {
         require_module('settings');
         $options = [
@@ -191,7 +191,7 @@ try {
         $q->execute(['template_design',json_encode($design,JSON_UNESCAPED_UNICODE)]);
         log_action('template.design', site_template());
         $_SESSION['flash']='Оформление сохранено. Цвета, размеры и стиль обновлены на сайте.';
-        $back='/admin/index.php?section=templates';
+        $back='/admin/index.php?section=templates&view=edit&tab=appearance';
     } elseif ($action === 'save_template_content') {
         require_module('settings');
         $limits = [
@@ -290,7 +290,7 @@ try {
         $q->execute(['template_content',json_encode($values,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
         log_action('template.content',site_template());
         $_SESSION['flash']='Тексты, бренд и меню обновлены.';
-        $back='/admin/index.php?section=templates';
+        $back='/admin/index.php?section=templates&view=edit&tab=content';
     } elseif ($action === 'save_template_sections') {
         require_module('settings');
         $enabled=$_POST['active_sections']??[];
@@ -311,7 +311,7 @@ try {
         $q->execute(['template_sections',json_encode($enabled)]);
         log_action('template.sections',implode(',',$enabled));
         $_SESSION['flash']='Порядок и видимость блоков сохранены.';
-        $back='/admin/index.php?section=templates';
+        $back='/admin/index.php?section=templates&view=edit&tab=blocks';
     } elseif ($action === 'save_content') {
         $kind = (string)($_POST['kind'] ?? '');
         if (!array_key_exists($kind, kinds())) throw new RuntimeException('Неизвестный раздел');
