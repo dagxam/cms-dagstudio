@@ -32,7 +32,9 @@ if(getenv('TEST_MODULE_LAYOUT_TEST')==='1') {
         'news'=>['area'=>'left','order'=>20],
         'service'=>['area'=>'nav','order'=>30],
         'product'=>['area'=>'footer','order'=>40],
-        'media'=>['area'=>'main','order'=>50],
+        'photos'=>['area'=>'main','order'=>50],
+        'documents'=>['area'=>'nav','order'=>55],
+        'videos'=>['area'=>'nav','order'=>56],
         'features'=>['area'=>'main','order'=>10],
         'contact'=>['area'=>'main','order'=>60],
     ];
