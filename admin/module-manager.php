@@ -20,7 +20,7 @@ $enabled=cms_enabled_module_keys();
   <div class="cms-modules-catalog">
    <?php foreach($catalog as $id=>$mod): ?>
    <label class="cms-modules-option">
-    <span class="cms-modules-icon" aria-hidden="true"><?=h(['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦','media'=>'▧','features'=>'✧','contact'=>'✉'][$id])?></span>
+    <span class="cms-modules-icon" aria-hidden="true"><?=h(['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦','documents'=>'▤','photos'=>'▧','videos'=>'▶','features'=>'✧','contact'=>'✉'][$id])?></span>
     <span class="cms-modules-info"><strong><?=h($mod['label'])?></strong><small><?=h($mod['description'])?></small></span>
     <input type="checkbox" name="enabled[]" value="<?=h($id)?>" <?=in_array($id,$enabled,true)?'checked':''?>>
    </label>
