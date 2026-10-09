@@ -63,4 +63,15 @@ $db->prepare('UPDATE cms_video_links SET title=?,status=? WHERE id=?')->execute(
 $q=$db->prepare('SELECT title FROM cms_video_links WHERE id=? AND status=?');
 $q->execute([$videoId,'published']);
 check($q->fetchColumn()==='Обновлённое видео','Внешнее видео можно редактировать и публиковать');
+check((int)$db->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='content_images'")->fetchColumn()===1,
+    'Таблица обложек создана');
+$newsId=(int)$db->query("SELECT id FROM content WHERE slug='test-news'")->fetchColumn();
+$db->prepare('INSERT INTO content_images(content_id,filename,alt_text) VALUES(?,?,?)')
+   ->execute([$newsId,str_repeat('b',32).'.jpg','Изображение тестовой новости']);
+$q=$db->prepare('SELECT alt_text FROM content_images WHERE content_id=?');
+$q->execute([$newsId]);
+check($q->fetchColumn()==='Изображение тестовой новости','Обложка привязана к правильному материалу');
+check(str_contains(cms_content_image_url($newsId,['updated_at'=>'2026-10-09 12:00:00']),'content-image.php?id='.$newsId),
+    'Публичный адрес обложки создаётся корректно');
+check(cms_content_image_file('../config.php')===null,'Обход каталога хранения отклоняется');
 echo "DAG STUDIO CMS: smoke-тест успешно завершён.\n";
