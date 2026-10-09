@@ -12,6 +12,11 @@ $mediaId=max(0,(int)($_GET['file']??0));
 $showId=max(0,(int)($_GET['view']??0));
 $preview=account()!==null && allowed('media');
 $externalId=max(0,(int)($_GET['external']??0));
+if(!$mediaId && !$showId && !$externalId && $requestedCategory===''){
+    foreach(['documents'=>'document','photos'=>'photo','videos'=>'video'] as $module=>$category){
+        if(cms_module_enabled($module))go('/media.php?type='.$category);
+    }
+}
 $external=null;
 if($externalId){
     cms_video_table();
