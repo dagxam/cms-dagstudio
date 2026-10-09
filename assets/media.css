@@ -70,3 +70,9 @@ body.cms-age-modal-open{overflow:hidden}
 .cms-media-admin-actions form input,.cms-media-admin-actions form textarea,.cms-media-admin-actions form select{width:100%}
 .government-leader-initials{font-size:17px!important}.government-leader-fullname{padding-top:3px!important;font-size:12px!important}
 @media(max-width:700px){.cms-media-page .cms-media-header{padding:13px}.cms-media-page .cms-media-public{margin:18px auto}.cms-media-grid{grid-template-columns:1fr}}
+
+.cms-skip-link{position:fixed;top:0;left:20px;transform:translateY(-160%);z-index:10000;padding:13px 20px;border-radius:0 0 8px 8px;background:#fefefe;color:#101010!important;outline:3px solid #101010;font-weight:800}
+.cms-skip-link:focus{transform:translateY(0)}
+.cms-media-header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cms-media-page.cms-vision-active .cms-media-header,.cms-media-page.cms-vision-active .cms-media-tile{background:var(--vision-bg);color:var(--vision-ink)}
+@media(max-width:610px){.cms-media-header{flex-wrap:wrap}.cms-media-header strong{order:-1;width:100%}}
