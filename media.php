@@ -89,7 +89,7 @@ $rating=cms_age_rating();
 <html lang="ru" data-theme-storage-key="dagstudio-template-<?=h(site_template())?>" data-theme-default="<?=h(template_default_mode(site_template()))?>"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?=h($item['title']??($external['title']??['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'][$requestedCategory]??'Разделы сайта'))?> — <?=h(config_value('site_name','DAG STUDIO CMS'))?></title>
 <meta name="robots" content="index,follow"><link rel="stylesheet" href="/assets/style.css?v=media1">
-<link rel="stylesheet" href="/assets/media.css?v=legal2">
+<link rel="stylesheet" href="/assets/media.css?v=legal3">
 <script>try{const k='dagstudio-template-<?=h(site_template())?>';const t=localStorage.getItem(k);document.documentElement.dataset.theme=t==='light'||t==='dark'?t:'<?=h(template_default_mode(site_template()))?>'}catch(e){document.documentElement.dataset.theme='<?=h(template_default_mode(site_template()))?>'}</script>
 <script src="/assets/theme.js?v=modules7" defer></script>
 <script src="/assets/accessibility.js?v=legal2" defer></script></head>
