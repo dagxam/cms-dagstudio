@@ -43,7 +43,7 @@ check_mod(in_array('photos',cms_module_ids('store','main'),true),'Медиате
 check_mod(!in_array('news',cms_module_ids('government','nav'),true),'Размещения не смешиваются между темами');
 $cfg['cms_modules_enabled']='["page","photos","contact"]';
 check_mod(!cms_module_enabled('news') && cms_module_ids('government','left')===['page'],'Выключенный модуль исчезает из всех зон');
-check_mod(cms_module_enabled('media'),'Включённые модули продолжают работать');
+check_mod(cms_module_enabled('photos'),'Включённые модули продолжают работать');
 check_mod(str_contains(cms_module_compact('photos'),'href="/media.php?type=photo"'),'Ссылка на модуль формируется безопасно');
 check_mod(str_contains(cms_module_compact('contact'),'/?module=contact'),'Вынесенная форма контактов доступна как отдельная страница');
 $cfg['cms_modules_enabled']='["photos","contact","news","page"]';
