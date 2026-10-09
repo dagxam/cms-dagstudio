@@ -99,8 +99,10 @@ function template_design(?string $forTemplate = null): array
 {
     $id = ($forTemplate !== null && array_key_exists($forTemplate, template_catalog())) ? $forTemplate : site_template();
     $preset = template_catalog()[$id];
-    if ($id !== site_template()) return $preset;
-    $stored = json_decode(config_value('template_design', '{}'), true);
+    $maps = json_decode(config_value('template_design_by_type', '{}'), true);
+    $stored = is_array($maps) && isset($maps[$id]) && is_array($maps[$id])
+        ? $maps[$id]
+        : ($id === site_template() ? json_decode(config_value('template_design', '{}'), true) : []);
     if (!is_array($stored)) $stored = [];
     $allowed = ['accent','background','ink','font','hero','cards','header','radius','width'];
     foreach ($allowed as $key) {
@@ -143,8 +145,10 @@ function template_active_sections(?string $forTemplate = null): array
 {
     $id = ($forTemplate !== null && array_key_exists($forTemplate, template_catalog())) ? $forTemplate : site_template();
     $original = template_catalog()[$id]['sections'];
-    if ($id !== site_template()) return $original;
-    $stored = json_decode(config_value('template_sections', ''), true);
+    $maps = json_decode(config_value('template_sections_by_type', '{}'), true);
+    $stored = is_array($maps) && isset($maps[$id]) && is_array($maps[$id])
+        ? $maps[$id]
+        : ($id === site_template() ? json_decode(config_value('template_sections', ''), true) : null);
     if (!is_array($stored)) return $original;
     $allowed = array_keys(template_sections());
     return array_values(array_unique(array_filter(
