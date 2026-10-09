@@ -179,7 +179,8 @@ if ($search!=='')$govTitle='Результаты поиска';
     <section class="government-widget government-leader">
       <h2><?=h($gov['leader_title'])?></h2>
       <?php if($gov['leader_image']!==''):?><img class="government-leader-photo" src="<?=h($gov['leader_image'])?>" alt="Фото руководителя" loading="lazy"><?php endif;?>
-      <?php if($gov['leader_name']!==''):?><strong><?=h($gov['leader_name'])?></strong><?php endif;?>
+      <?php if($gov['leader_initials']!==''):?><strong class="government-leader-initials"><?=h($gov['leader_initials'])?></strong><?php endif;?>
+      <?php if($gov['leader_name']!==''):?><p class="government-leader-fullname"><?=h($gov['leader_name'])?></p><?php endif;?>
       <?php if($gov['leader_description']!==''):?><p><?=h($gov['leader_description'])?></p><?php endif;?>
     </section>
     <?php endif;?>
