@@ -59,6 +59,11 @@ if ($activeTemplate === 'government') {
   </a>
   <nav class="site-nav" aria-label="Главное меню">
     <a href="/" <?=$kind===''?'class="current"':''?>>Главная</a>
+    <?php if(!cms_module_layout_configured($activeTemplate)): ?>
+    <?php foreach($moduleLabels as $key=>$label):if(!module_enabled($key))continue;?>
+      <a href="/?kind=<?=h($key)?>"><?=h($label)?></a>
+    <?php endforeach;?>
+    <?php endif;?>
     <?php foreach(cms_module_ids($activeTemplate,'nav') as $id): ?>
     <a href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
     <?php endforeach;?>
