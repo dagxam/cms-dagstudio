@@ -116,6 +116,7 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <label>Название сайта<input name="site_name" required maxlength="150" value="<?=h(config_value('site_name'))?>"></label>
 <label>Описание сайта<textarea name="site_description" maxlength="300" rows="3"><?=h(config_value('site_description'))?></textarea></label>
 <label>Контактный e-mail<input name="contact_email" type="email" required value="<?=h(config_value('contact_email'))?>"></label>
+<label>URL политики обработки персональных данных<input name="privacy_url" maxlength="500" placeholder="/?p=privacy" value="<?=h(config_value('privacy_url'))?>"></label><p class="muted">Пока этот адрес не задан, форма обращений отключена.</p>
 <label>Тип сайта<select name="site_type">
 <?php foreach(['government'=>'Администрация','company'=>'Компания','organization'=>'Организация','store'=>'Интернет-магазин'] as $type=>$label):?>
 <option value="<?=h($type)?>" <?=config_value('site_type')===$type?'selected':''?>><?=h($label)?></option><?php endforeach;?>
