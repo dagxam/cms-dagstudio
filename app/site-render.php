@@ -25,7 +25,7 @@ $siteClass = 'site-page site-template-' . $activeTemplate .
 $navLinks = $siteContent['header_links'];
 ?>
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme-storage-key="dagstudio-template-<?=h($activeTemplate)?>" data-theme-default="<?=h(template_default_mode($activeTemplate))?>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -33,7 +33,7 @@ $navLinks = $siteContent['header_links'];
   <meta name="theme-color" content="<?=h($design['palettes'][template_default_mode($activeTemplate)]['background'])?>">
   <title><?=h($metaTitle)?></title>
   <link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg">
-  <script>var dagDefaultTheme=<?=json_encode(in_array($activeTemplate,['organization','store','government'],true)?'light':'dark')?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-cms-theme");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
+  <script>var dagDefaultTheme=<?=json_encode(template_default_mode($activeTemplate))?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-template-<?=h($activeTemplate)?>");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
   <script src="/assets/theme.js" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=templates3">
   <link rel="stylesheet" href="/assets/templates.css?v=templates3">
