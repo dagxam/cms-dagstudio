@@ -36,3 +36,39 @@ function cms_media_get(int $id,bool $onlyPublished=true): ?array {
  return $q->fetch()?:null;
 }
 function cms_media_age_valid(string $value): bool {return in_array($value,['0+','6+','12+','16+','18+'],true);}
+
+function cms_media_upload_validation(array $file,string $category): array {
+    $formats=cms_media_formats()[$category]??null;
+    if(!$formats)throw new RuntimeException('Неверная категория файла.');
+    if(($file['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_OK || !is_uploaded_file((string)($file['tmp_name']??'')))
+        throw new RuntimeException('Ошибка загрузки. Проверьте ограничения размера файлов на хостинге.');
+    $size=(int)($file['size']??0);
+    $max=['photo'=>8,'document'=>20,'video'=>50][$category]*1024*1024;
+    if($size<1||$size>$max)throw new RuntimeException('Размер превышает '.(int)($max/1048576).' МБ.');
+    $original=mb_substr((string)($file['name']??'material'),0,190);
+    $ext=strtolower(pathinfo($original,PATHINFO_EXTENSION));
+    if(!isset($formats[$ext]))throw new RuntimeException('Формат файла не разрешён.');
+    $mime=(new finfo(FILEINFO_MIME_TYPE))->file((string)$file['tmp_name']);
+    $expected=$formats[$ext];
+    if(in_array($ext,['docx','pptx','xlsx'],true)){
+        if(!in_array($mime,['application/zip','application/octet-stream',$expected],true))
+            throw new RuntimeException('Некорректный Office-документ.');
+        $signature=file_get_contents((string)$file['tmp_name'],false,null,0,2);
+        if($signature!=='PK')throw new RuntimeException('Файл Office не является ZIP-пакетом.');
+    }elseif($mime!==$expected&&!($ext==='mp4'&&$mime==='application/octet-stream')){
+        throw new RuntimeException('Тип содержимого файла не совпадает с расширением.');
+    }
+    if($category==='photo'){
+        $dimensions=@getimagesize((string)$file['tmp_name']);
+        if(!$dimensions||($dimensions[0]??0)<1||($dimensions[1]??0)<1||
+            $dimensions[0]>6500||$dimensions[1]>6500)
+            throw new RuntimeException('Недопустимые размеры изображения.');
+    }
+    if($category==='video'){
+        $header=file_get_contents((string)$file['tmp_name'],false,null,0,16);
+        if(!is_string($header)||($ext==='mp4'&&substr($header,4,4)!=='ftyp')||
+            ($ext==='webm'&&bin2hex(substr($header,0,4))!=='1a45dfa3'))
+            throw new RuntimeException('Неверная структура видео.');
+    }
+    return [$expected,$ext,$size,$original];
+}
