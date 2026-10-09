@@ -65,15 +65,15 @@ $metaDescription = $record ? ($record['summary'] ?: $siteDescription) : $siteDes
 ?><!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="<?=h(mb_substr($metaDescription,0,250))?>">
-<title><?=h($metaTitle)?></title><link rel="stylesheet" href="/assets/style.css"></head>
+<title><?=h($metaTitle)?></title><link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=ornament2"></head>
 <body class="site-page">
 <header class="site-header"><div class="container header-inner">
-<a class="brand" href="/"><span class="brand-icon">D</span> <span><?=h($siteName)?></span></a>
+<a class="brand" href="/"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span><?=h($siteName)?></span></a>
 <nav class="site-nav"><a href="/">Главная</a>
 <?php foreach ($types as $key=>$label): ?>
 <a href="/?kind=<?=h($key)?>" class="<?=$kind===$key?'current':''?>"><?=h($label)?></a>
 <?php endforeach;?></nav>
-<a class="small-link" href="/admin/login.php">Вход</a></div></header>
+<div class="header-actions"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button><a class="small-link" href="/admin/login.php">Вход</a></div></div></header>
 <main class="container">
 <?php if ($record): ?>
 <section class="article-page"><a class="back" href="/?kind=<?=h($record['kind'])?>">← Назад к разделу</a>
