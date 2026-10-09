@@ -41,6 +41,26 @@ $mediaLinks=$mediaType==='video'?cms_video_links(false):[];
 <?php foreach($mediaLinks as $video):?><article class="box cms-media-admin-item"><div class="cms-media-admin-heading"><strong><?=h($video['title'])?></strong><span class="tag <?=$video['status']==='published'?'tag-green':''?>"><?=h($video['status'])?></span></div>
 <p class="muted"><?=h(strtoupper($video['provider']))?> · <?=h($video['age_rating'])?></p>
 <a href="/media.php?type=video&amp;external=<?=(int)$video['id']?>" target="_blank" rel="noopener">Просмотр ↗</a>
+<details class="cms-media-video-editor">
+<summary>Редактировать видео и публикацию</summary>
+<form method="post" action="/admin/actions.php">
+<?=csrf()?><input type="hidden" name="action" value="save_video_link">
+<input type="hidden" name="video_id" value="<?=(int)$video['id']?>">
+<label>Название<input required name="title" maxlength="190" value="<?=h($video['title'])?>"></label>
+<label>Ссылка VK Видео / Rutube<input required name="video_url" type="url" maxlength="500" value="<?=h($video['original_url'])?>"></label>
+<label>Описание<textarea name="description" rows="3" maxlength="2000"><?=h((string)($video['description']??''))?></textarea></label>
+<div class="two">
+<label>Возрастная категория<select name="age_rating"><?php foreach(['0+','6+','12+','16+','18+'] as $age):?>
+<option value="<?=h($age)?>" <?=$video['age_rating']===$age?'selected':''?>><?=h($age)?></option>
+<?php endforeach;?></select></label>
+<label>Публикация<select name="status">
+<option value="draft" <?=$video['status']==='draft'?'selected':''?>>Черновик</option>
+<option value="published" <?=$video['status']==='published'?'selected':''?>>Опубликовано</option>
+</select></label>
+</div>
+<button class="button" type="submit">Сохранить изменения</button>
+</form>
+</details>
 <form method="post" action="/admin/actions.php" onsubmit="return confirm('Удалить ссылку на это видео?')"><?=csrf()?><input type="hidden" name="action" value="delete_video_link"><input type="hidden" name="video_id" value="<?=(int)$video['id']?>"><button class="link-danger" type="submit">Удалить ссылку</button></form></article><?php endforeach;?></div><?php endif;?>
 <?php endif;?>
 <h2>Загруженные материалы</h2>
