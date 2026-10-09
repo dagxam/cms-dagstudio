@@ -30,7 +30,7 @@ jobs:
           import sys
           from ftplib import FTP_TLS
 
-          required = ('FTP_SERVER', 'FTP_USERNAME', 'FTP_PASSWORD', 'FTP_SERVER_DIR')
+          required = ('FTP_SERVER', 'FTP_USERNAME', 'FTP_PASSWORD')
           missing = [name for name in required if not os.environ.get(name, '').strip()]
           summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
 
@@ -59,15 +59,22 @@ jobs:
                   ftp.connect(host, 21)
                   ftp.login(os.environ['FTP_USERNAME'], os.environ['FTP_PASSWORD'])
                   ftp.prot_p()
-                  ftp.cwd(remote_dir)
+                  if remote_dir:
+                      ftp.cwd(remote_dir)
                   ftp.pwd()
           except Exception as exc:
               print(f'ОШИБКА FTPS: {type(exc).__name__}: {exc}')
               summary('❌ FTPS-подключение, авторизация или доступ к каталогу не подтверждены. Смотрите лог шага.')
               sys.exit(1)
 
-          print('УСПЕХ: защищённое соединение, вход и доступ к каталогу подтверждены. Файлы не загружались.')
-          summary('✅ Установлено защищённое соединение по FTPS, выполнен вход и открыт каталог назначения.')
+          print('УСПЕХ: защищённое соединение FTPS и авторизация подтверждены. Файлы не загружались.')
+          summary('✅ Установлено защищённое соединение FTPS и выполнен вход.')
+          if remote_dir:
+              print('Каталог назначения доступен.')
+              summary('✅ Каталог FTP_SERVER_DIR доступен.')
+          else:
+              print('ВНИМАНИЕ: FTP_SERVER_DIR отсутствует, каталог назначения не проверен.')
+              summary('⚠️ FTP_SERVER_DIR не задан: каталог назначения не проверен.')
           summary('ℹ️ Проверка не изменяла файлы и не подтверждает право записи.')
           enabled = os.environ.get('FTP_ENABLED', '').strip().lower() == 'true'
           if enabled:
