@@ -53,3 +53,20 @@ CREATE TABLE IF NOT EXISTS audit_log (
  target VARCHAR(190) NOT NULL,
  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cms_media (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ category ENUM('photo','document','video') NOT NULL,
+ title VARCHAR(190) NOT NULL,
+ description TEXT NULL,
+ alt_text VARCHAR(300) NOT NULL DEFAULT '',
+ age_rating ENUM('0+','6+','12+','16+','18+') NOT NULL DEFAULT '0+',
+ status ENUM('draft','published') NOT NULL DEFAULT 'draft',
+ filename VARCHAR(100) NOT NULL,
+ original_name VARCHAR(190) NOT NULL,
+ mime VARCHAR(150) NOT NULL,
+ size_bytes BIGINT UNSIGNED NOT NULL,
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ KEY idx_media_status(status,category,created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
