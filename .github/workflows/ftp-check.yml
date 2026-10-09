@@ -1,0 +1,77 @@
+name: Диагностика FTPS без загрузки файлов
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/ftp-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  connection:
+    name: Проверка соединения FTPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    environment: production
+    steps:
+      - name: Проверка FTPS, учётной записи и каталога без изменения файлов
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER_DIR: ${{ vars.FTP_SERVER_DIR }}
+          FTP_ENABLED: ${{ vars.FTP_ENABLED }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import ssl
+          import sys
+          from ftplib import FTP_TLS
+
+          required = ('FTP_SERVER', 'FTP_USERNAME', 'FTP_PASSWORD', 'FTP_SERVER_DIR')
+          missing = [name for name in required if not os.environ.get(name, '').strip()]
+          summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
+
+          def summary(line):
+              if summary_path:
+                  with open(summary_path, 'a', encoding='utf-8') as out:
+                      out.write(line + '\n')
+
+          summary('## Диагностика FTP-подключения DAG STUDIO CMS')
+          if missing:
+              message = 'Не настроены параметры: ' + ', '.join(missing)
+              print('ОШИБКА: ' + message)
+              summary('❌ ' + message)
+              sys.exit(1)
+
+          host = os.environ['FTP_SERVER'].strip()
+          remote_dir = os.environ['FTP_SERVER_DIR'].strip()
+          if '://' in host or '/' in host or ':' in host:
+              print('ОШИБКА: FTP_SERVER должен содержать только доменное имя сервера (без схемы, пути и порта).')
+              summary('❌ Некорректный формат FTP_SERVER')
+              sys.exit(1)
+
+          print('Подключение по явному FTPS/TLS на порт 21…')
+          try:
+              with FTP_TLS(context=ssl.create_default_context(), timeout=25) as ftp:
+                  ftp.connect(host, 21)
+                  ftp.login(os.environ['FTP_USERNAME'], os.environ['FTP_PASSWORD'])
+                  ftp.prot_p()
+                  ftp.cwd(remote_dir)
+                  ftp.pwd()
+          except Exception as exc:
+              print(f'ОШИБКА FTPS: {type(exc).__name__}: {exc}')
+              summary('❌ FTPS-подключение, авторизация или доступ к каталогу не подтверждены. Смотрите лог шага.')
+              sys.exit(1)
+
+          print('УСПЕХ: защищённое соединение, вход и доступ к каталогу подтверждены. Файлы не загружались.')
+          summary('✅ Установлено защищённое соединение по FTPS, выполнен вход и открыт каталог назначения.')
+          summary('ℹ️ Проверка не изменяла файлы и не подтверждает право записи.')
+          enabled = os.environ.get('FTP_ENABLED', '').strip().lower() == 'true'
+          if enabled:
+              summary('✅ FTP_ENABLED=true: автоматический деплой разрешён.')
+          else:
+              summary('⚠️ FTP_ENABLED не равен true: автоматический деплой при push будет пропущен.')
+          PY
