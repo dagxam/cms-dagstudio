@@ -6,7 +6,7 @@ header('X-Robots-Tag: noindex, nofollow');
 $me = require_account();
 $section = (string)($_GET['section'] ?? 'dashboard');
 $types = kinds();
-if (!in_array($section, array_merge(['dashboard','edit','settings','users','messages'],array_keys($types)),true)) $section='dashboard';
+if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages'],array_keys($types)),true)) $section='dashboard';
 if ($section === 'edit') {
     $id = max(0,(int)($_GET['id'] ?? 0));
     $record = null;
@@ -45,7 +45,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <?php endforeach; ?>
 <?php if (allowed('messages')): ?><a class="nav-item <?=$section==='messages'?'active':''?>" href="?section=messages">✉ Обращения</a><?php endif; ?>
 <?php if (allowed('users')): ?><a class="nav-item <?=$section==='users'?'active':''?>" href="?section=users">♙ Пользователи</a><?php endif; ?>
-<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
+<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Шаблоны и дизайн</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
 <div class="sidebar-bottom"><p class="muted">Вы вошли как<br><strong><?=h($me['name'])?></strong></p>
 <a class="nav-item" href="/" target="_blank" rel="noopener">↗ Открыть сайт</a>
 <form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit">Выйти из аккаунта</button></form></div>
@@ -71,7 +71,7 @@ foreach ($types as $key=>$label) {
 <span class="muted"><?=h($types[$key])?></span><strong><?=number_format($count,0,',',' ')?></strong><span class="stat-link">Перейти в раздел ↗</span></a><?php endforeach; ?>
 </div>
 <div class="box welcome"><h2>Ваш сайт под контролем</h2>
-<p class="muted">Начните с создания страницы или новости. Для новой установки выберите тип сайта в разделе настроек.</p>
+<p class="muted">Начните с создания страницы или новости. В разделе «Шаблоны и дизайн» выберите оформление и настройте главную страницу.</p>
 <?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key))continue;?>
 <a class="button button-outline" href="?section=edit&kind=<?=h($key)?>">+ <?=h($label)?></a>
 <?php endforeach; ?></div>
@@ -116,6 +116,9 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <?php endforeach; ?></tbody></table>
 <?php if(!$rows): ?><p class="empty">Материалов пока нет. Создайте первую запись.</p><?php endif; ?></div>
 
+<?php elseif ($section==='templates'): ?>
+<?php define('DAG_CMS_ADMIN_VIEW',true); require __DIR__ . '/template-editor.php'; ?>
+
 <?php elseif ($section==='settings'): ?>
 <div class="eyebrow">ПАРАМЕТРЫ САЙТА</div><h1>Основные настройки</h1>
 <div class="box form-panel"><form method="post" action="/admin/actions.php"><?=csrf()?>
@@ -124,10 +127,7 @@ $q->execute([$section]);$rows=$q->fetchAll();
 <label>Описание сайта<textarea name="site_description" maxlength="300" rows="3"><?=h(config_value('site_description'))?></textarea></label>
 <label>Контактный e-mail<input name="contact_email" type="email" required value="<?=h(config_value('contact_email'))?>"></label>
 <label>URL политики обработки персональных данных<input name="privacy_url" maxlength="500" placeholder="/?p=privacy" value="<?=h(config_value('privacy_url'))?>"></label><p class="muted">Пока этот адрес не задан, форма обращений отключена.</p>
-<label>Тип сайта<select name="site_type">
-<?php foreach(['government'=>'Администрация','company'=>'Компания','organization'=>'Организация','store'=>'Интернет-магазин'] as $type=>$label):?>
-<option value="<?=h($type)?>" <?=config_value('site_type')===$type?'selected':''?>><?=h($label)?></option><?php endforeach;?>
-</select></label>
+<div class="settings-template-note"><strong>Текущий тип: <?=h(template_catalog()[site_template()]['label'])?></strong><p class="muted">Тип и оформление сайта меняются в разделе <a href="?section=templates">«Шаблоны и дизайн»</a>.</p><input type="hidden" name="site_type" value="<?=h(config_value('site_type'))?>"></div>
 <fieldset><legend>Активные модули сайта</legend>
 <?php foreach($types as $type=>$label): ?>
 <label class="check"><input type="checkbox" name="modules[]" value="<?=h($type)?>" <?=module_enabled($type)?'checked':''?>> <?=h($label)?></label>
