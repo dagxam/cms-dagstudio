@@ -178,7 +178,7 @@ function template_sections(): array
 function safe_template_url(string $url): bool
 {
     if ($url === '') return true;
-    if (str_starts_with($url, '//') || preg_match('/[\x00-\x20\x7f]/', $url)) return false;
+    if (str_starts_with($url, '//') || str_contains($url, chr(92)) || preg_match('/[\x00-\x20\x7f]/', $url)) return false;
     if ($url[0] === '/') return true;
     if ($url[0] === '#') return (bool)preg_match('/^#[A-Za-z0-9_-]+$/', $url);
     if (!preg_match('~^https://~i', $url)) return false;
