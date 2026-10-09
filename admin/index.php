@@ -45,7 +45,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <?php endforeach; ?>
 <?php if (allowed('messages')): ?><a class="nav-item <?=$section==='messages'?'active':''?>" href="?section=messages">✉ Обращения</a><?php endif; ?>
 <?php if (allowed('users')): ?><a class="nav-item <?=$section==='users'?'active':''?>" href="?section=users">♙ Пользователи</a><?php endif; ?>
-<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Шаблоны и дизайн</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
+<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Выбор темы сайта</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
 <div class="sidebar-bottom"><p class="muted">Вы вошли как<br><strong><?=h($me['name'])?></strong></p>
 <a class="nav-item" href="/" target="_blank" rel="noopener">↗ Открыть сайт</a>
 <form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit">Выйти из аккаунта</button></form></div>
