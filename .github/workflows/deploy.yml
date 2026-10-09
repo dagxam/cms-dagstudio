@@ -1,0 +1,67 @@
+name: Проверка и публикация DAG STUDIO CMS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dagcms-production
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Проверка PHP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получение файлов проекта
+        uses: actions/checkout@v4
+      - name: Установка PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: none
+          coverage: none
+      - name: Проверка синтаксиса всех PHP-файлов
+        run: find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n 1 php -l
+
+  deploy:
+    name: Загрузка сайта по FTPS
+    needs: check
+    if: github.event_name == 'workflow_dispatch' || vars.FTP_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Получение проверенной версии
+        uses: actions/checkout@v4
+      - name: Проверка переменных подключения
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          test -n "$FTP_SERVER" || { echo "Отсутствует FTP_SERVER"; exit 1; }
+          test -n "$FTP_USERNAME" || { echo "Отсутствует FTP_USERNAME"; exit 1; }
+          test -n "$FTP_PASSWORD" || { echo "Отсутствует FTP_PASSWORD"; exit 1; }
+      - name: Передача CMS на хостинг (защищённый FTPS)
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./
+          server-dir: ${{ vars.FTP_SERVER_DIR || './' }}
+          log-level: minimal
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/node_modules/**
+            **/vendor/**
+            **/README.md
+            **/tests/**
