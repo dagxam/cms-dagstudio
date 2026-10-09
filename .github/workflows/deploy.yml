@@ -62,10 +62,12 @@ jobs:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER_DIR: ${{ vars.FTP_SERVER_DIR }}
         run: |
           test -n "$FTP_SERVER" || { echo "Отсутствует FTP_SERVER"; exit 1; }
           test -n "$FTP_USERNAME" || { echo "Отсутствует FTP_USERNAME"; exit 1; }
           test -n "$FTP_PASSWORD" || { echo "Отсутствует FTP_PASSWORD"; exit 1; }
+          test -n "$FTP_SERVER_DIR" || { echo "Не указан FTP_SERVER_DIR"; exit 1; }
       - name: Передача CMS на хостинг (защищённый FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
@@ -75,7 +77,7 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./
-          server-dir: ${{ vars.FTP_SERVER_DIR || './' }}
+          server-dir: ${{ vars.FTP_SERVER_DIR }}
           log-level: minimal
           exclude: |
             **/.git*
