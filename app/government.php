@@ -31,7 +31,7 @@ function government_defaults(): array
         'links_title'=>'Полезные ссылки',
         'footer_note'=>'Официальный информационный сайт.',
         'left_width'=>'240',
-        'right_width'=>'248',
+        'right_width'=>'240',
         'layout'=>'both',
         'show_topbar'=>'1',
         'show_banner'=>'1',
