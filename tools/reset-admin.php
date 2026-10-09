@@ -28,8 +28,8 @@ if ($line === false) {
     fail('Пароль не передан через STDIN.');
 }
 $password = rtrim($line, "\r\n");
-if (strlen($password) < 12 || strlen($password) > 4096) {
-    fail('Новый пароль должен иметь длину от 12 до 4096 байт.');
+if (strlen($password) < 12 || strlen($password) > 72) {
+    fail('Новый пароль должен иметь длину от 12 до 72 байт (ограничение bcrypt).');
 }
 unset($line);
 
