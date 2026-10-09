@@ -199,6 +199,6 @@ if ($search!=='')$govTitle='Результаты поиска';
   </aside>
   <?php endif;?>
 </div>
-<footer class="government-footer"><span>© <?=date('Y')?> <?=h($siteName)?>. <?=h($siteContent['footer_text'])?></span><span>Работает на DAG STUDIO CMS</span></footer>
+<footer class="government-footer"><span>© <?=date('Y')?> <?=h($siteName)?>. <?=h($siteContent['footer_text'])?> <?=h($gov['footer_note'])?></span><span>Работает на DAG STUDIO CMS</span></footer>
 </div>
 </body></html>
