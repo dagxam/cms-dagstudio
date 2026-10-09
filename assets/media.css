@@ -76,3 +76,22 @@ body.cms-age-modal-open{overflow:hidden}
 .cms-media-header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .cms-media-page.cms-vision-active .cms-media-header,.cms-media-page.cms-vision-active .cms-media-tile{background:var(--vision-bg);color:var(--vision-ink)}
 @media(max-width:610px){.cms-media-header{flex-wrap:wrap}.cms-media-header strong{order:-1;width:100%}}
+
+/* Фото, документы и видео: полностью отдельные светлая и тёмная палитры. */
+html[data-theme="dark"] .cms-media-page{background:#141b24!important;color:#f2f5f9!important}
+html[data-theme="dark"] .cms-media-header{background:#202d3b;color:#f2f5f9;border-bottom:1px solid #34475a}
+html[data-theme="dark"] .cms-media-tile,html[data-theme="dark"] .cms-media-detail,
+html[data-theme="dark"] .cms-media-public.box{background:#202d3b!important;color:#f2f5f9!important;border:1px solid #43566a}
+html[data-theme="dark"] .cms-media-head p,html[data-theme="dark"] .cms-media-tile p,
+html[data-theme="dark"] .cms-media-footer{color:#b8c9d8!important}
+html[data-theme="dark"] .cms-media-filters a{background:#202d3b;border-color:#455972;color:#f2f5f9}
+html[data-theme="dark"] .cms-media-filters .current{background:#91b9df;color:#112231;border-color:#91b9df}
+html[data-theme="dark"] .cms-media-tile a,html[data-theme="dark"] .cms-media-detail a{color:#a4d2ff}
+html[data-theme="dark"] .cms-media-type{background:#29425b;color:#bedaf0}
+html[data-theme="dark"] .cms-media-header a{color:#f4f6f8!important}
+html[data-theme="light"] .cms-media-page{background:#f5f7fa;color:#192b3e}
+html[data-theme="light"] .cms-media-tile a,html[data-theme="light"] .cms-media-detail a{color:#245c90}
+.cms-media-header .theme-toggle{background:transparent;color:inherit;border:1px solid currentColor;border-radius:8px;padding:5px 12px;min-height:38px;min-width:54px;cursor:pointer}
+.cms-media-header .cms-vision-switch{min-height:38px}
+.cms-media-header .theme-toggle:hover{background:#ffffff1a}
+.cms-media-page a:focus-visible,.cms-media-page button:focus-visible{outline:3px solid #d48b50;outline-offset:3px}
