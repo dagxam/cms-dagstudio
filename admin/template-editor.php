@@ -190,3 +190,7 @@ $sections = template_active_sections();
     <button class="button template-save" type="submit">Сохранить расположение блоков</button>
   </form>
 </section>
+
+<?php if ($selectedTemplate === 'government'): ?>
+<?php require __DIR__ . '/government-editor.php'; ?>
+<?php endif; ?>
