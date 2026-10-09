@@ -95,6 +95,11 @@ $sections = template_active_sections();
         <?php if($content['logo_path']!==''): ?>
           <div class="template-current-logo"><img src="<?=h($content['logo_path'])?>" alt="Текущий логотип"><label class="check"><input type="checkbox" name="remove_logo" value="1"> Убрать логотип</label></div>
         <?php endif;?>
+        <label>Изображение для первого экрана (PNG, JPG или WebP до 5 МБ)
+          <input type="file" accept="image/png,image/jpeg,image/webp" name="hero_image"></label>
+        <?php if($content['hero_image_path']!==''): ?>
+          <div class="template-current-logo"><img src="<?=h($content['hero_image_path'])?>" alt="Текущий фон первого экрана"><label class="check"><input type="checkbox" name="remove_hero_image" value="1"> Убрать фоновое изображение</label></div>
+        <?php endif;?>
         <label>Надпись над заголовком<input name="eyebrow" maxlength="140" value="<?=h($content['eyebrow'])?>"></label>
         <label>Заголовок первого экрана<input name="title" maxlength="190" value="<?=h($content['title'])?>" required></label>
         <label class="template-field-wide">Описание первого экрана<textarea name="description" rows="3" maxlength="700"><?=h($content['description'])?></textarea></label>
