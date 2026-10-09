@@ -42,7 +42,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 <script src="/assets/theme.js?v=government5" defer></script>
 <script src="/assets/government.js?v=government5" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=government5">
-<link rel="stylesheet" href="/assets/templates.css?v=government5">
+<link rel="stylesheet" href="/assets/templates.css?v=modules7">
 <link rel="stylesheet" href="/assets/government.css?v=government5">
 <link rel="stylesheet" href="/assets/media.css?v=legal2">
 <script src="/assets/accessibility.js?v=legal2" defer></script>
