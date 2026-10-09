@@ -90,7 +90,7 @@ $navLinks = $siteContent['header_links'];
     </div>
     <div class="site-hero-visual <?=$heroImage!==''?'has-custom-hero':''?>" aria-hidden="true">
       <?php if($heroImage!==''): ?><img class="site-custom-hero-image" src="<?=h($heroImage)?>" alt="" loading="eager"><?php endif;?>
-      <div class="site-hero-visual-inner"><img src="/assets/ornament-<?=htmlspecialchars($activeTemplate==='store' || $activeTemplate==='government' || $activeTemplate==='organization' ? 'light' : 'dark',ENT_QUOTES)?>.svg" alt=""></div>
+      <div class="site-hero-visual-inner"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></div>
       <span><?=h(template_catalog()[$activeTemplate]['label'])?></span>
     </div>
   </section>
