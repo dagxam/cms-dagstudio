@@ -456,3 +456,22 @@ html[data-theme="dark"] .admin-layout .button{color:#141312}
 .cms-video-frame iframe{width:100%;height:100%;border:0;display:block}
 @media(max-width:1100px){.cms-page-detail-layout,.cms-page-detail-layout:has(> .cms-page-detail-center:first-child),.cms-page-detail-layout:has(> .cms-page-detail-center:last-child){display:flex;flex-direction:column}.cms-page-detail-center,.cms-page-detail-sidebar{width:100%}}
 @media(max-width:700px){.cms-user-edit{min-width:0}.cms-menu-tabs{flex-wrap:nowrap;overflow-x:auto}.cms-page-widget-controls{padding:14px}.government-custom-menu{flex-wrap:nowrap;overflow:auto}}
+
+
+/* Удобное редактирование уже опубликованных роликов и прав сотрудников */
+.cms-media-video-editor{width:100%;margin:14px 0;border:1px solid var(--border);border-radius:12px;background:var(--panel2);overflow:hidden}
+.cms-media-video-editor>summary{padding:13px 16px;cursor:pointer;font-weight:750;font-size:13px;list-style-position:inside;color:var(--accent-light)}
+.cms-media-video-editor[open]>summary{border-bottom:1px solid var(--border)}
+.cms-media-video-editor>form{display:grid;gap:11px;padding:18px}
+.cms-media-video-editor>form label{min-width:0;margin-bottom:3px}
+.cms-media-video-editor>form input,.cms-media-video-editor>form textarea,.cms-media-video-editor>form select{background:var(--panel);color:var(--text);border:1px solid var(--border);max-width:100%}
+.cms-media-video-editor>form .button{justify-self:start}
+.cms-users-form{padding:clamp(18px,3vw,32px);border:1px solid var(--border);border-radius:14px}
+.cms-user-edit[open]{box-shadow:0 6px 20px #0002}
+.cms-user-edit form .button{justify-self:start}
+html[data-theme="light"] .admin-layout .cms-media-video-editor,
+html[data-theme="light"] .admin-layout .cms-user-edit{color:var(--text);background:var(--panel2)}
+html[data-theme="light"] .admin-layout .cms-media-video-editor input,
+html[data-theme="light"] .admin-layout .cms-media-video-editor textarea,
+html[data-theme="light"] .admin-layout .cms-media-video-editor select{background:var(--panel);color:var(--text)}
+@media(max-width:620px){.cms-media-video-editor>form{padding:13px}.cms-media-video-editor>form .two{grid-template-columns:1fr}.cms-users-form{padding:16px}}
