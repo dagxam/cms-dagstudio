@@ -14,7 +14,8 @@ $siteLogo = $siteContent['logo_path'];
 if (!preg_match('~^/assets/uploads/logo-[a-f0-9]{32}\\.(png|jpg|webp)$~D', $siteLogo)) $siteLogo = '';
 $heroImage = (string)($siteContent['hero_image_path'] ?? '');
 if (!preg_match('~^/assets/uploads/hero-[a-f0-9]{32}\\.(png|jpg|webp)$~D', $heroImage)) $heroImage = '';
-$visibleSections = $kind !== '' ? [$kind] : cms_module_ids($activeTemplate,'main');
+$requestedWidget=(string)($_GET['module']??'');
+$visibleSections = $kind !== '' ? [$kind] : ((in_array($requestedWidget,['features','contact'],true)&&cms_module_enabled($requestedWidget))?[$requestedWidget]:cms_module_ids($activeTemplate,'main'));
 $visibleSections = array_values(array_filter($visibleSections, static fn(string $s): bool => cms_module_enabled($s)));
 $leftModules=cms_module_ids($activeTemplate,'left');
 $rightModules=cms_module_ids($activeTemplate,'right');
@@ -132,7 +133,7 @@ if ($activeTemplate === 'government') {
       <?php if($privacyUrl): ?><div class="box contact-form">
         <?php if($message): ?><div class="notice"><?=h($message)?></div><?php endif;?>
         <?php if($error): ?><div class="error"><?=h($error)?></div><?php endif;?>
-        <form method="post" action="/#contact"><?=csrf()?>
+        <form method="post" action="/?module=contact#contact"><?=csrf()?>
           <input type="hidden" name="action" value="contact">
           <div class="honeypot" aria-hidden="true"><label>Сайт<input tabindex="-1" name="website" autocomplete="off"></label></div>
           <label>Ваше имя<input required maxlength="120" name="name" value="<?=h($_POST['name'] ?? '')?>"></label>
