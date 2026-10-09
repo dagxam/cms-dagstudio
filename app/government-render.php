@@ -136,6 +136,11 @@ if ($search!=='')$govTitle='Результаты поиска';
       <?php endif;?>
       <div class="government-breadcrumb"><a href="/">Главная</a><span>›</span><?=h($govArticle['title'])?></div>
       <h1><?=h($govArticle['title'])?></h1>
+      <?php $govCover=cms_content_image((int)$govArticle['id']);if($govCover):?>
+      <figure class="cms-article-cover government-article-cover">
+      <img src="<?=h(cms_content_image_url((int)$govArticle['id'],$govCover))?>" alt="<?=h($govCover['alt_text']?:$govArticle['title'])?>" loading="eager">
+      </figure>
+      <?php endif;?>
       <?php if(!empty($govArticle['summary'])):?><p class="government-lead"><?=h((string)$govArticle['summary'])?></p><?php endif;?>
       <div class="government-article-body"><?=nl2br(h((string)($govArticle['body']??'')))?></div>
       <?php if($govArticle['kind']==='product' && $govArticle['price']!==null):?><strong class="price"><?=h(number_format((float)$govArticle['price'],2,',',' '))?> ₽</strong><?php endif;?>
@@ -191,14 +196,25 @@ if ($search!=='')$govTitle='Результаты поиска';
         <?php elseif(isset($moduleLabels[$section]) && module_enabled($section)):
           $q=database()->prepare("SELECT * FROM content WHERE kind=? AND status='published' ORDER BY created_at DESC LIMIT 7");
           $q->execute([$section]);$items=$q->fetchAll();
+          $covers=cms_content_image_map($items);
         ?>
         <section class="government-section government-section-<?=h($section)?>">
           <div class="government-section-title"><h2><?=h($section==='news'?$siteContent['news_title']:$moduleLabels[$section])?></h2><a href="/?kind=<?=h($section)?>">Все материалы →</a></div>
           <?php if($items):?><div class="government-materials">
-            <?php foreach($items as $item):?><article class="government-material">
-              <div><span class="government-material-kind"><?=h($moduleLabels[$section])?></span><h3><a href="/?p=<?=rawurlencode($item['slug'])?>"><?=h($item['title'])?></a></h3>
-              <p><?=h(mb_strimwidth((string)($item['summary']?:($item['body']??'')),0,170,'…','UTF-8'))?></p></div>
-              <span class="government-material-date"><?=h(date('d.m.Y',strtotime((string)$item['created_at'])?:time()))?></span>
+            <?php foreach($items as $item):?><article class="government-material cms-government-material">
+              <a class="cms-government-material-thumb" href="/?p=<?=rawurlencode($item['slug'])?>" aria-label="<?=h($item['title'])?>">
+              <?php if(isset($covers[(int)$item['id']])):?>
+                <img src="<?=h(cms_content_image_url((int)$item['id'],$covers[(int)$item['id']]))?>" alt="<?=h($covers[(int)$item['id']]['alt_text']?:$item['title'])?>" loading="lazy" decoding="async">
+              <?php else:?>
+                <span aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
+              <?php endif;?></a>
+              <div class="cms-government-material-copy">
+                <span class="government-material-kind"><?=h($moduleLabels[$section])?></span>
+                <h3><a href="/?p=<?=rawurlencode($item['slug'])?>"><?=h($item['title'])?></a></h3>
+                <p><?=h(mb_strimwidth((string)($item['summary']?:($item['body']??'')),0,170,'…','UTF-8'))?></p>
+                <?php if($item['kind']==='product' && $item['price']!==null):?><strong class="price"><?=h(number_format((float)$item['price'],2,',',' '))?> ₽</strong><?php endif;?>
+              </div>
+              <time class="government-material-date" datetime="<?=h(date('Y-m-d',strtotime((string)$item['created_at'])?:time()))?>"><?=h(date('d.m.Y',strtotime((string)$item['created_at'])?:time()))?></time>
             </article><?php endforeach;?>
           </div><?php else:?><p class="government-empty">Материалы этого раздела появятся после публикации в панели управления.</p><?php endif;?>
         </section>
