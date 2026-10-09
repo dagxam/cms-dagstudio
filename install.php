@@ -97,7 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <span class="install-header-tag"><span class="install-header-dot" aria-hidden="true"></span> СОВРЕМЕННАЯ CMS · ДАГЕСТАНСКИЙ ХАРАКТЕР</span>
       <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span aria-hidden="true" class="theme-toggle-dark">☾</span><span aria-hidden="true" class="theme-toggle-light">☼</span></button>
     </div>
-  </header>  <main class="install-main">
+  </header>
+
+  <main class="install-main">
     <aside class="install-aside" aria-labelledby="install-welcome">
       <div class="install-hero-art" aria-hidden="true"></div>
       <div class="install-hero-content">
@@ -130,8 +132,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="install-panel-overline">ПЕРВЫЙ ЗАПУСК · DAG STUDIO CMS</p>
         <h2 id="install-form-title">Установка <em>DAG STUDIO CMS</em></h2>
         <p class="install-panel-subtitle">Заполните параметры для первоначальной настройки. Это займёт всего несколько минут.</p>
-      </div>
-        <span class="install-version">DAG CMS / SETUP</span>
       </div>
 
       <?php if ($error): ?>
