@@ -179,6 +179,9 @@ if ($activeTemplate === 'government') {
           </span>
           <span class="cms-card-copy"><span class="card-symbol" aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
           <span class="eyebrow"><?=h($moduleLabels[$item['kind']])?></span>
+          <?php if($item['kind']==='news'):?>
+          <time class="cms-card-date" datetime="<?=h(date('Y-m-d',strtotime((string)$item['created_at'])?:time()))?>"><?=h(date('d.m.Y',strtotime((string)$item['created_at'])?:time()))?></time>
+          <?php endif;?>
           <h3><?=h($item['title'])?></h3>
           <p><?=h(mb_strimwidth((string)($item['summary'] ?: ($item['body'] ?? '')),0,180,'…','UTF-8'))?></p>
           <?php if($item['kind']==='product' && $item['price']!==null): ?><span class="price"><?=h(number_format((float)$item['price'],2,',',' '))?> ₽</span><?php endif;?>
