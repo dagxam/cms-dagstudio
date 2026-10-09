@@ -12,7 +12,52 @@ $action = (string)($_POST['action'] ?? '');
 $back = '/admin/index.php';
 
 try {
-    if ($action === 'save_compliance') {
+    if ($action === 'save_cms_modules') {
+        require_module('settings');
+        $keys=$_POST['enabled']??[];
+        if(!is_array($keys) || count($keys)>count(cms_modules())) {
+            throw new RuntimeException('Некорректный перечень модулей.');
+        }
+        $chosen=array_values(array_intersect(array_keys(cms_modules()),array_map('strval',$keys)));
+        // Должен остаться хотя бы один материал/функциональный раздел.
+        if(!$chosen)throw new RuntimeException('Включите хотя бы один модуль.');
+        $q=database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+        $q->execute(['cms_modules_enabled',json_encode($chosen,JSON_UNESCAPED_UNICODE)]);
+        // Старый формат используется установщиком и прежними частями CMS.
+        $legacy=array_values(array_intersect(array_keys(kinds()),$chosen));
+        $q->execute(['enabled_modules',json_encode($legacy)]);
+        log_action('modules.enabled',implode(',',$chosen));
+        $_SESSION['flash']='Состояние модулей сохранено. Контент отключённых модулей не удалён.';
+        $back='/admin/index.php?section=modules';
+    } elseif ($action === 'save_cms_layout') {
+        require_module('settings');
+        $template=(string)($_POST['template']??'');
+        if(!isset(template_catalog()[$template]))throw new RuntimeException('Неизвестный шаблон.');
+        $posted=$_POST['position']??null;
+        if(!is_array($posted) || array_diff(array_keys($posted),array_keys(cms_modules())) ||
+            count($posted)!==count(cms_modules()))throw new RuntimeException('Некорректная таблица модулей.');
+        $result=[];
+        foreach(cms_modules() as $id=>$def) {
+            $item=$posted[$id]??null;
+            if(!is_array($item))throw new RuntimeException('Отсутствуют настройки модуля '.$id);
+            $area=$item['area']??null;
+            $order=$item['order']??null;
+            if(!is_string($area) || !isset(cms_module_areas()[$area]) ||
+               !is_string($order) || !ctype_digit($order) ||
+               (int)$order<1 || (int)$order>99) {
+               throw new RuntimeException('Недопустимое расположение или порядок для '.$id);
+            }
+            $result[$id]=['area'=>$area,'order'=>(int)$order];
+        }
+        $maps=json_decode(config_value('cms_module_layouts','{}'),true);
+        if(!is_array($maps))$maps=[];
+        $maps[$template]=$result;
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['cms_module_layouts',json_encode($maps,JSON_UNESCAPED_UNICODE)]);
+        log_action('modules.layout',$template);
+        $_SESSION['flash']='Расположение модулей для шаблона «'.template_catalog()[$template]['label'].'» обновлено.';
+        $back='/admin/index.php?section=modules&tpl='.rawurlencode($template);
+    } elseif ($action === 'save_compliance') {
         require_module('settings');
         $age=(string)($_POST['site_age_rating']??'');
         if(!cms_media_age_valid($age))throw new RuntimeException('Недопустимая возрастная категория.');
@@ -454,12 +499,7 @@ try {
         $back = '/admin/index.php?section=' . urlencode((string)$kind);
     } elseif ($action === 'save_settings') {
         require_module('settings');
-        $modules = $_POST['modules'] ?? [];
-        if (!is_array($modules)) throw new RuntimeException('Неверный список модулей');
-        $modules = array_values(array_intersect(array_keys(kinds()), array_map('strval',$modules)));
-        if (!$modules) throw new RuntimeException('Включите хотя бы один модуль');
         $values = [
-            'enabled_modules'=>json_encode($modules),
             'site_name'=>trim((string)($_POST['site_name'] ?? '')),
             'site_description'=>trim((string)($_POST['site_description'] ?? '')),
             'contact_email'=>trim((string)($_POST['contact_email'] ?? '')),
