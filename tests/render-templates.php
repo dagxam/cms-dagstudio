@@ -33,9 +33,17 @@ try {
     ob_start();
     include $root.'/index.php';
     $html=ob_get_clean();
-    if (!str_contains($html,'site-template-'.$id) ||
-        !str_contains($html,'id="site-main-title"') ||
-        !str_contains($html,'site-sections') ||
+    $layoutOk=$id==='government'
+        ? (str_contains($html,'government-columns') &&
+           str_contains($html,'government-left-nav') &&
+           str_contains($html,'government-right') &&
+           str_contains($html,'government-search') &&
+           str_contains($html,'/assets/government.css') &&
+           str_contains($html,'data-government-accessibility'))
+        : (str_contains($html,'id="site-main-title"') &&
+           str_contains($html,'site-sections'));
+    if (!$layoutOk ||
+        !str_contains($html,'site-template-'.$id) ||
         !str_contains($html,'/assets/templates.css') ||
         !str_contains($html,'dag-site-palettes') ||
         !str_contains($html,'data-theme-storage-key="dagstudio-template-'.$id.'"') ||
