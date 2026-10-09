@@ -14,6 +14,7 @@ $error = '';
 $privacyUrl = config_value('privacy_url');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'contact') {
+    if (!cms_module_enabled('contact')) {http_response_code(404);exit('Раздел обращений отключён.');}
     verify_token();
     if ($privacyUrl === '' || empty($_POST['consent'])) {
         http_response_code(400);
