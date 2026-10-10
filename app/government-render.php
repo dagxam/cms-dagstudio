@@ -55,50 +55,18 @@ if ($search!=='')$govTitle='Результаты поиска';
 <?php if($previewMode): ?>
 <div class="site-preview-banner"><strong>Предпросмотр шаблона «Администрация»</strong>. Настройки ещё не применены. <a href="/admin/index.php?section=templates">Вернуться в редактор</a></div>
 <?php endif;?>
-<?php if($gov['show_topbar']==='1'):?>
-<div class="government-utility"><div class="government-container government-utility-inner">
-  <div class="government-utility-info">
-    <span><span aria-hidden="true">⌖</span> <?=h($gov['location'])?></span>
-    <?php if($gov['show_date']==='1'):?><time data-government-datetime aria-label="Текущая дата и время"><?=h(date('d.m.Y'))?></time><?php endif;?>
-    <?php if($gov['office_phone']!==''):?><span>☎ <?=h($gov['office_phone'])?></span><?php endif;?>
-  </div>
-  <div class="government-utility-actions">
-    <?=cms_accessibility_control()?>
-    <?=cms_age_mark()?>
-    <button type="button" class="government-utility-button" data-government-print>▣ Печать</button>
-    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button>
-  </div>
-</div></div>
-<?php endif;?>
-<?php if($gov['show_topbar']!=='1'):?><div class="cms-government-a11y-bar"><?=cms_accessibility_control()?> <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему">☾/☼</button></div><?php endif;?>
+<?php cms_render_public_header('government'); ?>
 <div class="government-container">
-<header class="government-masthead">
-  <a class="government-identity" href="/">
-    <?php if($govLogo!==''):?><img class="government-identity-logo" src="<?=h($govLogo)?>" alt="" loading="eager"><?php else:?>
-    <span class="government-symbol"><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""></span>
-    <?php endif;?>
-    <span class="government-identity-copy"><small><?=h($gov['name'])?></small><strong><?=h($siteName)?></strong><span><?=h($gov['name_detail'])?></span></span>
-  </a>
-  <?php if($gov['show_banner']==='1'):?>
-  <div class="government-banner">
-    <img src="<?=h($govBanner!==''?$govBanner:'/assets/mountain-scene.svg')?>" alt="" loading="eager">
-    <div class="government-banner-content">
-      <span><?=h($gov['top_note'])?></span>
-      <strong><?=h($gov['banner_title'])?></strong>
-      <small><?=h($gov['banner_text'])?></small>
-    </div>
+<?php if($gov['show_banner']==='1'):?>
+<section class="government-banner cms-government-main-banner" aria-label="<?=h($gov['banner_title'])?>">
+  <img src="<?=h($govBanner!==''?$govBanner:'/assets/mountain-scene.svg')?>" alt="" loading="lazy">
+  <div class="government-banner-content">
+    <span><?=h($gov['top_note'])?></span>
+    <strong><?=h($gov['banner_title'])?></strong>
+    <small><?=h($gov['banner_text'])?></small>
   </div>
-  <?php else:?>
-  <div class="government-masthead-note"><span><?=h($gov['top_note'])?></span><strong><?=h($gov['banner_title'])?></strong></div>
-  <?php endif;?>
-</header>
-<nav class="government-custom-menu" aria-label="Главное меню администрации">
-<?php $govMenuUrls=[]; foreach(cms_menu_visible('government') as $link):$govMenuUrls[]=$link['url'];?>
-<a href="<?=h($link['url'])?>"><?=h($link['label'])?></a>
-<?php endforeach;?>
-<?php foreach(cms_module_ids('government','nav') as $id):if(in_array(cms_module_href($id),$govMenuUrls,true))continue;?>
-<a href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
-<?php endforeach;?></nav>
+</section>
+<?php endif;?>
 <?php if($gov['show_search']==='1'):?>
 <div class="government-searchbar">
   <form method="get" action="/" role="search" class="government-search">
