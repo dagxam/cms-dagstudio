@@ -298,3 +298,7 @@ html[data-theme] body.site-page.cms-vision-active :is(.cms-media-head h1,.cms-me
 html[data-theme] body.site-page.cms-vision-active :is(.cms-vision-toolbar,.cms-privacy-banner){background:var(--vision-bg)!important;color:var(--vision-ink)!important;border-color:var(--vision-ink)!important}
 html[data-theme] body.site-page.cms-vision-active :is(.cms-vision-toolbar button,.cms-privacy-actions button){background:var(--vision-bg)!important;color:var(--vision-ink)!important;border-color:var(--vision-ink)!important}
 html[data-theme] body.site-page.cms-vision-active :is(.cms-media-grid,.site-content-grid,.government-columns,.site-hero,.cms-media-header-inner){grid-template-columns:minmax(0,1fr)!important;max-width:100%;min-width:0}
+
+/* Раскрывающаяся панель не сжимается до ширины кнопки. */
+.cms-vision-toolbar{inset-inline-start:auto;inset-inline-end:0;max-width:calc(100vw - 24px)}
+@media(max-width:620px){.cms-vision-toolbar{inset-inline-start:10px;inset-inline-end:10px;max-width:none}}
