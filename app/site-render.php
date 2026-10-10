@@ -146,8 +146,8 @@ if ($activeTemplate === 'government') {
         <p><?=h(config_value('contact_email'))?></p>
       </div>
       <?php if($privacyReady): ?><div class="box contact-form">
-        <?php if($message): ?><div class="notice"><?=h($message)?></div><?php endif;?>
-        <?php if($error): ?><div class="error"><?=h($error)?></div><?php endif;?>
+        <?php if($message): ?><div class="notice" role="status"><?=h($message)?></div><?php endif;?>
+        <?php if($error): ?><div class="error" role="alert"><?=h($error)?></div><?php endif;?>
         <form method="post" action="/?module=contact#contact"><?=csrf()?>
           <input type="hidden" name="action" value="contact">
           <div class="honeypot" aria-hidden="true"><label>Сайт<input tabindex="-1" name="website" autocomplete="off"></label></div>
