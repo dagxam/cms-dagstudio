@@ -49,6 +49,16 @@ check($q->fetchColumn() === 'Проверочная новость', 'Публи
 $db->prepare('INSERT INTO messages(name,email,body) VALUES (?,?,?)')
     ->execute(['Тест','test@example.test','Проверка обратной связи']);
 check((int)$db->query('SELECT COUNT(*) FROM messages')->fetchColumn() === 1, 'Сообщения');
+check((int)$db->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='cms_message_consents'")->fetchColumn()===1,'Таблица подтверждений согласий');
+$messageId=(int)$db->query('SELECT id FROM messages LIMIT 1')->fetchColumn();
+$testConsentText='Согласие на обработку обращения. Редакция test-2026';
+$db->prepare('INSERT INTO cms_message_consents(message_id,consent_version,consent_text_hash) VALUES(?,?,?)')
+   ->execute([$messageId,'test-2026',hash('sha256',$testConsentText)]);
+$q=$db->prepare('SELECT consent_version,consent_text_hash FROM cms_message_consents WHERE message_id=?');
+$q->execute([$messageId]);$record=$q->fetch();
+check($record['consent_version']==='test-2026' && $record['consent_text_hash']===hash('sha256',$testConsentText),
+    'Версия и контрольная сумма отдельного согласия сохраняются');
+
 check((int)$db->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='cms_media'")->fetchColumn() === 1,'Таблица медиатеки создана');
 $db->prepare('INSERT INTO cms_media(category,title,description,alt_text,age_rating,status,filename,original_name,mime,size_bytes) VALUES(?,?,?,?,?,?,?,?,?,?)')
   ->execute(['document','Тестовый документ','Описание PDF','','6+','published',str_repeat('a',32).'.pdf','test.pdf','application/pdf',12345]);
