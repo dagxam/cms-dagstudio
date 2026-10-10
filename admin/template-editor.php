@@ -27,7 +27,7 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
   <article class="template-choice box <?=$selectedTemplate===$code?'is-selected':''?>">
     <?php $samplePalettes=template_design($code)['palettes']; $sampleMode=template_default_mode($code); $sample=$samplePalettes[$sampleMode]; ?>
     <div class="template-visual template-visual-<?=h($code)?>" style="--sample-accent:<?=h($sample['accent'])?>;--sample-bg:<?=h($sample['background'])?>;--sample-ink:<?=h($sample['ink'])?>">
-      <div class="template-mini-top"><span class="template-mini-mark">◈</span><span class="template-mini-lines">━━━━ &nbsp; ━━━ &nbsp; ━━</span></div>
+      <div class="template-mini-top"><span class="template-mini-mark"><i class="fa-solid fa-palette" aria-hidden="true"></i></span><span class="template-mini-lines">━━━━ &nbsp; ━━━ &nbsp; ━━</span></div>
       <div class="template-mini-hero">
         <span class="template-mini-kicker"><?=h($tpl['eyebrow'])?></span>
         <strong><?=h($tpl['title'])?></strong>
@@ -66,7 +66,7 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
   <div class="template-editor-current-copy">
     <span class="template-editor-step">02 / НАСТРОЙКА ШАБЛОНА</span>
     <div class="template-editor-current-title">
-      <span class="template-editor-current-icon" aria-hidden="true">◈</span>
+      <span class="template-editor-current-icon" aria-hidden="true"><i class="fa-solid fa-palette"></i></span>
       <div><h2><?=h($catalog[$selectedTemplate]['label'])?></h2>
         <p><?=h($catalog[$selectedTemplate]['caption'])?> · Активный шаблон сайта</p></div>
     </div>
@@ -95,10 +95,10 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
           $palette=$design['palettes'][$mode];
         ?>
         <fieldset class="template-palette-panel" data-palette-panel="<?=h($mode)?>">
-          <legend><span class="template-mode-symbol" aria-hidden="true"><?=$mode==='light'?'☼':'☾'?></span> <?=h($title)?></legend>
+          <legend><span class="template-mode-symbol" aria-hidden="true"><i class="fa-solid <?=$mode==='light'?'fa-sun':'fa-moon'?>"></i></span> <?=h($title)?></legend>
           <div class="template-palette-preview" data-palette-preview
             style="--preview-accent:<?=h($palette['accent'])?>;--preview-bg:<?=h($palette['background'])?>;--preview-ink:<?=h($palette['ink'])?>;--preview-surface:<?=h($palette['surface'])?>;--preview-border:<?=h($palette['border'])?>">
-            <div class="template-palette-demo-header"><span>◈ <?=h($catalog[$selectedTemplate]['label'])?></span><span>☰</span></div>
+            <div class="template-palette-demo-header"><span><i class="fa-solid fa-palette" aria-hidden="true"></i> <?=h($catalog[$selectedTemplate]['label'])?></span><span><i class="fa-solid fa-bars" aria-hidden="true"></i></span></div>
             <div class="template-palette-demo-content"><strong>Пример оформления</strong><p>Заголовок и текст на фоне выбранной темы.</p>
               <span class="template-palette-demo-button">Подробнее →</span>
               <span class="template-palette-demo-tile">Карточка содержимого</span>

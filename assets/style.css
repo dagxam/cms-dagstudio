@@ -1,3 +1,5 @@
+/* Font Awesome Free 6.7.2 · общая библиотека пиктограмм CMS */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css");
 :root{
   color-scheme:dark;--bg:#101113;--panel:#191b1e;--panel2:#222428;
   --border:#333539;--text:#f0eee9;--muted:#a1a0a0;--accent:#dc8755;
@@ -753,3 +755,35 @@ html[data-theme="light"] .message{background:#fffdfa}
  .site-header .header-actions{margin-left:auto}
  .auth-card .brand{font-size:13px}
 }
+
+/* Общий овальный переключатель для кабинета, авторизации и установщика. */
+.theme-toggle,.admin-header-controls .theme-toggle{
+  position:relative;display:inline-flex;align-items:center;justify-content:space-between;
+  box-sizing:border-box;width:70px;min-width:70px;height:40px;min-height:40px;
+  flex:0 0 70px;gap:0;padding:4px 10px;border-radius:999px;
+  background:rgba(185,107,69,.09);border:1px solid rgba(200,128,89,.48);
+  color:var(--accent-light);font-size:15px;line-height:1;cursor:pointer;
+}
+.theme-toggle::before{content:"";position:absolute;left:4px;top:50%;width:30px;height:30px;
+  transform:translateY(-50%);border-radius:50%;background:var(--accent);
+  box-shadow:0 2px 8px #0002;transition:transform .22s ease,background-color .22s ease}
+html[data-theme="light"] .theme-toggle::before{transform:translate(30px,-50%)}
+.theme-toggle .theme-toggle-dark,.theme-toggle .theme-toggle-light{
+  position:relative;z-index:1;display:inline-flex!important;align-items:center;justify-content:center;
+  width:20px;height:24px;flex:0 0 20px;opacity:.6;color:inherit;font-size:14px}
+html[data-theme="dark"] .theme-toggle .theme-toggle-dark,
+html[data-theme="light"] .theme-toggle .theme-toggle-light{opacity:1;color:#fff}
+html[data-theme="light"] .theme-toggle .theme-toggle-dark,
+html[data-theme="dark"] .theme-toggle .theme-toggle-light{opacity:.65}
+.theme-toggle:hover{border-color:var(--accent);background:rgba(185,107,69,.16)}
+.theme-toggle:focus-visible{outline:3px solid var(--accent-light);outline-offset:3px}
+.theme-toggle .fa-solid{font-size:14px}
+.sidebar .nav-item .cms-nav-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;margin-right:9px;flex:0 0 20px}
+.sidebar .cms-settings-child .cms-nav-icon{font-size:13px;width:18px;flex-basis:18px;margin-right:9px}
+.sidebar .cms-settings-summary>.fa-solid{width:20px;text-align:center}
+.cms-icon-inline{display:inline-block;font-size:.91em;vertical-align:baseline}
+.cms-icon-inline:first-child{margin-right:.3em}
+.cms-icon-inline:last-child{margin-left:.3em}
+.cms-social-symbol .fa-brands,.cms-social-symbol .fa-solid{font-size:1.15em}
+.password-eye .fa-solid{font-size:16px}
+@media(prefers-reduced-motion:reduce){.theme-toggle::before{transition:none}}

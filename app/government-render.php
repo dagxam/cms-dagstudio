@@ -70,7 +70,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 <?php if($gov['show_search']==='1'):?>
 <div class="government-searchbar">
   <form method="get" action="/" role="search" class="government-search">
-    <label for="government-search-input" class="government-search-icon" aria-label="Поиск">⌕</label>
+    <label for="government-search-input" class="government-search-icon" aria-label="Поиск"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></label>
     <input id="government-search-input" type="search" name="q" value="<?=h($search)?>" placeholder="<?=h($gov['search_placeholder'])?>" maxlength="120">
     <button type="submit"><?=h($gov['search_button'])?></button>
   </form>
@@ -178,7 +178,7 @@ if ($search!=='')$govTitle='Результаты поиска';
               <?php if(isset($covers[(int)$item['id']])):?>
                 <img src="<?=h(cms_content_image_url((int)$item['id'],$covers[(int)$item['id']]))?>" alt="<?=h($covers[(int)$item['id']]['alt_text']?:$item['title'])?>" loading="lazy" decoding="async">
               <?php else:?>
-                <span aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
+                <span aria-hidden="true"><?=cms_fa_icon($item['kind'])?></span>
               <?php endif;?></a>
               <div class="cms-government-material-copy">
                 <span class="government-material-kind"><?=h($moduleLabels[$section])?></span>
@@ -206,7 +206,7 @@ if ($search!=='')$govTitle='Результаты поиска';
     </section>
     <?php endif;?>
     <?php if($gov['show_schedule']==='1'):?>
-    <section class="government-widget"><h2 class="government-widget-bar"><span aria-hidden="true">✉</span> <?=h($gov['schedule_title'])?></h2><p><?=nl2br(h($gov['schedule_text']))?></p><small><?=h($gov['working_hours'])?></small></section>
+    <section class="government-widget"><h2 class="government-widget-bar"><span aria-hidden="true"><i class="fa-solid fa-envelope"></i></span> <?=h($gov['schedule_title'])?></h2><p><?=nl2br(h($gov['schedule_text']))?></p><small><?=h($gov['working_hours'])?></small></section>
     <?php endif;?>
     <?php if($gov['show_announcements']==='1'):?>
     <section class="government-widget"><h2 class="government-widget-muted"><?=h($gov['announcements_title'])?></h2><p><?=nl2br(h($gov['announcements_text']))?></p>

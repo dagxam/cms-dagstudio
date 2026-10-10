@@ -28,7 +28,7 @@ function cms_age_mark(): string {
 function cms_accessibility_control(): string {
     if(cms_accessibility()['enabled']!=='1' && site_template()!=='government')return '';
     return '<div class="cms-vision-control">'.
-      '<button class="cms-vision-switch" type="button" data-accessibility-toggle aria-controls="cms-vision-toolbar" aria-expanded="false" aria-pressed="false" aria-label="Включить версию для слабовидящих">◉ <span>Для слабовидящих</span></button>'.
+      '<button class="cms-vision-switch" type="button" data-accessibility-toggle aria-controls="cms-vision-toolbar" aria-expanded="false" aria-pressed="false" aria-label="Включить версию для слабовидящих"><i class="fa-solid fa-eye" aria-hidden="true"></i> <span>Для слабовидящих</span></button>'.
       '<div class="cms-vision-toolbar" id="cms-vision-toolbar" data-vision-toolbar hidden role="group" aria-label="Настройки версии для слабовидящих">'.
         '<label>Размер текста <select data-vision-option="scale" aria-label="Размер текста">'.
           '<option value="125">125%</option><option value="150">150%</option><option value="175">175%</option><option value="200">200%</option></select></label>'.

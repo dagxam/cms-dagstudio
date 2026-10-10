@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <a class="brand install-brand" href="/"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span><span>DAG STUDIO <b>CMS</b></span></a>
     <div class="install-header-actions">
       <span class="install-header-tag"><span class="install-header-dot" aria-hidden="true"></span> СОВРЕМЕННАЯ CMS · ДАГЕСТАНСКИЙ ХАРАКТЕР</span>
-      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span aria-hidden="true" class="theme-toggle-dark">☾</span><span aria-hidden="true" class="theme-toggle-light">☼</span></button>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span aria-hidden="true" class="theme-toggle-dark"><i class="fa-solid fa-moon"></i></span><span aria-hidden="true" class="theme-toggle-light"><i class="fa-solid fa-sun"></i></span></button>
     </div>
   </header>
 
@@ -108,15 +108,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <img class="logo-on-light" src="/assets/ornament-light.svg" alt="">
         </div>
         <h1 id="install-welcome">DAG STUDIO <span>CMS</span></h1>
-        <div class="install-ornament-line" aria-hidden="true"><i></i><b>◇</b><i></i></div>
+        <div class="install-ornament-line" aria-hidden="true"><i></i><b><i class="fa-solid fa-diamond"></i></b><i></i></div>
         <p class="install-hero-kicker">СОВРЕМЕННАЯ СИСТЕМА УПРАВЛЕНИЯ САЙТАМИ</p>
         <p class="install-lead">Простая установка. Мощные возможности.<br>Создавайте современные сайты, управляйте контентом и развивайте проекты вместе с DAG STUDIO CMS.</p>
       </div>
       <div class="install-feature-grid" aria-label="Преимущества CMS">
-        <div class="install-feature"><span aria-hidden="true">▣</span><strong>Гибкое<br>управление</strong></div>
-        <div class="install-feature"><span aria-hidden="true">◇</span><strong>Современная<br>архитектура</strong></div>
-        <div class="install-feature"><span aria-hidden="true">♢</span><strong>Надёжная<br>защита</strong></div>
-        <div class="install-feature"><span aria-hidden="true">⚙</span><strong>Расширяемые<br>возможности</strong></div>
+        <div class="install-feature"><span aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span><strong>Гибкое<br>управление</strong></div>
+        <div class="install-feature"><span aria-hidden="true"><i class="fa-solid fa-code"></i></span><strong>Современная<br>архитектура</strong></div>
+        <div class="install-feature"><span aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></span><strong>Надёжная<br>защита</strong></div>
+        <div class="install-feature"><span aria-hidden="true"><i class="fa-solid fa-gears"></i></span><strong>Расширяемые<br>возможности</strong></div>
       </div>
       <p class="install-aside-note"><span>ИДЕИ</span> <i>·</i> <span>КОНТЕНТ</span> <i>·</i> <span>ЛЮДИ</span> <i>·</i> <span>ВОЗМОЖНОСТИ</span></p>
     </aside>
@@ -169,12 +169,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <input required type="email" name="admin_email" value="<?=h($_POST['admin_email'] ?? '')?>" placeholder="admin@example.ru" autocomplete="email" spellcheck="false">
                 </label>
                 <label class="install-field-wide">Пароль администратора
-                  <span class="password-field"><input id="install-admin-pass" required minlength="12" type="password" name="admin_password" autocomplete="new-password" placeholder="Не менее 12 символов" aria-describedby="install-password-hint"><button type="button" class="password-eye" data-password-toggle aria-controls="install-admin-pass" aria-label="Показать пароль" aria-pressed="false">◎</button></span>
+                  <span class="password-field"><input id="install-admin-pass" required minlength="12" type="password" name="admin_password" autocomplete="new-password" placeholder="Не менее 12 символов" aria-describedby="install-password-hint"><button type="button" class="password-eye" data-password-toggle aria-controls="install-admin-pass" aria-label="Показать пароль" aria-pressed="false"><i class="fa-solid fa-eye" aria-hidden="true"></i></button></span>
                   <small id="install-password-hint">Пароль администратора отличается от пароля MySQL. Сохраните его для входа.</small>
                 </label>
               </div>
               <div class="install-security-tip">
-                <span class="install-security-symbol" aria-hidden="true">✓</span>
+                <span class="install-security-symbol" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
                 <div><strong>Защищённая установка</strong><p>Пароль администратора сохраняется в виде хеша. После установки повторный запуск мастера блокируется.</p></div>
               </div>
             </fieldset>
@@ -196,19 +196,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <input required name="username" value="<?=h($_POST['username'] ?? '')?>" placeholder="db_user" autocomplete="off" spellcheck="false">
                 </label>
                 <label class="install-field-wide">Пароль базы данных
-                  <span class="password-field"><input id="install-db-pass" type="password" name="db_password" autocomplete="off" placeholder="Пароль пользователя MySQL"><button type="button" class="password-eye" data-password-toggle aria-controls="install-db-pass" aria-label="Показать пароль" aria-pressed="false">◎</button></span>
+                  <span class="password-field"><input id="install-db-pass" type="password" name="db_password" autocomplete="off" placeholder="Пароль пользователя MySQL"><button type="button" class="password-eye" data-password-toggle aria-controls="install-db-pass" aria-label="Показать пароль" aria-pressed="false"><i class="fa-solid fa-eye" aria-hidden="true"></i></button></span>
                 </label>
               </div>
             </fieldset>
             <div class="install-safety-card">
-              <div class="install-safety-symbol" aria-hidden="true">◇</div>
+              <div class="install-safety-symbol" aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></div>
               <div><strong>Всё для вашего сайта</strong><p>После установки вы получите панель управления, публикацию материалов, роли пользователей и настройку разделов.</p></div>
             </div>
           </div>
         </div>
         <div class="install-form-footer">
           <p>Данные подключения будут храниться только на сервере. Сохраните пароль администратора для последующего входа.</p>
-          <button class="button install-submit" type="submit"><span aria-hidden="true">✦</span> Создать сайт <span aria-hidden="true">→</span></button>
+          <button class="button install-submit" type="submit"><span aria-hidden="true"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Создать сайт <span aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span></button>
         </div>
       </form>
     </section>

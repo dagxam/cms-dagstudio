@@ -47,6 +47,10 @@ jobs:
           node --check assets/accessibility.js
           node --check assets/privacy.js
           node --check assets/content-editor.js
+      - name: Проверка пиктограмм Font Awesome и переключателя тем
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/icons-ui.php
       - name: Smoke-тест базы данных
         env:
           DAG_CMS_TEST_MODE: '1'

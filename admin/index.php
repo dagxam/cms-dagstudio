@@ -39,14 +39,14 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <aside class="sidebar">
 <a class="brand" href="/admin/index.php"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span>DAG STUDIO <b>CMS</b></span></a>
 <span class="nav-label">УПРАВЛЕНИЕ</span>
-<a class="nav-item <?=$section==='dashboard'?'active':''?>" href="/admin/index.php">◫ Обзор</a>
+<a class="nav-item <?=$section==='dashboard'?'active':''?>" href="/admin/index.php"><span class="cms-nav-icon"><?=cms_fa_icon('dashboard')?></span> Обзор</a>
 <?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key)) continue; ?>
-<a class="nav-item <?=($section===$key||($section==='edit'&&$kind===$key))?'active':''?>" href="/admin/index.php?section=<?=h($key)?>"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$key]?> <?=h($label)?></a>
+<a class="nav-item <?=($section===$key||($section==='edit'&&$kind===$key))?'active':''?>" href="/admin/index.php?section=<?=h($key)?>"><span class="cms-nav-icon"><?=cms_fa_icon($key)?></span> <?=h($label)?></a>
 <?php endforeach; ?>
 <?php if (allowed('media')): ?>
-<?php foreach(['documents'=>'▤ Документы','photos'=>'▧ Фотогалерея','videos'=>'▣ Видеогалерея'] as $key=>$label):
+<?php foreach(['documents'=>'Документы','photos'=>'Фотогалерея','videos'=>'Видеогалерея'] as $key=>$label):
     if(!cms_module_enabled($key))continue; ?>
-<a class="nav-item <?=$section===$key?'active':''?>" href="?section=<?=h($key)?>"><?=h($label)?></a>
+<a class="nav-item <?=$section===$key?'active':''?>" href="?section=<?=h($key)?>"><span class="cms-nav-icon"><?=cms_fa_icon($key)?></span> <?=h($label)?></a>
 <?php endforeach; endif; ?>
 <?php
 $settingsChildren=[
@@ -67,28 +67,28 @@ $settingsAvailable=allowed('settings')||allowed('messages')||allowed('users');
 <?php if($settingsAvailable):?>
 <details class="cms-settings-group" <?=$settingsOpen?'open':''?>>
   <summary class="nav-item cms-settings-summary <?=$settingsOpen?'active':''?>" aria-label="Раздел настроек">
-    <span aria-hidden="true">⚙</span><span>Настройки</span><span class="cms-settings-chevron" aria-hidden="true">⌄</span>
+    <i class="fa-solid fa-gear" aria-hidden="true"></i><span>Настройки</span><span class="cms-settings-chevron" aria-hidden="true"><i class="fa-solid fa-chevron-down"></i></span>
   </summary>
   <nav class="cms-settings-children" aria-label="Подразделы настроек">
     <?php foreach($settingsChildren as $childKey=>$entry):
       if(!allowed($entry[1]))continue;?>
       <a class="nav-item cms-settings-child <?=$section===$childKey?'active':''?>" href="/admin/index.php?section=<?=h($childKey)?>" <?=$section===$childKey?'aria-current="page"':''?>>
-        <span class="cms-settings-child-dot" aria-hidden="true"></span><?=h($entry[0])?>
+        <span class="cms-nav-icon" aria-hidden="true"><i class="fa-solid <?=h(['settings'=>'fa-sliders','templates'=>'fa-palette','menus'=>'fa-bars','modules'=>'fa-puzzle-piece','accessibility'=>'fa-universal-access','privacy'=>'fa-shield-halved','contacts'=>'fa-address-book','socials'=>'fa-share-nodes','messages'=>'fa-envelope','users'=>'fa-users'][$childKey]??'fa-circle-info')?>"></i></span><?=h($entry[0])?>
       </a>
     <?php endforeach;?>
   </nav>
 </details>
 <?php endif;?>
 <div class="sidebar-bottom"><p class="muted">Вы вошли как<br><strong><?=h($me['name'])?></strong></p>
-<a class="nav-item" href="/" target="_blank" rel="noopener">↗ Открыть сайт</a>
-<form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit">Выйти из аккаунта</button></form></div>
+<a class="nav-item" href="/" target="_blank" rel="noopener"><span class="cms-nav-icon"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span> Открыть сайт</a>
+<form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit"><i class="fa-solid fa-right-from-bracket cms-icon-inline" aria-hidden="true"></i> Выйти из аккаунта</button></form></div>
 </aside>
 <div class="workspace"><header class="topbar"><span class="topbar-brand">Панель управления <span class="muted">/ <?=h($section==='dashboard'?'Обзор':($types[$section]??([
 'settings'=>'Настройки / Основные настройки','templates'=>'Настройки / Выбор темы','menus'=>'Настройки / Главное меню',
 'modules'=>'Настройки / Модули','accessibility'=>'Настройки / Доступность и возраст',
 'privacy'=>'Настройки / Конфиденциальность',
 'contacts'=>'Настройки / Контакты','socials'=>'Настройки / Социальные сети',
-'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button><span class="user-pill"><?=h($me['name'])?> · <?=h($me['role'])?></span></div></header>
+'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span><span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span></button><span class="user-pill"><?=h($me['name'])?> · <?=h($me['role'])?></span></div></header>
 <main class="main">
 <?php if ($flash): ?><div class="notice"><?=h($flash)?></div><?php endif; ?>
 <?php if ($flashError): ?><div class="error"><?=h($flashError)?></div><?php endif; ?>
@@ -132,7 +132,7 @@ $cover=$record?cms_content_image((int)$record['id']):null;
 <div class="cms-cover-editor">
   <div class="cms-cover-editor-preview">
     <?php if($cover):?><img src="<?=h(cms_content_image_url((int)$record['id'],$cover))?>" alt="<?=h($cover['alt_text']?:$row['title'])?>" loading="lazy">
-    <?php else:?><span class="cms-cover-editor-empty" aria-hidden="true">▧</span><span class="muted">Обложка пока не загружена</span><?php endif;?>
+    <?php else:?><span class="cms-cover-editor-empty" aria-hidden="true"><?=cms_fa_icon('photos')?></span><span class="muted">Обложка пока не загружена</span><?php endif;?>
   </div>
   <div class="cms-cover-editor-controls">
     <label>Загрузить обложку (JPG, PNG, WebP)
@@ -170,7 +170,7 @@ $covers=cms_content_image_map($rows);
 <tbody><?php foreach($rows as $item): ?><tr>
 <td><div class="cms-admin-cover-thumb">
 <?php if(isset($covers[(int)$item['id']])):?><img src="<?=h(cms_content_image_url((int)$item['id'],$covers[(int)$item['id']]))?>" alt="" loading="lazy">
-<?php else:?><span aria-hidden="true">▧</span><?php endif;?></div></td>
+<?php else:?><span aria-hidden="true"><?=cms_fa_icon('photos')?></span><?php endif;?></div></td>
 <td><strong><?=h($item['title'])?></strong><small class="muted"><?=h($item['slug'])?></small></td>
 <td><span class="tag <?=$item['status']==='published'?'tag-green':''?>"><?=h($item['status']==='published'?'Опубликовано':'Черновик')?></span></td>
 <td><?=h($item['updated_at'])?></td>

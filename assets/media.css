@@ -510,3 +510,17 @@ body.site-page .cms-unified-official-strip{display:flex;align-items:center;gap:1
 body.site-page .cms-unified-official-strip>span,
 body.site-page .cms-unified-official-strip>time{margin:0!important;font-size:10px;color:#fff!important;letter-spacing:0;font-weight:500;opacity:.95}
 body.site-page .cms-unified-official-strip>strong{font-weight:850;color:#fff!important;white-space:nowrap}
+
+/* Не даём медиатеке и единой шапке превращать переключатель в квадрат. */
+body.site-page .cms-unified-header .cms-media-header-actions .theme-toggle,
+.cms-media-page .cms-media-header-actions .theme-toggle,
+.cms-media-header .theme-toggle{
+  box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;
+  justify-content:space-between!important;flex:0 0 70px!important;
+  width:70px!important;min-width:70px!important;height:40px!important;
+  min-height:40px!important;padding:4px 10px!important;
+  border-radius:999px!important;line-height:1!important;
+}
+body.site-page.cms-vision-active .cms-unified-header .cms-media-header-actions .theme-toggle{
+  min-height:44px!important;height:44px!important;
+}

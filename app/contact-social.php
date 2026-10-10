@@ -76,15 +76,15 @@ function cms_contact_details_lines(array $items): string {
 }
 function cms_social_catalog(): array {
     return [
-        'vk'=>['name'=>'ВКонтакте','host'=>['vk.com','www.vk.com','m.vk.com'],'abbr'=>'VK'],
-        'telegram'=>['name'=>'Telegram','host'=>['t.me','telegram.me'],'abbr'=>'TG'],
-        'max'=>['name'=>'MAX','host'=>['max.ru','www.max.ru'],'abbr'=>'М'],
-        'rutube'=>['name'=>'Rutube','host'=>['rutube.ru','www.rutube.ru'],'abbr'=>'R'],
-        'ok'=>['name'=>'Одноклассники','host'=>['ok.ru','www.ok.ru'],'abbr'=>'OK'],
-        'dzen'=>['name'=>'Дзен','host'=>['dzen.ru','www.dzen.ru'],'abbr'=>'Д'],
-        'youtube'=>['name'=>'YouTube','host'=>['youtube.com','www.youtube.com','youtu.be'],'abbr'=>'YT'],
-        'whatsapp'=>['name'=>'WhatsApp','host'=>['wa.me','api.whatsapp.com'],'abbr'=>'WA'],
-        'instagram'=>['name'=>'Instagram','host'=>['instagram.com','www.instagram.com'],'abbr'=>'IG'],
+        'vk'=>['name'=>'ВКонтакте','host'=>['vk.com','www.vk.com','m.vk.com'],'abbr'=>'VK','icon'=>'fa-brands fa-vk'],
+        'telegram'=>['name'=>'Telegram','host'=>['t.me','telegram.me'],'abbr'=>'TG','icon'=>'fa-brands fa-telegram'],
+        'max'=>['name'=>'MAX','host'=>['max.ru','www.max.ru'],'abbr'=>'М','icon'=>'fa-solid fa-comment-dots'],
+        'rutube'=>['name'=>'Rutube','host'=>['rutube.ru','www.rutube.ru'],'abbr'=>'R','icon'=>'fa-solid fa-circle-play'],
+        'ok'=>['name'=>'Одноклассники','host'=>['ok.ru','www.ok.ru'],'abbr'=>'OK','icon'=>'fa-brands fa-odnoklassniki'],
+        'dzen'=>['name'=>'Дзен','host'=>['dzen.ru','www.dzen.ru'],'abbr'=>'Д','icon'=>'fa-solid fa-rss'],
+        'youtube'=>['name'=>'YouTube','host'=>['youtube.com','www.youtube.com','youtu.be'],'abbr'=>'YT','icon'=>'fa-brands fa-youtube'],
+        'whatsapp'=>['name'=>'WhatsApp','host'=>['wa.me','api.whatsapp.com'],'abbr'=>'WA','icon'=>'fa-brands fa-whatsapp'],
+        'instagram'=>['name'=>'Instagram','host'=>['instagram.com','www.instagram.com'],'abbr'=>'IG','icon'=>'fa-brands fa-instagram'],
     ];
 }
 function cms_social_valid_url(string $platform,string $url): bool {
@@ -120,7 +120,7 @@ function cms_render_social_links(string $template,string $location='footer'): st
     $html='<nav class="cms-social-links cms-social-links-'.h($location).'" aria-label="Мы в социальных сетях">';
     foreach($cfg['links'] as $id=>$url) {
         $meta=cms_social_catalog()[$id];
-        $html.='<a href="'.h($url).'" target="_blank" rel="noopener noreferrer" aria-label="'.h($meta['name']).' (открывается в новой вкладке)"><span class="cms-social-symbol" aria-hidden="true">'.h($meta['abbr']).'</span><span>'.h($meta['name']).'</span></a>';
+        $html.='<a href="'.h($url).'" target="_blank" rel="noopener noreferrer" aria-label="'.h($meta['name']).' (открывается в новой вкладке)"><span class="cms-social-symbol" aria-hidden="true"><i class="'.h($meta['icon']).'"></i></span><span>'.h($meta['name']).'</span></a>';
     }
     return $html.'</nav>';
 }

@@ -5,6 +5,19 @@ declare(strict_types=1);
  * Каталог встроенных модулей. Отключение скрывает вывод, но не удаляет материалы.
  * Привязки к расположению независимы для каждого из четырёх шаблонов.
  */
+/** Безопасный общий каталог Font Awesome Free: работает во всех типах сайта. */
+function cms_fa_icon(string $id): string {
+    $icons=[
+        'dashboard'=>'fa-chart-pie','page'=>'fa-file-lines','news'=>'fa-newspaper',
+        'service'=>'fa-screwdriver-wrench','product'=>'fa-box-open',
+        'document'=>'fa-file-pdf','documents'=>'fa-file-pdf',
+        'photo'=>'fa-image','photos'=>'fa-images',
+        'video'=>'fa-circle-play','videos'=>'fa-video',
+        'features'=>'fa-star','contact'=>'fa-envelope','all'=>'fa-layer-group'
+    ];
+    return '<i class="fa-solid '.($icons[$id]??'fa-circle-info').'" aria-hidden="true"></i>';
+}
+
 function cms_modules(): array {
     return [
         'page'=>['label'=>'Страницы','description'=>'Статические страницы сайта','href'=>'/?kind=page'],
@@ -100,7 +113,7 @@ function cms_module_compact(string $id, string $style='plain'): string {
     $url=cms_module_href($id);
     $title=cms_module_label($id);
     return '<a class="cms-module-link cms-module-link-'.h($style).'" href="'.h($url).'">'
-        .'<span>'.h($title).'</span><span aria-hidden="true">↗</span></a>';
+        .'<span>'.h($title).'</span><span aria-hidden="true"><i class="fa-solid fa-arrow-up-right-from-square"></i></span></a>';
 }
 /** Мини-виджет модуля в боковой колонке с настоящим содержимым. */
 function cms_module_sidebar(string $id,string $template): void {
@@ -116,7 +129,7 @@ function cms_module_sidebar(string $id,string $template): void {
             echo '<a class="cms-module-widget-entry cms-module-widget-entry-cover" href="/?p='.rawurlencode($item['slug']).'">';
             if(isset($covers[$itemId]))
                 echo '<img loading="lazy" src="'.h(cms_content_image_url($itemId,$covers[$itemId])).'" alt="">';
-            else echo '<span class="cms-module-widget-symbol" aria-hidden="true">▤</span>';
+            else echo '<span class="cms-module-widget-symbol" aria-hidden="true">'.cms_fa_icon($id).'</span>';
             echo '<span>'.h($item['title']).'</span></a>';
         }
         if(!$items)echo '<p>Публикаций пока нет.</p>';
@@ -152,13 +165,13 @@ function cms_module_media_block(string $module='photos'): void {
         echo '<a class="cms-media-module-card" href="/media.php?view='.$id.'">';
         if($item['category']==='photo' && $item['age_rating']!=='18+')
             echo '<img loading="lazy" src="/media.php?file='.$id.'" alt="'.h($item['alt_text']?:$item['title']).'">';
-        else echo '<span class="cms-media-module-icon" aria-hidden="true">▤</span>';
+        else echo '<span class="cms-media-module-icon" aria-hidden="true">'.cms_fa_icon('documents').'</span>';
         echo '<strong>'.h($item['title']).'</strong><small>'.h($item['age_rating']).'</small></a>';
     }
     if($module==='videos') {
         foreach(array_slice(cms_video_links(true),0,6) as $item) {
             echo '<a class="cms-media-module-card" href="/media.php?type=video&amp;external='.(int)$item['id'].'">'
-            .'<span class="cms-media-module-icon" aria-hidden="true">▶</span><strong>'.h($item['title']).'</strong>'
+            .'<span class="cms-media-module-icon" aria-hidden="true">'.cms_fa_icon('video').'</span><strong>'.h($item['title']).'</strong>'
             .'<small>'.h($item['age_rating']).'</small></a>';
         }
     }

@@ -109,7 +109,7 @@ if ($activeTemplate === 'government') {
       <div class="section-heading"><div><div class="eyebrow">НАШ ПОДХОД</div><h2><?=h($siteContent['features_title'])?></h2></div></div>
       <div class="cards site-feature-cards">
         <?php for($i=1;$i<=3;$i++): ?>
-        <article class="box content-card site-feature-card"><span class="site-feature-mark" aria-hidden="true"><?=['','◇','✧','⬡'][$i]?></span>
+        <article class="box content-card site-feature-card"><span class="site-feature-mark" aria-hidden="true"><i class="fa-solid <?=['','fa-gem','fa-bolt','fa-shield-halved'][$i]?>" aria-hidden="true"></i></span>
           <h3><?=h($siteContent['feature_'.$i.'_title'])?></h3><p><?=h($siteContent['feature_'.$i.'_text'])?></p></article>
         <?php endfor;?>
       </div>
@@ -152,10 +152,10 @@ if ($activeTemplate === 'government') {
           <?php if(isset($covers[(int)$item['id']])):?>
             <img src="<?=h(cms_content_image_url((int)$item['id'],$covers[(int)$item['id']]))?>" alt="<?=h($covers[(int)$item['id']]['alt_text']?:$item['title'])?>" loading="lazy" decoding="async">
           <?php else:?>
-            <span class="cms-card-media-placeholder" aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
+            <span class="cms-card-media-placeholder" aria-hidden="true"><?=cms_fa_icon($item['kind'])?></span>
           <?php endif;?>
           </span>
-          <span class="cms-card-copy"><span class="card-symbol" aria-hidden="true"><?=['page'=>'▤','news'=>'▣','service'=>'◇','product'=>'▦'][$item['kind']]?></span>
+          <span class="cms-card-copy"><span class="card-symbol" aria-hidden="true"><?=cms_fa_icon($item['kind'])?></span>
           <span class="eyebrow"><?=h($moduleLabels[$item['kind']])?></span>
           <?php if($item['kind']==='news'):?>
           <time class="cms-card-date" datetime="<?=h(date('Y-m-d',strtotime((string)$item['created_at'])?:time()))?>"><?=h(date('d.m.Y',strtotime((string)$item['created_at'])?:time()))?></time>

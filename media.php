@@ -142,7 +142,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
       <h1><?=h($pageTitle)?></h1>
       <p><?=h($sectionDescriptions[$activeSection]??$sectionDescriptions['all'])?></p>
     </div>
-    <span class="cms-media-head-decoration" aria-hidden="true"><?=['document'=>'▤','photo'=>'▧','video'=>'▶','all'=>'◇'][$activeSection]??'◇'?></span>
+    <span class="cms-media-head-decoration" aria-hidden="true"><?=cms_fa_icon($activeSection)?></span>
   </div>
   <?php if($external):
     $embedded=cms_video_embed((string)$external['original_url']);?>
@@ -161,7 +161,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
         <video controls preload="metadata" playsinline aria-label="<?=h($item['title'])?>"><source src="/media.php?file=<?=(int)$item['id']?>" type="<?=h($item['mime'])?>">Браузер не поддерживает видео.</video>
       <?php else:?>
         <div class="cms-media-document-download">
-          <span class="cms-media-document-icon" aria-hidden="true">▤</span>
+          <span class="cms-media-document-icon" aria-hidden="true"><?=cms_fa_icon('documents')?></span>
           <div><strong><?=h($item['original_name'])?></strong><p><?=number_format(((int)$item['size_bytes'])/1048576,2,',',' ')?> МБ · <?=h(strtoupper(pathinfo((string)$item['original_name'],PATHINFO_EXTENSION)))?></p></div>
           <a class="cms-media-action" href="/media.php?file=<?=(int)$item['id']?>">Скачать документ <span aria-hidden="true">↓</span></a>
         </div>
@@ -178,7 +178,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
     <div class="cms-media-grid">
       <?php if($filter==='video'):foreach($linkedVideos as $v):?>
         <article class="cms-media-tile cms-media-tile-video">
-          <a class="cms-media-tile-media" href="/media.php?type=video&amp;external=<?=(int)$v['id']?>" aria-label="Смотреть: <?=h($v['title'])?>"><span class="cms-media-tile-symbol" aria-hidden="true">▶</span></a>
+          <a class="cms-media-tile-media" href="/media.php?type=video&amp;external=<?=(int)$v['id']?>" aria-label="Смотреть: <?=h($v['title'])?>"><span class="cms-media-tile-symbol" aria-hidden="true"><?=cms_fa_icon('video')?></span></a>
           <div class="cms-media-tile-copy">
             <div class="cms-media-tile-meta"><span><?=h($v['provider']==='vk'?'VK Видео':'Rutube')?></span><span><?=h($v['age_rating'])?></span></div>
             <h2><a href="/media.php?type=video&amp;external=<?=(int)$v['id']?>"><?=h($v['title'])?></a></h2>
@@ -192,7 +192,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
         <a class="cms-media-tile-media" href="<?=h($link)?>" aria-label="<?=h($f['title'])?>">
           <?php if($f['category']==='photo' && $f['age_rating']!=='18+'):?>
             <img loading="lazy" decoding="async" src="/media.php?file=<?=$id?>" alt="<?=h($f['alt_text']?:$f['title'])?>">
-          <?php else:?><span class="cms-media-tile-symbol" aria-hidden="true"><?= $f['age_rating']==='18+'?'18+':(['document'=>'▤','video'=>'▶'][$f['category']]??'▧') ?></span><?php endif;?>
+          <?php else:?><span class="cms-media-tile-symbol" aria-hidden="true"><?= $f['age_rating']==='18+'?'18+':cms_fa_icon($f['category']) ?></span><?php endif;?>
         </a>
         <div class="cms-media-tile-copy">
           <div class="cms-media-tile-meta"><span><?=h(['photo'=>'Фотография','document'=>'Документ','video'=>'Видео'][$f['category']])?></span><span><?=h($f['age_rating'])?></span></div>
@@ -203,7 +203,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
       </article>
       <?php endforeach;?>
     </div>
-    <?php if(!$files&&!$linkedVideos):?><div class="cms-media-empty"><span aria-hidden="true">◇</span><h2>Материалов пока нет</h2><p>Здесь появятся опубликованные материалы этого раздела.</p></div><?php endif;?>
+    <?php if(!$files&&!$linkedVideos):?><div class="cms-media-empty"><span aria-hidden="true"><i class="fa-solid fa-folder-open"></i></span><h2>Материалов пока нет</h2><p>Здесь появятся опубликованные материалы этого раздела.</p></div><?php endif;?>
   <?php endif;?>
   <?php if($item||$external):?><a class="cms-media-back" href="/media.php?type=<?=h($activeSection)?>">← К разделу «<?=h($sectionTitle)?>»</a><?php endif;?>
 </main>

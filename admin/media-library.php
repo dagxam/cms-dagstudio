@@ -40,7 +40,7 @@ $mediaLinks=$mediaType==='video'?cms_video_links(false):[];
 <?php if($mediaLinks):?><h2>Видео по ссылкам</h2><div class="cms-media-admin-list">
 <?php foreach($mediaLinks as $video):?><article class="box cms-media-admin-item"><div class="cms-media-admin-heading"><strong><?=h($video['title'])?></strong><span class="tag <?=$video['status']==='published'?'tag-green':''?>"><?=h($video['status'])?></span></div>
 <p class="muted"><?=h(strtoupper($video['provider']))?> · <?=h($video['age_rating'])?></p>
-<a href="/media.php?type=video&amp;external=<?=(int)$video['id']?>" target="_blank" rel="noopener">Просмотр ↗</a>
+<a href="/media.php?type=video&amp;external=<?=(int)$video['id']?>" target="_blank" rel="noopener">Просмотр <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
 <details class="cms-media-video-editor">
 <summary>Редактировать видео и публикацию</summary>
 <form method="post" action="/admin/actions.php">
@@ -70,7 +70,7 @@ $mediaLinks=$mediaType==='video'?cms_video_links(false):[];
  <div class="cms-media-admin-heading"><strong><?=h($media['title'])?></strong><span class="tag <?=$media['status']==='published'?'tag-green':''?>"><?=$media['status']==='published'?'Опубликовано':'Черновик'?></span></div>
  <p class="muted"><?=h($media['original_name'])?> · <?=h(['photo'=>'Фото','document'=>'Документ','video'=>'Видео'][$media['category']]??'Файл')?> · <?=h($media['age_rating'])?> · <?=number_format(((int)$media['size_bytes'])/1024/1024,2,',',' ')?> МБ</p>
  <div class="cms-media-admin-actions">
- <a href="/media.php?file=<?=(int)$media['id']?>" target="_blank" rel="noopener">Открыть файл ↗</a>
+ <a href="/media.php?file=<?=(int)$media['id']?>" target="_blank" rel="noopener">Открыть файл <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
  <form method="post" action="/admin/actions.php"><?=csrf()?>
    <input type="hidden" name="action" value="update_media">
    <input type="hidden" name="media_id" value="<?=(int)$media['id']?>">

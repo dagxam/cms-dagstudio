@@ -63,8 +63,8 @@ function cms_render_public_header(string $template): void {
         <div class="cms-media-header-actions">
           <?=cms_accessibility_control()?>
           <button class="theme-toggle" type="button" data-theme-toggle aria-label="Переключить светлую и тёмную тему" title="Переключить тему">
-            <span class="theme-toggle-dark" aria-hidden="true">☾</span>
-            <span class="theme-toggle-light" aria-hidden="true">☼</span>
+            <span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+            <span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
           </button>
           <?=cms_age_mark()?>
           <a class="cms-header-login" href="/admin/login.php">Вход</a>

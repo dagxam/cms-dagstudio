@@ -35,7 +35,7 @@
         input.type = visible ? 'text' : 'password';
         button.setAttribute('aria-label', visible ? 'Скрыть пароль' : 'Показать пароль');
         button.setAttribute('aria-pressed', String(visible));
-        button.textContent = visible ? '◉' : '◎';
+        button.innerHTML = visible ? '<i class="fa-solid fa-eye-slash" aria-hidden="true"></i>' : '<i class="fa-solid fa-eye" aria-hidden="true"></i>';
       });
     });
     document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {

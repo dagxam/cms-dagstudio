@@ -26,7 +26,7 @@ $s=cms_socials($selected);
 </select></label>
 <div class="cms-social-editor-grid">
 <?php foreach(cms_social_catalog() as $id=>$social):?>
-<label class="cms-social-editor-row"><span class="cms-social-symbol" aria-hidden="true"><?=h($social['abbr'])?></span>
+<label class="cms-social-editor-row"><span class="cms-social-symbol" aria-hidden="true"><i class="<?=h($social['icon'])?>"></i></span>
 <span><?=h($social['name'])?><input name="social[<?=h($id)?>]" type="url" maxlength="500" placeholder="https://<?=h($social['host'][0])?>/..." value="<?=h($s['links'][$id]??'')?>"></span></label>
 <?php endforeach;?></div>
 <p class="muted">Принимаются только HTTPS-адреса соответствующей площадки. Можно включить VK, Telegram, MAX, Rutube, Одноклассники, Дзен, YouTube, WhatsApp и Instagram. Сохраняются только введённые ссылки, без автоматической загрузки внешних виджетов.</p>
