@@ -59,10 +59,27 @@ if(getenv('TEST_COVER_IMAGE_TEST')==='1') {
     ];
     $up->execute(['cms_module_layouts',json_encode([$id=>$placements])]);
 }
+if(getenv('TEST_CONTACT_SOCIAL_TEST')==='1') {
+    $template=(string)$argv[1];
+    $up->execute(['cms_modules_enabled','["page","news","service","product","documents","photos","videos","features","contact"]']);
+    $up->execute(['cms_module_layouts','{}']);
+    $up->execute(['cms_contacts_by_type',json_encode([$template=>[
+        'title'=>'Контакты тестового шаблона','intro'=>'Свяжитесь с нами',
+        'phones'=>['+7 (900) 111-22-33'],'emails'=>['hello@example.ru'],
+        'addresses'=>['Тестовая улица, 10'],'hours'=>'Пн–Пт',
+        'details'=>[['label'=>'Приёмная','value'=>'Кабинет 7']]
+    ]],JSON_UNESCAPED_UNICODE)]);
+    $up->execute(['cms_socials_by_type',json_encode([$template=>[
+        'enabled'=>true,'location'=>'both','links'=>['vk'=>'https://vk.com/testcompany']
+    ]])]);
+    if($template!=='government')$up->execute(['template_content_by_type',json_encode([
+        $template=>['hero_logo_path'=>'/assets/uploads/hero-logo-'.str_repeat('a',32).'.png']
+    ])]);
+}
 file_put_contents($config,'<?php return '.var_export($c,true).';');
 try {
     $_SERVER['REQUEST_METHOD']='GET';
-    $_GET=[];
+    $_GET=getenv('TEST_CONTACT_SOCIAL_TEST')==='1'?['module'=>'contact']:[];
     ob_start();
     include $root.'/index.php';
     $html=ob_get_clean();
@@ -110,6 +127,14 @@ try {
             throw new RuntimeException('Муниципальная карточка новости не показана');
         if($id!=='government' && !str_contains($html,'cms-visual-card'))
             throw new RuntimeException('Карточка новости с обложкой не показана');
+    }
+    if(getenv('TEST_CONTACT_SOCIAL_TEST')==='1') {
+        foreach(['Контакты тестового шаблона','mailto:hello@example.ru','tel:+79001112233',
+            'Тестовая улица, 10','https://vk.com/testcompany'] as $expected)
+            if(!str_contains($html,$expected))
+                throw new RuntimeException('Не найдено поле контактов/соцсетей: '.$id.' / '.$expected);
+        if($id!=='government' && !str_contains($html,'cms-custom-hero-logo'))
+            throw new RuntimeException('Не выведена индивидуальная эмблема: '.$id);
     }
     if (!str_contains($html,'Шаблон не найден') && strlen($html)<2000) {
         throw new RuntimeException('Недостаточный HTML шаблона '.$id);
