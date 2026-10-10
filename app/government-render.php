@@ -41,10 +41,10 @@ if ($search!=='')$govTitle='Результаты поиска';
 <script>try{const t=localStorage.getItem('dagstudio-template-government');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}</script>
 <script src="/assets/theme.js?v=government5" defer></script>
 <script src="/assets/government.js?v=government5" defer></script>
-<link rel="stylesheet" href="/assets/style.css?v=government5">
+<link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
 <link rel="stylesheet" href="/assets/templates.css?v=contacts8">
 <link rel="stylesheet" href="/assets/government.css?v=government5">
-<link rel="stylesheet" href="/assets/media.css?v=unified7">
+<link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
 <style id="dag-site-palettes"><?=template_palette_css($design,'government')?></style>

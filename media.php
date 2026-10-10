@@ -37,7 +37,7 @@ if((($item && $item['age_rating']==='18+') || ($external && $external['age_ratin
     }
     http_response_code(403);
     ?><!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="/assets/style.css"><title>18+ — подтверждение возраста</title>
+    <link rel="stylesheet" href="/assets/style.css?v=fa672-local2"><title>18+ — подтверждение возраста</title>
     <body class="cms-media-page"><main class="cms-media-public box"><span class="cms-age-mark">18+</span>
     <h1>Информация для совершеннолетних</h1><p>Материал имеет возрастную маркировку 18+. Подтвердите, что вам исполнилось 18 лет.</p>
     <form method="post"><?=csrf()?><input type="hidden" name="confirm_age" value="1"><button class="button" type="submit">Мне исполнилось 18 лет</button></form>
@@ -122,9 +122,9 @@ foreach(cms_module_ids($tpl,'nav') as $module){
 <script src="/assets/theme.js?v=gallery4" defer></script>
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
-<link rel="stylesheet" href="/assets/style.css?v=gallery4">
+<link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
 <link rel="stylesheet" href="/assets/templates.css?v=contacts8">
-<link rel="stylesheet" href="/assets/media.css?v=unified7">
+<link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
 <style id="dag-site-palettes"><?=template_palette_css($design,$tpl)?></style>
 </head>
 <body class="site-page site-template-<?=h($tpl)?> cms-media-page cms-media-layout-<?=h($activeSection)?> <?=$tpl==='government'?'government-page cms-media-official':''?>" <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$tpl))?>">

@@ -1,5 +1,5 @@
 /* Font Awesome Free 6.7.2 · общая библиотека пиктограмм CMS */
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css");
+@import url("/assets/fontawesome/css/all.min.css?v=6.7.2");
 :root{
   color-scheme:dark;--bg:#101113;--panel:#191b1e;--panel2:#222428;
   --border:#333539;--text:#f0eee9;--muted:#a1a0a0;--accent:#dc8755;
@@ -787,3 +787,26 @@ html[data-theme="dark"] .theme-toggle .theme-toggle-light{opacity:.65}
 .cms-social-symbol .fa-brands,.cms-social-symbol .fa-solid{font-size:1.15em}
 .password-eye .fa-solid{font-size:16px}
 @media(prefers-reduced-motion:reduce){.theme-toggle::before{transition:none}}
+
+/* Администратор: данные профиля и выход — в правой части верхней панели. */
+.admin-header-controls{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-width:0}
+.admin-account-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}
+.admin-account-actions .user-pill{display:inline-flex;align-items:center;gap:7px;max-width:260px;min-height:40px;padding:8px 13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-account-actions .user-pill .fa-solid{color:var(--accent-light);flex:0 0 auto}
+.admin-logout-form{display:inline-flex;margin:0;flex:0 0 auto}
+.admin-logout-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 13px;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.admin-logout-button:hover{color:var(--accent-light);border-color:var(--accent);background:rgba(185,107,69,.1)}
+.admin-logout-button:focus-visible{outline:3px solid var(--accent-light);outline-offset:2px}
+.admin-header-controls .theme-toggle{width:76px!important;min-width:76px!important;flex:0 0 76px!important;height:40px!important;border-radius:999px!important}
+.admin-header-controls .theme-toggle::before{transform:translateY(-50%)}
+html[data-theme="light"] .admin-header-controls .theme-toggle::before{transform:translate(36px,-50%)}
+@media(max-width:1100px){.admin-account-actions .user-pill{max-width:180px}.topbar{padding-left:22px;padding-right:22px}}
+@media(max-width:720px){
+ .topbar{flex-wrap:wrap;row-gap:12px;padding:13px 16px}
+ .topbar-brand{flex:1 1 100%}
+ .admin-header-controls{width:100%;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+ .admin-account-actions{gap:8px}
+ .admin-account-actions .user-pill{display:inline-flex;max-width:min(45vw,220px);font-size:11px}
+ .admin-logout-button{min-height:40px;padding:8px 11px}
+}
+@media(max-width:430px){.admin-logout-button span{display:none}.admin-account-actions .user-pill{max-width:39vw}.admin-header-controls{gap:6px}}

@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('dagstudio-cms-theme')==='light'?'light':'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
   <script src="/assets/theme.js" defer></script>
-  <link rel="stylesheet" href="/assets/style.css?v=ornament2">
+  <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
 </head>
 <body class="install-page">
 <div class="install-shell">

@@ -43,9 +43,9 @@ if ($activeTemplate === 'government') {
   <link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg">
   <script>var dagDefaultTheme=<?=json_encode(template_default_mode($activeTemplate))?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-template-<?=h($activeTemplate)?>");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
   <script src="/assets/theme.js?v=palette4" defer></script>
-  <link rel="stylesheet" href="/assets/style.css?v=templates3">
+  <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
   <link rel="stylesheet" href="/assets/templates.css?v=contacts8">
-  <link rel="stylesheet" href="/assets/media.css?v=unified7">
+  <link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
   <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
   <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>

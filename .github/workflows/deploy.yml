@@ -37,6 +37,8 @@ jobs:
           tools: none
           extensions: pdo_mysql, mbstring
           coverage: none
+      - name: Подготовка локальных иконок Font Awesome Free 6.7.2
+        run: bash tools/install-fontawesome.sh
       - name: Проверка синтаксиса всех PHP-файлов
         run: find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n 1 php -l
       - name: Проверка синтаксиса JavaScript
@@ -164,6 +166,13 @@ jobs:
             php tests/render-templates.php "$type"
           done
 
+      - name: Сохранение проверенных шрифтов для публикации
+        uses: actions/upload-artifact@v4
+        with:
+          name: dagcms-fontawesome-672
+          path: assets/fontawesome/
+          if-no-files-found: error
+          retention-days: 1
 
   deploy:
     name: Загрузка сайта по FTPS
@@ -174,6 +183,17 @@ jobs:
     steps:
       - name: Получение проверенной версии
         uses: actions/checkout@v4
+      - name: Получение проверенных шрифтов Font Awesome
+        uses: actions/download-artifact@v4
+        with:
+          name: dagcms-fontawesome-672
+          path: assets/fontawesome/
+      - name: Проверка локальной библиотеки перед загрузкой
+        run: |
+          test -s assets/fontawesome/css/all.min.css
+          test -s assets/fontawesome/webfonts/fa-solid-900.woff2
+          test -s assets/fontawesome/webfonts/fa-brands-400.woff2
+          test -s assets/fontawesome/webfonts/fa-regular-400.woff2
       - name: Проверка переменных подключения
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}

@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?><!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>Вход — DAG STUDIO CMS</title>
-<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=ornament2"></head>
+<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=fa672-local2"></head>
 <body class="auth-page"><main class="auth-card box"><div class="auth-theme-bar"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span><span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span></button></div>
 <div class="brand"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span>DAG STUDIO <b>CMS</b></span></div>
 <h1>Панель управления</h1><p class="muted">Войдите для управления вашим сайтом.</p>

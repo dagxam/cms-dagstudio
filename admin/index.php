@@ -34,7 +34,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Панель управления — DAG STUDIO CMS</title>
-<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=templates3"><link rel="stylesheet" href="/assets/templates.css?v=contacts8"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
+<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=fa672-local2"><link rel="stylesheet" href="/assets/templates.css?v=contacts8"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
 <body class="admin-layout">
 <aside class="sidebar">
 <a class="brand" href="/admin/index.php"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span>DAG STUDIO <b>CMS</b></span></a>
@@ -79,16 +79,24 @@ $settingsAvailable=allowed('settings')||allowed('messages')||allowed('users');
   </nav>
 </details>
 <?php endif;?>
-<div class="sidebar-bottom"><p class="muted">Вы вошли как<br><strong><?=h($me['name'])?></strong></p>
+<div class="sidebar-bottom">
 <a class="nav-item" href="/" target="_blank" rel="noopener"><span class="cms-nav-icon"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span> Открыть сайт</a>
-<form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit"><i class="fa-solid fa-right-from-bracket cms-icon-inline" aria-hidden="true"></i> Выйти из аккаунта</button></form></div>
+</div>
 </aside>
 <div class="workspace"><header class="topbar"><span class="topbar-brand">Панель управления <span class="muted">/ <?=h($section==='dashboard'?'Обзор':($types[$section]??([
 'settings'=>'Настройки / Основные настройки','templates'=>'Настройки / Выбор темы','menus'=>'Настройки / Главное меню',
 'modules'=>'Настройки / Модули','accessibility'=>'Настройки / Доступность и возраст',
 'privacy'=>'Настройки / Конфиденциальность',
 'contacts'=>'Настройки / Контакты','socials'=>'Настройки / Социальные сети',
-'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span><span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span></button><span class="user-pill"><?=h($me['name'])?> · <?=h($me['role'])?></span></div></header>
+'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span><span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span></button><div class="admin-account-actions">
+  <span class="user-pill"><i class="fa-solid fa-user" aria-hidden="true"></i> <?=h($me['name'])?> · <?=h($me['role'])?></span>
+  <form class="admin-logout-form" method="post" action="/admin/login.php"><?=csrf()?>
+    <input type="hidden" name="logout" value="1">
+    <button class="admin-logout-button" type="submit" title="Выйти из аккаунта" aria-label="Выйти из аккаунта">
+      <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Выйти</span>
+    </button>
+  </form>
+</div></div></header>
 <main class="main">
 <?php if ($flash): ?><div class="notice"><?=h($flash)?></div><?php endif; ?>
 <?php if ($flashError): ?><div class="error"><?=h($flashError)?></div><?php endif; ?>
