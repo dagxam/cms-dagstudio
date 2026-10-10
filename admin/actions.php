@@ -171,6 +171,58 @@ try {
         }catch(Throwable $e){if(database()->inTransaction())database()->rollBack();throw $e;}
         $_SESSION['flash']='Параметры конфиденциальности сохранены.';
         $back='/admin/index.php?section=privacy';
+    } elseif ($action === 'save_contacts') {
+        require_module('settings');
+        $template=(string)($_POST['template']??'');
+        if(!isset(template_catalog()[$template]))throw new RuntimeException('Неизвестный шаблон.');
+        $title=$_POST['title']??'';
+        $intro=$_POST['intro']??'';
+        $hours=$_POST['hours']??'';
+        $details=$_POST['details']??'';
+        if(!is_string($title)||!is_string($intro)||!is_string($hours)||!is_string($details)||
+           trim($title)===''||mb_strlen($title)>140||mb_strlen($intro)>1200||mb_strlen($hours)>1000)
+            throw new RuntimeException('Проверьте название, описание и часы работы.');
+        $data=['title'=>trim($title),'intro'=>trim($intro),'hours'=>trim($hours)];
+        foreach(['phones','emails','addresses'] as $key) {
+            $raw=$_POST[$key]??'';
+            if(!is_string($raw))throw new RuntimeException('Некорректный список контактов.');
+            $data[$key]=cms_contact_parse_lines($raw,$key);
+        }
+        $data['details']=cms_contact_parse_details($details);
+        $maps=json_decode(config_value('cms_contacts_by_type','{}'),true);
+        if(!is_array($maps))$maps=[];
+        $maps[$template]=$data;
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['cms_contacts_by_type',json_encode($maps,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
+        log_action('contacts.update',$template);
+        $_SESSION['flash']='Контактные данные шаблона сохранены.';
+        $back='/admin/index.php?section=contacts&tpl='.rawurlencode($template);
+    } elseif ($action === 'save_socials') {
+        require_module('settings');
+        $template=(string)($_POST['template']??'');
+        if(!isset(template_catalog()[$template]))throw new RuntimeException('Неизвестный шаблон.');
+        $raw=$_POST['social']??[];
+        $location=(string)($_POST['location']??'both');
+        if(!is_array($raw)||count($raw)>count(cms_social_catalog())||
+           !in_array($location,['contact','footer','both'],true))
+            throw new RuntimeException('Некорректные настройки социальных сетей.');
+        $links=[];
+        foreach(cms_social_catalog() as $id=>$social){
+            $value=$raw[$id]??'';
+            if(!is_string($value)||!cms_social_valid_url($id,trim($value)))
+                throw new RuntimeException('Некорректная ссылка: '.$social['name'].' — используйте HTTPS-адрес соответствующей сети.');
+            if(trim($value)!=='')$links[$id]=trim($value);
+        }
+        $data=['enabled'=>isset($_POST['enabled'])&&$_POST['enabled']==='1',
+               'location'=>$location,'links'=>$links];
+        $maps=json_decode(config_value('cms_socials_by_type','{}'),true);
+        if(!is_array($maps))$maps=[];
+        $maps[$template]=$data;
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['cms_socials_by_type',json_encode($maps,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);
+        log_action('socials.update',$template);
+        $_SESSION['flash']='Социальные сети шаблона сохранены.';
+        $back='/admin/index.php?section=socials&tpl='.rawurlencode($template);
     } elseif ($action === 'save_compliance') {
         require_module('settings');
         $age=(string)($_POST['site_age_rating']??'');
