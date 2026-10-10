@@ -14,7 +14,7 @@ $design=template_design($template);
 <script src="/assets/theme.js" defer></script><script src="/assets/accessibility.js?v=a11y4" defer></script><script src="/assets/privacy.js?v=privacy4" defer></script>
 </head><body class="site-page site-template-<?=h($template)?> cms-legal-page" <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$template))?>">
 <a class="cms-skip-link" href="#cms-legal-main">Перейти к содержимому</a>
-<header class="cms-legal-header"><a href="/">← На главную</a><strong><?=h(config_value('site_name'))?></strong><div><?=cms_accessibility_control()?><button class="theme-toggle" type="button" data-theme-toggle aria-label="Переключить тему">☾/☼</button></div></header>
+<?php cms_render_public_header($template); ?>
 <main class="cms-legal-content" id="cms-legal-main"><h1>Согласие на обработку персональных данных</h1>
 <?php if(!$p['ready']):?><div class="cms-legal-alert" role="status">Оператор ещё не опубликовал необходимые реквизиты и политику обработки данных.</div>
 <?php else:?>
