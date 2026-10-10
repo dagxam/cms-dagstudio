@@ -77,6 +77,10 @@ try {
            str_contains($html,'data-accessibility-toggle'))
         : (str_contains($html,'id="site-main-title"') &&
            str_contains($html,'site-sections'));
+    if(substr_count($html,'class="cms-media-header cms-unified-header"')!==1 ||
+       substr_count($html,'<nav class="cms-media-site-nav"')!==1 ||
+       substr_count($html,'aria-label="Главное меню"')!==1)
+        throw new RuntimeException('Главная и разделы должны иметь единую шапку и одно главное меню: '.$id);
     if (!$layoutOk ||
         !str_contains($html,'site-template-'.$id) ||
         !str_contains($html,'/assets/templates.css') ||
