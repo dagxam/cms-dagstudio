@@ -89,7 +89,7 @@ if ($activeTemplate === 'government') {
         <?php if($siteContent['secondary']!==''): ?><a class="button button-outline" href="<?=h(safe_template_url($siteContent['secondary_url'])&&$siteContent['secondary_url']!==''?$siteContent['secondary_url']:'#contact')?>"><?=h($siteContent['secondary'])?></a><?php endif;?>
       </div>
     </div>
-    <div class="site-hero-visual <?=$heroImage!==''?'has-custom-hero':''?>" aria-hidden="true">
+    <div class="site-hero-visual <?=($heroImage!==''?'has-custom-hero ':'').($heroLogo!==''?'has-custom-logo':'')?>" aria-hidden="true">
       <?php if($heroImage!==''): ?><img class="site-custom-hero-image" src="<?=h($heroImage)?>" alt="" loading="eager"><?php endif;?>
       <div class="site-hero-visual-inner">
         <?php if($heroLogo!==''):?><img class="cms-custom-hero-logo" src="<?=h($heroLogo)?>" alt="" loading="eager">
