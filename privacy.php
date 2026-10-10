@@ -9,8 +9,8 @@ $title='Политика обработки персональных данны�
 <!doctype html><html lang="ru" data-theme-storage-key="dagstudio-template-<?=h($active)?>" data-theme-default="<?=h(template_default_mode($active))?>">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?=h($title)?> — <?=h($siteName)?></title>
-<link rel="stylesheet" href="/assets/style.css"><link rel="stylesheet" href="/assets/templates.css?v=dark5">
-<link rel="stylesheet" href="/assets/media.css?v=privacy5">
+<link rel="stylesheet" href="/assets/style.css"><link rel="stylesheet" href="/assets/templates.css?v=dark6">
+<link rel="stylesheet" href="/assets/media.css?v=privacy6">
 <style id="dag-site-palettes"><?=template_palette_css($design,$active)?></style>
 <script>try{const k='dagstudio-template-<?=h($active)?>';const t=localStorage.getItem(k);document.documentElement.dataset.theme=t==='dark'||t==='light'?t:'<?=h(template_default_mode($active))?>'}catch(e){document.documentElement.dataset.theme='<?=h(template_default_mode($active))?>'}</script>
 <script src="/assets/theme.js" defer></script><script src="/assets/accessibility.js?v=a11y4" defer></script><script src="/assets/privacy.js?v=privacy4" defer></script>
