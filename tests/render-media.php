@@ -36,6 +36,10 @@ try{
     if(!str_contains($html,$names[$type]))throw new RuntimeException('Неправильный заголовок.');
     if(!str_contains($html,'cms-media-tile')&&!str_contains($html,'cms-media-empty'))
         throw new RuntimeException('Нет ни карточек, ни пустого состояния.');
+    if(substr_count($html,'class="cms-media-header cms-unified-header"')!==1 ||
+       substr_count($html,'<nav class="cms-media-site-nav"')!==1 ||
+       substr_count($html,'aria-label="Главное меню"')!==1)
+       throw new RuntimeException('В медиаразделе должно быть одно общее меню: '.$tpl.'/'.$type);
     if(strlen($html)<2500)throw new RuntimeException('HTML неожиданно короткий.');
     echo '[OK] Медиараздел '.$type.' в шаблоне '.$tpl.PHP_EOL;
 }finally{
