@@ -48,14 +48,42 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
     if(!cms_module_enabled($key))continue; ?>
 <a class="nav-item <?=$section===$key?'active':''?>" href="?section=<?=h($key)?>"><?=h($label)?></a>
 <?php endforeach; endif; ?>
-<?php if (allowed('messages')): ?><a class="nav-item <?=$section==='messages'?'active':''?>" href="?section=messages">✉ Обращения</a><?php endif; ?>
-<?php if (allowed('users')): ?><a class="nav-item <?=$section==='users'?'active':''?>" href="?section=users">♙ Пользователи</a><?php endif; ?>
-<?php if (allowed('settings')): ?><a class="nav-item <?=$section==='modules'?'active':''?>" href="?section=modules">▦ Модули</a><a class="nav-item <?=$section==='menus'?'active':''?>" href="?section=menus">☷ Главное меню</a><a class="nav-item <?=$section==='templates'?'active':''?>" href="?section=templates">◈ Выбор темы сайта</a><a class="nav-item <?=$section==='accessibility'?'active':''?>" href="?section=accessibility">◉ Доступность и возраст</a><a class="nav-item <?=$section==='settings'?'active':''?>" href="?section=settings">⚙ Настройки</a><?php endif; ?>
+<?php
+$settingsChildren=[
+    'settings'=>['Основные настройки','settings'],
+    'templates'=>['Выбор темы','settings'],
+    'menus'=>['Главное меню','settings'],
+    'modules'=>['Модули','settings'],
+    'accessibility'=>['Доступность и возраст','settings'],
+    'messages'=>['Обращения','messages'],
+    'users'=>['Пользователи','users'],
+];
+$settingsOpen=isset($settingsChildren[$section]);
+$settingsAvailable=allowed('settings')||allowed('messages')||allowed('users');
+?>
+<?php if($settingsAvailable):?>
+<details class="cms-settings-group" <?=$settingsOpen?'open':''?>>
+  <summary class="nav-item cms-settings-summary <?=$settingsOpen?'active':''?>" aria-label="Раздел настроек">
+    <span aria-hidden="true">⚙</span><span>Настройки</span><span class="cms-settings-chevron" aria-hidden="true">⌄</span>
+  </summary>
+  <nav class="cms-settings-children" aria-label="Подразделы настроек">
+    <?php foreach($settingsChildren as $childKey=>$entry):
+      if(!allowed($entry[1]))continue;?>
+      <a class="nav-item cms-settings-child <?=$section===$childKey?'active':''?>" href="/admin/index.php?section=<?=h($childKey)?>" <?=$section===$childKey?'aria-current="page"':''?>>
+        <span class="cms-settings-child-dot" aria-hidden="true"></span><?=h($entry[0])?>
+      </a>
+    <?php endforeach;?>
+  </nav>
+</details>
+<?php endif;?>
 <div class="sidebar-bottom"><p class="muted">Вы вошли как<br><strong><?=h($me['name'])?></strong></p>
 <a class="nav-item" href="/" target="_blank" rel="noopener">↗ Открыть сайт</a>
 <form method="post" action="/admin/login.php"><?=csrf()?><input type="hidden" name="logout" value="1"><button class="logout" type="submit">Выйти из аккаунта</button></form></div>
 </aside>
-<div class="workspace"><header class="topbar"><span class="topbar-brand">Панель управления <span class="muted">/ <?=h($section==='dashboard'?'Обзор':($types[$section]??ucfirst($section)))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button><span class="user-pill"><?=h($me['name'])?> · <?=h($me['role'])?></span></div></header>
+<div class="workspace"><header class="topbar"><span class="topbar-brand">Панель управления <span class="muted">/ <?=h($section==='dashboard'?'Обзор':($types[$section]??([
+'settings'=>'Настройки / Основные настройки','templates'=>'Настройки / Выбор темы','menus'=>'Настройки / Главное меню',
+'modules'=>'Настройки / Модули','accessibility'=>'Настройки / Доступность и возраст',
+'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button><span class="user-pill"><?=h($me['name'])?> · <?=h($me['role'])?></span></div></header>
 <main class="main">
 <?php if ($flash): ?><div class="notice"><?=h($flash)?></div><?php endif; ?>
 <?php if ($flashError): ?><div class="error"><?=h($flashError)?></div><?php endif; ?>
@@ -76,7 +104,7 @@ foreach ($types as $key=>$label) {
 <span class="muted"><?=h($types[$key])?></span><strong><?=number_format($count,0,',',' ')?></strong><span class="stat-link">Перейти в раздел ↗</span></a><?php endforeach; ?>
 </div>
 <div class="box welcome"><h2>Ваш сайт под контролем</h2>
-<p class="muted">Начните с создания страницы или новости. В разделе «Шаблоны и дизайн» выберите оформление и настройте главную страницу.</p>
+<p class="muted">Начните с создания страницы или новости. В разделе «Настройки → Выбор темы» настройте оформление и главную страницу.</p>
 <?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key))continue;?>
 <a class="button button-outline" href="?section=edit&kind=<?=h($key)?>">+ <?=h($label)?></a>
 <?php endforeach; ?></div>
