@@ -50,34 +50,7 @@ if ($activeTemplate === 'government') {
 <body class="<?=h($siteClass)?>"<?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$activeTemplate))?>">
 <a class="cms-skip-link" href="#cms-main-content">Перейти к основному содержимому</a>
 <?php if($previewMode): ?><div class="site-preview-banner"><strong>Предпросмотр: <?=h(template_catalog()[$activeTemplate]['label'])?></strong> · Это предварительный вид. Шаблон не применён. <a href="/admin/index.php?section=templates">Вернуться к выбору</a></div><?php endif;?>
-<?php if ($activeTemplate==='government'): ?><div class="site-official-bar"><div class="container">ОФИЦИАЛЬНЫЙ САЙТ <span>Информация для граждан и организаций</span></div></div><?php endif;?>
-<header class="site-header"><div class="container header-inner">
-  <a class="brand site-brand" href="/">
-    <?php if ($siteLogo!==''): ?><img class="site-uploaded-logo" src="<?=h($siteLogo)?>" alt="" loading="eager"><?php else: ?>
-      <span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span>
-    <?php endif; ?>
-    <span><?=h($siteName)?></span>
-  </a>
-  <nav class="site-nav" aria-label="Главное меню">
-
-    <?php $menuUrls=[];foreach(cms_menu_visible($activeTemplate) as $link):$menuUrls[]=$link['url']; ?>
-    <a href="<?=h($link['url'])?>"><?=h($link['label'])?></a>
-    <?php endforeach;?>
-    <?php foreach(cms_module_ids($activeTemplate,'nav') as $id):if(in_array(cms_module_href($id),$menuUrls,true))continue;?>
-    <a href="<?=h(cms_module_href($id))?>"><?=h(cms_module_label($id))?></a>
-    <?php endforeach;?>
-    <?php foreach ((!cms_menu_configured($activeTemplate)?$navLinks:[]) as $link): if(!is_array($link) || !safe_template_url((string)($link['url']??'')))continue; ?>
-    <a href="<?=h((string)$link['url'])?>"><?=h((string)($link['label']??''))?></a>
-    <?php endforeach;?>
-  </nav>
-  <div class="header-actions">
-    <?=cms_accessibility_control()?>
-    <?=cms_age_mark()?>
-    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button>
-    <?php if($activeTemplate==='store' && module_enabled('product')): ?><a class="small-link shop-shortcut" href="/?kind=product">Каталог ↗</a><?php endif;?>
-    <a class="small-link" href="/admin/login.php">Вход</a>
-  </div>
-</div></header>
+<?php cms_render_public_header($activeTemplate); ?>
 <main id="cms-main-content" class="container site-body">
 <?php if($record): ?>
   <?php $pageConfig=$record['kind']==='page'?cms_page_options((int)$record['id']):null; ?>
