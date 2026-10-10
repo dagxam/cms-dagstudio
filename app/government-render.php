@@ -45,7 +45,8 @@ if ($search!=='')$govTitle='Результаты поиска';
 <link rel="stylesheet" href="/assets/templates.css?v=covers1">
 <link rel="stylesheet" href="/assets/government.css?v=government5">
 <link rel="stylesheet" href="/assets/media.css?v=legal2">
-<script src="/assets/accessibility.js?v=legal2" defer></script>
+<script src="/assets/accessibility.js?v=a11y4" defer></script>
+<script src="/assets/privacy.js?v=privacy4" defer></script>
 <style id="dag-site-palettes"><?=template_palette_css($design,'government')?></style>
 </head>
 <body class="site-page site-template-government government-page government-layout-<?=h($govLayout)?>"
@@ -62,13 +63,14 @@ if ($search!=='')$govTitle='Результаты поиска';
     <?php if($gov['office_phone']!==''):?><span>☎ <?=h($gov['office_phone'])?></span><?php endif;?>
   </div>
   <div class="government-utility-actions">
-    <?php if($gov['show_accessibility']==='1'):?><?=cms_accessibility_control()?><?php endif;?>
+    <?=cms_accessibility_control()?>
     <?=cms_age_mark()?>
     <button type="button" class="government-utility-button" data-government-print>▣ Печать</button>
     <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button>
   </div>
 </div></div>
 <?php endif;?>
+<?php if($gov['show_topbar']!=='1'):?><div class="cms-government-a11y-bar"><?=cms_accessibility_control()?> <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему">☾/☼</button></div><?php endif;?>
 <div class="government-container">
 <header class="government-masthead">
   <a class="government-identity" href="/">
@@ -181,14 +183,14 @@ if ($search!=='')$govTitle='Результаты поиска';
           <h2><?=h($siteContent['contact_title'])?></h2>
           <?php if($message!==''):?><div class="notice" role="status"><?=h($message)?></div><?php endif;?>
           <?php if($error!==''):?><div class="error" role="alert"><?=h($error)?></div><?php endif;?>
-          <?php if($privacyUrl!==''):?>
+          <?php if($privacyReady):?>
           <form class="government-contact" method="post" action="/?module=contact#contact"><?=csrf()?>
             <input type="hidden" name="action" value="contact">
             <div class="honeypot" aria-hidden="true"><label>Сайт<input tabindex="-1" name="website" autocomplete="off"></label></div>
             <label>Ваше имя<input required name="name" maxlength="120" value="<?=h($_POST['name']??'')?>"></label>
             <label>E-mail<input required name="email" type="email" maxlength="190" value="<?=h($_POST['email']??'')?>"></label>
             <label>Сообщение<textarea required name="body" minlength="10" maxlength="5000" rows="4"><?=h($_POST['body']??'')?></textarea></label>
-            <label class="check privacy-check"><input type="checkbox" name="consent" value="1" required> Согласен с <a href="<?=h($privacyUrl)?>" target="_blank" rel="noopener noreferrer">политикой обработки персональных данных</a></label>
+            <label class="check privacy-check"><input type="checkbox" name="consent" value="1" required> Даю отдельное согласие на обработку данных для ответа на обращение. <a href="/consent.php" target="_blank" rel="noopener">Текст согласия</a>. <a href="/privacy.php" target="_blank" rel="noopener">Политика обработки данных</a>.</label>
             <button type="submit" class="button">Отправить обращение</button>
           </form>
           <?php else:?><p>Электронная форма обращений будет доступна после публикации политики обработки персональных данных. Контакты указаны в правой колонке.</p><?php endif;?>
@@ -254,6 +256,8 @@ if ($search!=='')$govTitle='Результаты поиска';
 </div>
 <footer class="government-footer"><?=cms_age_mark()?><span>© <?=date('Y')?> <?=h($siteName)?>. <?=h($siteContent['footer_text'])?> <?=h($gov['footer_note'])?></span><span>Работает на DAG STUDIO CMS
 <?php foreach(cms_module_ids('government','footer') as $id):?><?=cms_module_compact($id,'footer')?><?php endforeach;?></span></footer>
+<div class="cms-legal-footer-links"><?=cms_privacy_links()?></div>
 </div>
+<?=cms_cookie_controls()?>
 <?=cms_age_gate()?>
 </body></html>
