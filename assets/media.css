@@ -505,3 +505,8 @@ body.site-page.cms-vision-active .cms-unified-header .cms-media-header-actions .
  body.site-page .cms-unified-header .cms-media-site-nav{padding:7px 0!important}
 }
 @media print{body.site-page .cms-unified-header .cms-media-header-actions{display:none!important}}
+
+body.site-page .cms-unified-official-strip{display:flex;align-items:center;gap:10px 19px;flex-wrap:wrap}
+body.site-page .cms-unified-official-strip>span,
+body.site-page .cms-unified-official-strip>time{margin:0!important;font-size:10px;color:#fff!important;letter-spacing:0;font-weight:500;opacity:.95}
+body.site-page .cms-unified-official-strip>strong{font-weight:850;color:#fff!important;white-space:nowrap}
