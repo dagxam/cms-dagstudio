@@ -29,7 +29,7 @@ function cms_privacy_links(): string {
     if($url==='')return '';
     return '<nav class="cms-legal-links" aria-label="Конфиденциальность">'
         .'<a href="'.h($url).'">Политика обработки персональных данных</a>'
-        .'<a href="/consent.php">Согласие на обработку данных</a>'
+        .(cms_privacy()['ready']?'<a href="/consent.php">Согласие на обработку данных</a>':'')
         .'<button type="button" data-privacy-open>Настройки конфиденциальности</button></nav>';
 }
 function cms_consent_table(): void {
@@ -51,7 +51,7 @@ function cms_cookie_controls(): string {
     return '<aside class="cms-privacy-banner" data-privacy-banner role="region" aria-labelledby="cms-privacy-title" hidden>'.
       '<div><strong id="cms-privacy-title">Конфиденциальность</strong>'.
       '<p>Сайт использует необходимый сеансовый cookie для работы форм и входа. Видео VK и Rutube могут получать данные посетителя при включённом воспроизведении. Внешние видео не загружаются без вашего выбора.</p>'.
-      '<a href="'.h(cms_privacy_url()?:'/privacy.php').'">Политика обработки данных</a></div>'.
+      (cms_privacy_url()!==''?'<a href="'.h(cms_privacy_url()).'">Политика обработки данных</a>':'<small>Реквизиты оператора уточняются владельцем сайта.</small>').'</div>'.
       '<div class="cms-privacy-actions"><button type="button" data-privacy-reject>Только необходимые</button>'.
       '<button type="button" data-privacy-accept>Разрешить внешнее видео</button></div>'.
       '</aside>';
