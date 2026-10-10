@@ -12,6 +12,7 @@ function check_ext(bool $value,string $label):void{
 require dirname(__DIR__).'/app/templates.php';
 require dirname(__DIR__).'/app/modules.php';
 require dirname(__DIR__).'/app/menus.php';
+require dirname(__DIR__).'/app/public-header.php';
 require dirname(__DIR__).'/app/page-options.php';
 require dirname(__DIR__).'/app/video-links.php';
 check_ext(count(cms_menu_for_template('company'))>2,'Стандартное главное меню');
@@ -24,6 +25,14 @@ $cfg['cms_menus_by_type']=json_encode(['company'=>[['label'=>'Связь','url'=
                                        'government'=>[['label'=>'Документы','url'=>'/media.php?type=document']]]);
 check_ext(cms_menu_for_template('company')[0]['label']==='Связь','Независимое меню компании');
 check_ext(cms_menu_for_template('government')[0]['label']==='Документы','Независимое меню администрации');
+foreach(['organization','company','store','government'] as $type) {
+    $nav=cms_public_menu_links($type);
+    $urls=array_column($nav,'url');
+    check_ext(count($urls)===count(array_unique($urls)),'Без дублей ссылок: '.$type);
+    check_ext(count($nav)>0,'Верхнее меню шаблона не пустое: '.$type);
+}
+check_ext(cms_public_menu_links('company')[0]['label']==='Связь','Свой порядок пунктов компании сохраняется в общей шапке');
+
 $cfg['cms_page_options']=json_encode(['42'=>['before'=>'news','after'=>'photos',
     'left'=>['documents','page'],'right'=>['videos','contact']]]);
 $o=cms_page_options(42);
