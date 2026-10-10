@@ -124,7 +124,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
 <script src="/assets/privacy.js?v=privacy4" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=gallery4">
 <link rel="stylesheet" href="/assets/templates.css?v=dark6">
-<link rel="stylesheet" href="/assets/media.css?v=privacy6">
+<link rel="stylesheet" href="/assets/media.css?v=unified7">
 <style id="dag-site-palettes"><?=template_palette_css($design,$tpl)?></style>
 </head>
 <body class="site-page site-template-<?=h($tpl)?> cms-media-page cms-media-layout-<?=h($activeSection)?> <?=$tpl==='government'?'government-page cms-media-official':''?>" <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$tpl))?>">
