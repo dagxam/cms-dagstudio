@@ -129,31 +129,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
 </head>
 <body class="site-page site-template-<?=h($tpl)?> cms-media-page cms-media-layout-<?=h($activeSection)?> <?=$tpl==='government'?'government-page cms-media-official':''?>" <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$tpl))?>">
 <a class="cms-skip-link" href="#cms-media-content">Перейти к содержимому</a>
-<?php if($tpl==='government'):?>
-<div class="cms-media-official-strip">ОФИЦИАЛЬНЫЙ САЙТ <span>Информация для граждан и организаций</span></div>
-<?php endif;?>
-<header class="cms-media-header">
-  <div class="cms-media-header-inner">
-    <a class="cms-media-brand" href="/">
-      <?php if($siteLogo!==''):?><img src="<?=h($siteLogo)?>" alt="" loading="eager">
-      <?php else:?><span class="cms-media-brand-mark" aria-hidden="true">
-        <img class="logo-on-light" src="/assets/ornament-light.svg" alt="">
-        <img class="logo-on-dark" src="/assets/ornament-dark.svg" alt="">
-      </span><?php endif;?>
-      <span><small><?=h(template_catalog()[$tpl]['label'])?></small><strong><?=h($siteName)?></strong></span>
-    </a>
-    <div class="cms-media-header-actions">
-      <?=cms_accessibility_control()?>
-      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить светлую и тёмную тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button>
-      <?=cms_age_mark()?>
-    </div>
-  </div>
-  <nav class="cms-media-site-nav" aria-label="Главное меню">
-    <?php foreach($menuLinks as $link):if(!safe_template_url($link['url']))continue;?>
-      <a href="<?=h($link['url'])?>"><?=h($link['label'])?></a>
-    <?php endforeach;?>
-  </nav>
-</header>
+<?php cms_render_public_header($tpl); ?>
 <main id="cms-media-content" class="cms-media-public">
   <nav class="cms-media-breadcrumb" aria-label="Навигационная цепочка">
     <a href="/">Главная</a><span aria-hidden="true">›</span>
