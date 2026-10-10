@@ -34,6 +34,7 @@ try {
         $url=trim((string)($_POST['video_url']??''));
         $age=(string)($_POST['age_rating']??'0+');
         $status=(string)($_POST['status']??'draft');
+        if(site_template()==='government' && $description==='')throw new RuntimeException('Для официального сайта добавьте текстовое описание видео для доступности.');
         $parsed=cms_video_embed($url);
         if($title===''||mb_strlen($title)>190||mb_strlen($description)>2000||
            strlen($url)>500||!$parsed||!cms_media_age_valid($age)||!in_array($status,['draft','published'],true))
@@ -208,6 +209,7 @@ try {
         if($title===''||mb_strlen($title)>190||mb_strlen($description)>2000||
             mb_strlen($alt)>300||!cms_media_age_valid($age))throw new RuntimeException('Проверьте описание и возрастную маркировку.');
         if($category==='photo'&&$alt==='')throw new RuntimeException('Для фотографии нужен альтернативный текст.');
+        if($category==='video'&&site_template()==='government'&&$description==='')throw new RuntimeException('Для официального сайта необходимо краткое текстовое описание видео.');
         $file=$_FILES['media_file']??[];
         if(!is_array($file))throw new RuntimeException('Выберите файл.');
         [$mime,$ext,$size,$original]=cms_media_upload_validation($file,$category);
