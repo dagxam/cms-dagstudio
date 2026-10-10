@@ -83,55 +83,156 @@ if($mediaId){
 $files=array_values(array_filter(cms_media_list(true),
     static fn(array $x):bool=>cms_module_enabled(['document'=>'documents','photo'=>'photos','video'=>'videos'][$x['category']]??'')));
 $filter=(string)($_GET['type']??'all');
-if(in_array($filter,['photo','video','document'],true))$files=array_values(array_filter($files,static fn(array $f):bool=>$f['category']===$filter));
+if(in_array($filter,['photo','video','document'],true))
+    $files=array_values(array_filter($files,static fn(array $f):bool=>$f['category']===$filter));
+$linkedVideos=$filter==='video' && cms_module_enabled('videos')?cms_video_links(true):[];
 $rating=cms_age_rating();
-?><!doctype html>
-<html lang="ru" data-theme-storage-key="dagstudio-template-<?=h(site_template())?>" data-theme-default="<?=h(template_default_mode(site_template()))?>"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title><?=h($item['title']??($external['title']??['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'][$requestedCategory]??'Разделы сайта'))?> — <?=h(config_value('site_name','DAG STUDIO CMS'))?></title>
-<meta name="robots" content="index,follow"><link rel="stylesheet" href="/assets/style.css?v=media1">
-<link rel="stylesheet" href="/assets/media.css?v=legal3">
-<script>try{const k='dagstudio-template-<?=h(site_template())?>';const t=localStorage.getItem(k);document.documentElement.dataset.theme=t==='light'||t==='dark'?t:'<?=h(template_default_mode(site_template()))?>'}catch(e){document.documentElement.dataset.theme='<?=h(template_default_mode(site_template()))?>'}</script>
-<script src="/assets/theme.js?v=modules7" defer></script>
-<script src="/assets/accessibility.js?v=legal2" defer></script></head>
-<body class="cms-media-page"<?=cms_accessibility_attributes()?>>
-<header class="cms-media-header"><a href="/">← На главную</a><strong><?=h(config_value('site_name','DAG STUDIO CMS'))?></strong><div class="cms-media-header-actions"><button class="theme-toggle" type="button" data-theme-toggle aria-label="Переключить цветовую тему" aria-pressed="false">☾/☼</button><?=cms_accessibility_control()?><?=cms_age_mark()?></div></header>
-<main class="cms-media-public"><div class="cms-media-head"><span class="eyebrow">DAG STUDIO CMS</span><h1><?=h($item['title']??($external['title']??(['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'][$requestedCategory]??'Файлы сайта')))?></h1>
-<p>Документы, фотографии и видео, опубликованные администрацией сайта.</p></div>
-<?php if($external):
-  $embedded=cms_video_embed((string)$external['original_url']);
+$tpl=site_template();
+$design=template_design($tpl);
+$siteContent=template_content($tpl);
+$siteName=config_value('site_name','DAG STUDIO CMS');
+$siteLogo=(string)$siteContent['logo_path'];
+if(!preg_match('~^/assets/uploads/logo-[a-f0-9]{32}\\.(png|jpg|webp)$~D',$siteLogo))$siteLogo='';
+$sectionLabels=['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея','all'=>'Материалы сайта'];
+$activeSection=$item['category']??($external?'video':$filter);
+$sectionTitle=$sectionLabels[$activeSection]??'Материалы сайта';
+$pageTitle=(string)($item['title']??($external['title']??$sectionTitle));
+$sectionDescriptions=[
+    'document'=>'Официальные документы, отчёты, положения и полезные файлы.',
+    'photo'=>'Фотографии, события и галереи нашего сайта.',
+    'video'=>'Видеоматериалы, репортажи и публикации.',
+    'all'=>'Документы, фотографии и видеоматериалы сайта.',
+];
+$menuUrls=[];$menuLinks=[];
+foreach(cms_menu_visible($tpl) as $link){$menuLinks[]=$link;$menuUrls[]=$link['url'];}
+foreach(cms_module_ids($tpl,'nav') as $module){
+    $url=cms_module_href($module);
+    if(!in_array($url,$menuUrls,true)){$menuLinks[]=['url'=>$url,'label'=>cms_module_label($module)];$menuUrls[]=$url;}
+}
 ?>
-<article class="box cms-media-detail"><span class="cms-age-mark"><?=h($external['age_rating'])?></span>
-<?php if($embedded):?><div class="cms-video-frame"><iframe src="<?=h($embedded['embed'])?>" title="<?=h($external['title'])?>" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><?php endif;?>
-<?php if($external['description']):?><p><?=nl2br(h($external['description']))?></p><?php endif;?>
-<p><a href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Открыть на видеоплатформе ↗</a></p></article>
-<?php elseif($item):?>
-<article class="box cms-media-detail"><span class="cms-age-mark"><?=h($item['age_rating'])?></span>
-<?php if($item['category']==='photo'):?><img src="/media.php?file=<?=(int)$item['id']?>" alt="<?=h($item['alt_text']?:$item['title'])?>">
-<?php elseif($item['category']==='video'):?><video controls preload="metadata" playsinline aria-label="<?=h($item['title'])?>"><source src="/media.php?file=<?=(int)$item['id']?>" type="<?=h($item['mime'])?>">Ваш браузер не поддерживает видео.</video>
-<?php else:?><p>Файл документа: <?=h($item['original_name'])?></p><a class="button" href="/media.php?file=<?=(int)$item['id']?>">Скачать документ ↓</a><?php endif;?>
-<?php if($item['description']):?><p><?=nl2br(h((string)$item['description']))?></p><?php endif;?>
-<p><a href="/media.php">← Все материалы</a></p></article>
-<?php else:?>
-<nav class="cms-media-filters" aria-label="Тип файлов">
-<?php foreach(['all'=>'Все','document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'] as $type=>$label): if($type!=='all'&&!cms_module_enabled(['document'=>'documents','photo'=>'photos','video'=>'videos'][$type]))continue;?>
-<a class="<?=$filter===$type?'current':''?>" href="/media.php?type=<?=h($type)?>"><?=h($label)?></a>
-<?php endforeach;?></nav>
-<div class="cms-media-grid">
-<?php if($filter==='video'):
-  foreach(cms_video_links(true) as $v):?>
-  <article class="box cms-media-tile"><div class="cms-media-type">▶</div><span class="cms-age-mark"><?=h($v['age_rating'])?></span><h2><a href="/media.php?type=video&amp;external=<?=(int)$v['id']?>"><?=h($v['title'])?></a></h2><p><?=h(mb_strimwidth((string)$v['description'],0,150,'…','UTF-8'))?></p><a href="/media.php?type=video&amp;external=<?=(int)$v['id']?>">Смотреть видео ↗</a></article>
-  <?php endforeach; endif;?>
-<?php foreach($files as $f):?><article class="box cms-media-tile">
-<?php if($f['category']==='photo'):?><a href="/media.php?view=<?=(int)$f['id']?>">
-<?php if($f['age_rating']==='18+'):?><div class="cms-media-type">18+</div><?php else:?><img loading="lazy" src="/media.php?file=<?=(int)$f['id']?>" alt="<?=h($f['alt_text']?:$f['title'])?>"><?php endif;?></a>
-<?php else:?><div class="cms-media-type"><?=['document'=>'▤','video'=>'▣'][$f['category']]?></div><?php endif;?>
-<span class="cms-age-mark"><?=h($f['age_rating'])?></span><h2><a href="/media.php?view=<?=(int)$f['id']?>"><?=h($f['title'])?></a></h2>
-<p><?=h(mb_strimwidth((string)($f['description']??''),0,150,'…','UTF-8'))?></p>
-<a href="/media.php?view=<?=(int)$f['id']?>">Открыть ↗</a>
-</article><?php endforeach;?>
-</div>
-<?php if(!$files && !($filter==='video'&&cms_video_links(true))):?><div class="box">Опубликованных материалов пока нет.</div><?php endif;?>
+<!doctype html>
+<html lang="ru" data-theme-storage-key="dagstudio-template-<?=h($tpl)?>" data-theme-default="<?=h(template_default_mode($tpl))?>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="<?=h($sectionDescriptions[$activeSection]??$sectionDescriptions['all'])?>">
+<title><?=h($pageTitle)?> — <?=h($siteName)?></title>
+<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-<?=template_default_mode($tpl)==='light'?'light':'dark'?>.svg">
+<script>try{const k='dagstudio-template-<?=h($tpl)?>';const t=localStorage.getItem(k);document.documentElement.dataset.theme=t==='light'||t==='dark'?t:'<?=h(template_default_mode($tpl))?>'}catch(e){document.documentElement.dataset.theme='<?=h(template_default_mode($tpl))?>'}</script>
+<script src="/assets/theme.js?v=gallery4" defer></script>
+<script src="/assets/accessibility.js?v=gallery4" defer></script>
+<link rel="stylesheet" href="/assets/style.css?v=gallery4">
+<link rel="stylesheet" href="/assets/templates.css?v=gallery4">
+<link rel="stylesheet" href="/assets/media.css?v=gallery4">
+<style id="dag-site-palettes"><?=template_palette_css($design,$tpl)?></style>
+</head>
+<body class="site-page site-template-<?=h($tpl)?> cms-media-page cms-media-layout-<?=h($activeSection)?> <?=$tpl==='government'?'government-page cms-media-official':''?>" <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$tpl))?>">
+<a class="cms-skip-link" href="#cms-media-content">Перейти к содержимому</a>
+<?php if($tpl==='government'):?>
+<div class="cms-media-official-strip">ОФИЦИАЛЬНЫЙ САЙТ <span>Информация для граждан и организаций</span></div>
 <?php endif;?>
-</main><footer class="cms-media-footer">© <?=date('Y')?> <?=h(config_value('site_name','DAG STUDIO CMS'))?> · DAG STUDIO CMS · <?=h($rating)?></footer>
+<header class="cms-media-header">
+  <div class="cms-media-header-inner">
+    <a class="cms-media-brand" href="/">
+      <?php if($siteLogo!==''):?><img src="<?=h($siteLogo)?>" alt="" loading="eager">
+      <?php else:?><span class="cms-media-brand-mark" aria-hidden="true">
+        <img class="logo-on-light" src="/assets/ornament-light.svg" alt="">
+        <img class="logo-on-dark" src="/assets/ornament-dark.svg" alt="">
+      </span><?php endif;?>
+      <span><small><?=h(template_catalog()[$tpl]['label'])?></small><strong><?=h($siteName)?></strong></span>
+    </a>
+    <div class="cms-media-header-actions">
+      <?=cms_accessibility_control()?>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить светлую и тёмную тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button>
+      <?=cms_age_mark()?>
+    </div>
+  </div>
+  <nav class="cms-media-site-nav" aria-label="Главное меню">
+    <?php foreach($menuLinks as $link):if(!safe_template_url($link['url']))continue;?>
+      <a href="<?=h($link['url'])?>"><?=h($link['label'])?></a>
+    <?php endforeach;?>
+  </nav>
+</header>
+<main id="cms-media-content" class="cms-media-public">
+  <nav class="cms-media-breadcrumb" aria-label="Навигационная цепочка">
+    <a href="/">Главная</a><span aria-hidden="true">›</span>
+    <?php if($item || $external):?><a href="/media.php?type=<?=h($activeSection)?>"><?=h($sectionTitle)?></a><span aria-hidden="true">›</span><span><?=h($pageTitle)?></span>
+    <?php else:?><span aria-current="page"><?=h($sectionTitle)?></span><?php endif;?>
+  </nav>
+  <div class="cms-media-head">
+    <div class="cms-media-head-copy">
+      <span class="eyebrow"><?=h($tpl==='government'?'РАЗДЕЛ ОФИЦИАЛЬНОГО САЙТА':'ПУБЛИКАЦИИ И МАТЕРИАЛЫ')?></span>
+      <h1><?=h($pageTitle)?></h1>
+      <p><?=h($sectionDescriptions[$activeSection]??$sectionDescriptions['all'])?></p>
+    </div>
+    <span class="cms-media-head-decoration" aria-hidden="true"><?=['document'=>'▤','photo'=>'▧','video'=>'▶','all'=>'◇'][$activeSection]??'◇'?></span>
+  </div>
+  <?php if($external):
+    $embedded=cms_video_embed((string)$external['original_url']);?>
+    <article class="cms-media-detail cms-media-detail-video">
+      <div class="cms-media-detail-meta"><span class="cms-media-topic">Видеогалерея · <?=h($external['provider']==='vk'?'VK Видео':'Rutube')?></span><span class="cms-age-mark"><?=h($external['age_rating'])?></span></div>
+      <?php if($embedded):?><div class="cms-video-frame"><iframe src="<?=h($embedded['embed'])?>" title="<?=h($external['title'])?>" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><?php endif;?>
+      <?php if($external['description']):?><p class="cms-media-description"><?=nl2br(h($external['description']))?></p><?php endif;?>
+      <a class="cms-media-detail-link" href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Смотреть на видеоплатформе ↗</a>
+    </article>
+  <?php elseif($item):?>
+    <article class="cms-media-detail cms-media-detail-<?=h($item['category'])?>">
+      <div class="cms-media-detail-meta"><span class="cms-media-topic"><?=h($sectionTitle)?></span><span class="cms-age-mark"><?=h($item['age_rating'])?></span></div>
+      <?php if($item['category']==='photo'):?>
+        <figure class="cms-media-full-photo"><img src="/media.php?file=<?=(int)$item['id']?>" alt="<?=h($item['alt_text']?:$item['title'])?>"></figure>
+      <?php elseif($item['category']==='video'):?>
+        <video controls preload="metadata" playsinline aria-label="<?=h($item['title'])?>"><source src="/media.php?file=<?=(int)$item['id']?>" type="<?=h($item['mime'])?>">Браузер не поддерживает видео.</video>
+      <?php else:?>
+        <div class="cms-media-document-download">
+          <span class="cms-media-document-icon" aria-hidden="true">▤</span>
+          <div><strong><?=h($item['original_name'])?></strong><p><?=number_format(((int)$item['size_bytes'])/1048576,2,',',' ')?> МБ · <?=h(strtoupper(pathinfo((string)$item['original_name'],PATHINFO_EXTENSION)))?></p></div>
+          <a class="cms-media-action" href="/media.php?file=<?=(int)$item['id']?>">Скачать документ <span aria-hidden="true">↓</span></a>
+        </div>
+      <?php endif;?>
+      <?php if($item['description']):?><p class="cms-media-description"><?=nl2br(h((string)$item['description']))?></p><?php endif;?>
+    </article>
+  <?php else:?>
+    <nav class="cms-media-filters" aria-label="Выберите тип материалов">
+      <?php foreach(['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'] as $type=>$label):
+        if(!cms_module_enabled(['document'=>'documents','photo'=>'photos','video'=>'videos'][$type]))continue;?>
+        <a class="<?=$filter===$type?'current':''?>" <?=$filter===$type?'aria-current="page"':''?> href="/media.php?type=<?=h($type)?>"><?=h($label)?></a>
+      <?php endforeach;?>
+    </nav>
+    <div class="cms-media-grid">
+      <?php if($filter==='video'):foreach($linkedVideos as $v):?>
+        <article class="cms-media-tile cms-media-tile-video">
+          <a class="cms-media-tile-media" href="/media.php?type=video&amp;external=<?=(int)$v['id']?>" aria-label="Смотреть: <?=h($v['title'])?>"><span class="cms-media-tile-symbol" aria-hidden="true">▶</span></a>
+          <div class="cms-media-tile-copy">
+            <div class="cms-media-tile-meta"><span><?=h($v['provider']==='vk'?'VK Видео':'Rutube')?></span><span><?=h($v['age_rating'])?></span></div>
+            <h2><a href="/media.php?type=video&amp;external=<?=(int)$v['id']?>"><?=h($v['title'])?></a></h2>
+            <?php if($v['description']):?><p><?=h(mb_strimwidth((string)$v['description'],0,150,'…','UTF-8'))?></p><?php endif;?>
+            <a class="cms-media-tile-cta" href="/media.php?type=video&amp;external=<?=(int)$v['id']?>">Смотреть <span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+      <?php endforeach;endif;?>
+      <?php foreach($files as $f):$id=(int)$f['id'];$link='/media.php?view='.$id;?>
+      <article class="cms-media-tile cms-media-tile-<?=h($f['category'])?>">
+        <a class="cms-media-tile-media" href="<?=h($link)?>" aria-label="<?=h($f['title'])?>">
+          <?php if($f['category']==='photo' && $f['age_rating']!=='18+'):?>
+            <img loading="lazy" decoding="async" src="/media.php?file=<?=$id?>" alt="<?=h($f['alt_text']?:$f['title'])?>">
+          <?php else:?><span class="cms-media-tile-symbol" aria-hidden="true"><?= $f['age_rating']==='18+'?'18+':(['document'=>'▤','video'=>'▶'][$f['category']]??'▧') ?></span><?php endif;?>
+        </a>
+        <div class="cms-media-tile-copy">
+          <div class="cms-media-tile-meta"><span><?=h(['photo'=>'Фотография','document'=>'Документ','video'=>'Видео'][$f['category']])?></span><span><?=h($f['age_rating'])?></span></div>
+          <h2><a href="<?=h($link)?>"><?=h($f['title'])?></a></h2>
+          <?php if($f['description']):?><p><?=h(mb_strimwidth((string)$f['description'],0,150,'…','UTF-8'))?></p><?php endif;?>
+          <a class="cms-media-tile-cta" href="<?=h($link)?>"><?=$f['category']==='document'?'Открыть документ':($f['category']==='video'?'Смотреть видео':'Смотреть фото')?><span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+      <?php endforeach;?>
+    </div>
+    <?php if(!$files&&!$linkedVideos):?><div class="cms-media-empty"><span aria-hidden="true">◇</span><h2>Материалов пока нет</h2><p>Здесь появятся опубликованные материалы этого раздела.</p></div><?php endif;?>
+  <?php endif;?>
+  <?php if($item||$external):?><a class="cms-media-back" href="/media.php?type=<?=h($activeSection)?>">← К разделу «<?=h($sectionTitle)?>»</a><?php endif;?>
+</main>
+<footer class="cms-media-footer">
+  <div><strong><?=h($siteName)?></strong><span>© <?=date('Y')?> · <?=h($siteContent['footer_text'])?></span></div>
+  <div><span><?=cms_age_mark()?></span><span>Создано на DAG STUDIO CMS</span></div>
+</footer>
 <?=cms_age_gate()?>
 </body></html>
