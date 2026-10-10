@@ -11,12 +11,13 @@ $kind = (string)($_GET['kind'] ?? '');
 if (!array_key_exists($kind, $types)) $kind = '';
 $message = '';
 $error = '';
-$privacyUrl = config_value('privacy_url');
+$privacyUrl = cms_privacy_url();
+$privacyReady = cms_privacy()['ready'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'contact') {
     if (!cms_module_enabled('contact')) {http_response_code(404);exit('Раздел обращений отключён.');}
     verify_token();
-    if ($privacyUrl === '' || empty($_POST['consent'])) {
+    if (!$privacyReady || empty($_POST['consent']) || ($_POST['consent']??'')!=='1') {
         http_response_code(400);
         $error = 'Отправка обращения требует опубликованной политики и согласия.';
     } else {
@@ -34,8 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'conta
     } elseif (time() - (int)($_SESSION['last_contact'] ?? 0) < 60) {
         $error = 'Вы уже отправили сообщение. Повторите через минуту.';
     } else {
-        database()->prepare('INSERT INTO messages(name,email,body) VALUES (?,?,?)')
-            ->execute([$name,$email,$body]);
+        cms_consent_table();
+        $db=database();
+        $p=cms_privacy();
+        $db->beginTransaction();
+        try {
+            $db->prepare('INSERT INTO messages(name,email,body) VALUES (?,?,?)')
+                ->execute([$name,$email,$body]);
+            $messageId=(int)$db->lastInsertId();
+            $db->prepare('INSERT INTO cms_message_consents(message_id,consent_version,consent_text_hash) VALUES(?,?,?)')
+                ->execute([$messageId,$p['version'],hash('sha256',cms_consent_text($p))]);
+            $db->commit();
+        }catch(Throwable $e){if($db->inTransaction())$db->rollBack();throw $e;}
         $_SESSION['last_contact'] = time();
         $message = 'Спасибо! Ваше обращение сохранено и доступно администратору сайта.';
     }
