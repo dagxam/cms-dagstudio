@@ -186,7 +186,7 @@ try {
             if(!in_array($v,$options,true))throw new RuntimeException('Недопустимый параметр доступности: '.$key);
             $opts[$key]=$v;
         }
-        foreach(['show_images','underlines','grayscale'] as $key)$opts[$key]=isset($_POST[$key])?'1':'0';
+        foreach(['show_images','underlines','grayscale','motion'] as $key)$opts[$key]=isset($_POST[$key])?'1':'0';
         $q=database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
         $q->execute(['site_age_rating',$age]);
         $q->execute(['accessibility_options',json_encode($opts,JSON_UNESCAPED_UNICODE)]);
