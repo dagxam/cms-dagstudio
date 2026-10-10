@@ -16,7 +16,7 @@ $title='Политика обработки персональных данны�
 <script src="/assets/theme.js" defer></script><script src="/assets/accessibility.js?v=a11y4" defer></script><script src="/assets/privacy.js?v=privacy4" defer></script>
 </head><body class="site-page site-template-<?=h($active)?> cms-legal-page" <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$active))?>">
 <a class="cms-skip-link" href="#cms-legal-main">Перейти к основному содержимому</a>
-<header class="cms-legal-header"><a href="/">← На главную</a><strong><?=h($siteName)?></strong><div><?=cms_accessibility_control()?><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить цветовую тему">☾/☼</button></div></header>
+<?php cms_render_public_header($active); ?>
 <main id="cms-legal-main" class="cms-legal-content">
 <h1><?=h($title)?></h1>
 <?php if(!$p['ready']):?>
