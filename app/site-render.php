@@ -14,6 +14,9 @@ $siteLogo = $siteContent['logo_path'];
 if (!preg_match('~^/assets/uploads/logo-[a-f0-9]{32}\\.(png|jpg|webp)$~D', $siteLogo)) $siteLogo = '';
 $heroImage = (string)($siteContent['hero_image_path'] ?? '');
 if (!preg_match('~^/assets/uploads/hero-[a-f0-9]{32}\\.(png|jpg|webp)$~D', $heroImage)) $heroImage = '';
+$heroLogo=(string)($siteContent['hero_logo_path']??'');
+if(!preg_match('~^/assets/uploads/hero-logo-[a-f0-9]{32}\\.(png|jpg|webp)$~D',$heroLogo))$heroLogo='';
+$siteContacts=cms_contacts($activeTemplate);
 $requestedWidget=(string)($_GET['module']??'');
 $visibleSections = $kind !== '' ? [$kind] : ((in_array($requestedWidget,['features','contact'],true)&&cms_module_enabled($requestedWidget))?[$requestedWidget]:cms_module_ids($activeTemplate,'main'));
 $visibleSections = array_values(array_filter($visibleSections, static fn(string $s): bool => cms_module_enabled($s)));
@@ -88,7 +91,10 @@ if ($activeTemplate === 'government') {
     </div>
     <div class="site-hero-visual <?=$heroImage!==''?'has-custom-hero':''?>" aria-hidden="true">
       <?php if($heroImage!==''): ?><img class="site-custom-hero-image" src="<?=h($heroImage)?>" alt="" loading="eager"><?php endif;?>
-      <div class="site-hero-visual-inner"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></div>
+      <div class="site-hero-visual-inner">
+        <?php if($heroLogo!==''):?><img class="cms-custom-hero-logo" src="<?=h($heroLogo)?>" alt="" loading="eager">
+        <?php else:?><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""><?php endif;?>
+      </div>
       <span><?=h(template_catalog()[$activeTemplate]['label'])?></span>
     </div>
   </section>
@@ -112,11 +118,9 @@ if ($activeTemplate === 'government') {
       <?php cms_module_media_block($section); ?>
     <?php elseif($section==='contact'): ?>
     <section class="section-block contact-section site-block" id="contact">
-      <div><div class="eyebrow">ОБРАТНАЯ СВЯЗЬ</div><h2><?=h($siteContent['contact_title'])?></h2>
-        <p class="muted">Свяжитесь с нами по указанным контактам или оставьте сообщение через сайт.</p>
-        <?php if($siteContent['phone']!==''): ?><p><strong>Телефон:</strong> <?=h($siteContent['phone'])?></p><?php endif;?>
-        <?php if($siteContent['address']!==''): ?><p><strong>Адрес:</strong> <?=h($siteContent['address'])?></p><?php endif;?>
-        <p><?=h(config_value('contact_email'))?></p>
+      <div><div class="eyebrow">ОБРАТНАЯ СВЯЗЬ</div><h2><?=h($siteContacts['title'])?></h2>
+        <?php if($siteContacts['intro']!==''):?><p class="muted"><?=nl2br(h($siteContacts['intro']))?></p><?php endif;?>
+        <?=cms_render_contact_details($activeTemplate)?>
       </div>
       <?php if($privacyReady): ?><div class="box contact-form">
         <?php if($message): ?><div class="notice" role="status"><?=h($message)?></div><?php endif;?>
@@ -178,7 +182,7 @@ if ($activeTemplate === 'government') {
   <div><strong><?=h($siteName)?></strong><br><?=h($siteContent['footer_text'])?></div>
   <div><?=date('Y')?> · Работает на <strong>DAG STUDIO CMS</strong>
   <?php foreach(cms_module_ids($activeTemplate,'footer') as $id):?><?=cms_module_compact($id,'footer')?><?php endforeach;?></div>
-</div><div class="container cms-legal-footer-links"><?=cms_privacy_links()?></div></footer>
+</div><div class="container cms-social-footer"><?=cms_render_social_links($activeTemplate,'footer')?></div><div class="container cms-legal-footer-links"><?=cms_privacy_links()?></div></footer>
 <?=cms_cookie_controls()?>
 <?=cms_age_gate()?>
 </body></html>
