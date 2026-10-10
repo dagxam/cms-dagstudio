@@ -169,6 +169,31 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
         <?php if($content['hero_image_path']!==''): ?>
           <div class="template-current-logo"><img src="<?=h($content['hero_image_path'])?>" alt="Текущий фон первого экрана"><label class="check"><input type="checkbox" name="remove_hero_image" value="1"> Убрать фоновое изображение</label></div>
         <?php endif;?>
+        <?php if($selectedTemplate!=='government'):?>
+        <fieldset class="cms-hero-logo-editor">
+          <legend>Логотип в правом блоке главной страницы</legend>
+          <p class="muted">Отдельная эмблема в большом блоке справа. Не влияет на логотип в шапке и фоновую картинку. Можно задать индивидуально для организации, компании и магазина.</p>
+          <div class="cms-hero-logo-editor-grid">
+            <div class="cms-hero-logo-current">
+              <?php $heroLogo=(string)($content['hero_logo_path']??'');?>
+              <?php if($heroLogo!=='' && preg_match('~^/assets/uploads/hero-logo-[a-f0-9]{32}\\.(png|jpg|webp)$~D',$heroLogo)):?>
+                <img src="<?=h($heroLogo)?>" alt="Текущий логотип правого блока" loading="lazy">
+              <?php else:?>
+                <img src="/assets/ornament-light.svg" alt="Стандартный орнамент" loading="lazy">
+              <?php endif;?>
+            </div>
+            <div>
+              <label>Заменить эмблему (PNG с прозрачностью, JPG, WebP; до 3 МБ)
+                <input name="hero_logo" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
+              </label>
+              <?php if($heroLogo!==''):?>
+                <label class="check"><input type="checkbox" name="remove_hero_logo" value="1"> Вернуть стандартный орнамент</label>
+              <?php endif;?>
+              <p class="muted">Рекомендуется квадратный логотип 600 × 600 пикселей или крупнее. При замене сохраняется оформление выбранной темы.</p>
+            </div>
+          </div>
+        </fieldset>
+        <?php endif;?>
         <label>Надпись над заголовком<input name="eyebrow" maxlength="140" value="<?=h($content['eyebrow'])?>"></label>
         <label>Заголовок первого экрана<input name="title" maxlength="190" value="<?=h($content['title'])?>" required></label>
         <label class="template-field-wide">Описание первого экрана<textarea name="description" rows="3" maxlength="700"><?=h($content['description'])?></textarea></label>
