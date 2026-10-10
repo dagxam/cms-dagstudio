@@ -6,7 +6,7 @@ header('X-Robots-Tag: noindex, nofollow');
 $me = require_account();
 $section = (string)($_GET['section'] ?? 'dashboard');
 $types = kinds();
-if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages','documents','photos','videos','accessibility','modules','menus'],array_keys($types)),true)) $section='dashboard';
+if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages','documents','photos','videos','accessibility','privacy','modules','menus'],array_keys($types)),true)) $section='dashboard';
 if ($section === 'edit') {
     $id = max(0,(int)($_GET['id'] ?? 0));
     $record = null;
@@ -21,7 +21,7 @@ if ($section === 'edit') {
     require_module($kind);
     if (!module_enabled($kind)) { http_response_code(404); exit('Модуль отключён'); }
 } elseif ($section !== 'dashboard') {
-    require_module(in_array($section,['accessibility','modules','menus'],true)?'settings':(in_array($section,['documents','photos','videos'],true)?'media':$section));
+    require_module(in_array($section,['accessibility','privacy','modules','menus'],true)?'settings':(in_array($section,['documents','photos','videos'],true)?'media':$section));
     if (isset($types[$section]) && !module_enabled($section)) {
         http_response_code(404);
         exit('Модуль отключён');
@@ -55,6 +55,7 @@ $settingsChildren=[
     'menus'=>['Главное меню','settings'],
     'modules'=>['Модули','settings'],
     'accessibility'=>['Доступность и возраст','settings'],
+    'privacy'=>['Конфиденциальность','settings'],
     'messages'=>['Обращения','messages'],
     'users'=>['Пользователи','users'],
 ];
@@ -83,6 +84,7 @@ $settingsAvailable=allowed('settings')||allowed('messages')||allowed('users');
 <div class="workspace"><header class="topbar"><span class="topbar-brand">Панель управления <span class="muted">/ <?=h($section==='dashboard'?'Обзор':($types[$section]??([
 'settings'=>'Настройки / Основные настройки','templates'=>'Настройки / Выбор темы','menus'=>'Настройки / Главное меню',
 'modules'=>'Настройки / Модули','accessibility'=>'Настройки / Доступность и возраст',
+'privacy'=>'Настройки / Конфиденциальность',
 'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true">☾</span><span class="theme-toggle-light" aria-hidden="true">☼</span></button><span class="user-pill"><?=h($me['name'])?> · <?=h($me['role'])?></span></div></header>
 <main class="main">
 <?php if ($flash): ?><div class="notice"><?=h($flash)?></div><?php endif; ?>
@@ -184,6 +186,9 @@ $covers=cms_content_image_map($rows);
 
 <?php elseif ($section==='menus'): ?>
 <?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/menu-editor.php'; ?>
+
+<?php elseif ($section==='privacy'): ?>
+<?php if(!defined('DAG_CMS_ADMIN_VIEW'))define('DAG_CMS_ADMIN_VIEW',true);require __DIR__.'/privacy-editor.php'; ?>
 
 <?php elseif ($section==='accessibility'): ?>
 <?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/accessibility-editor.php'; ?>
