@@ -211,6 +211,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
   <div><strong><?=h($siteName)?></strong><span>© <?=date('Y')?> · <?=h($siteContent['footer_text'])?></span></div>
   <div><span><?=cms_age_mark()?></span><span>Создано на DAG STUDIO CMS</span></div>
 </footer>
+<div class="cms-media-social-footer"><?=cms_render_social_links($tpl,'footer')?></div>
 <div class="cms-media-bottom-privacy"><?=cms_privacy_links()?></div>
 <?=cms_cookie_controls()?>
 <?=cms_age_gate()?>
