@@ -132,10 +132,10 @@ function cms_module_sidebar(string $id,string $template): void {
         for($i=1;$i<=3;$i++)if(($content['feature_'.$i.'_title']??'')!=='')
             echo '<p>'.h($content['feature_'.$i.'_title']).'</p>';
     }elseif($id==='contact') {
-        $email=config_value('contact_email');
-        if($email!=='')echo '<p>'.h($email).'</p>';
-        $details=template_content($template);
-        if(($details['phone']??'')!=='')echo '<p>'.h($details['phone']).'</p>';
+        $details=cms_contacts($template);
+        if($details['phones'])echo '<p>'.h($details['phones'][0]).'</p>';
+        if($details['emails'])echo '<p>'.h($details['emails'][0]).'</p>';
+        if($details['addresses'])echo '<p>'.h($details['addresses'][0]).'</p>';
     }
     echo '<a class="cms-module-widget-more" href="'.h(cms_module_href($id)).'">Открыть раздел ↗</a></section>';
 }
