@@ -150,7 +150,7 @@ function cms_module_sidebar(string $id,string $template): void {
         if($details['emails'])echo '<p>'.h($details['emails'][0]).'</p>';
         if($details['addresses'])echo '<p>'.h($details['addresses'][0]).'</p>';
     }
-    echo '<a class="cms-module-widget-more" href="'.h(cms_module_href($id)).'">Открыть раздел ↗</a></section>';
+    echo '<a class="cms-module-widget-more" href="'.h(cms_module_href($id)).'">Открыть раздел <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></section>';
 }
 
 function cms_module_media_block(string $module='photos'): void {
@@ -159,7 +159,7 @@ function cms_module_media_block(string $module='photos'): void {
     $cat=['documents'=>'document','photos'=>'photo','videos'=>'video'][$module]??'photo';
     $items=array_slice(array_values(array_filter(cms_media_list(true),static fn(array $x):bool=>$x['category']===$cat)),0,6);
     echo '<section class="cms-media-module" id="cms-media-section"><div class="section-heading">'
-        .'<h2>'.h(cms_module_label($module)).'</h2><a href="'.h(cms_module_href($module)).'">Все материалы ↗</a></div><div class="cms-media-module-grid">';
+        .'<h2>'.h(cms_module_label($module)).'</h2><a href="'.h(cms_module_href($module)).'">Все материалы <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div><div class="cms-media-module-grid">';
     foreach($items as $item) {
         $id=(int)$item['id'];
         echo '<a class="cms-media-module-card" href="/media.php?view='.$id.'">';

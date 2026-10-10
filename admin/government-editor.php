@@ -24,7 +24,7 @@ $govLabels=[
 <div class="government-editor-help">
  <strong>Оформление по образцу официального сайта</strong>
  <p>Логотип и фотография верхнего баннера загружаются выше в разделе «Содержимое и бренд». Цвета синей навигации, фона, текста и границ меняются в «Внешний вид» отдельно для светлой и тёмной темы.</p>
- <a href="/" target="_blank" rel="noopener">Посмотреть текущий сайт ↗</a>
+ <a href="/" target="_blank" rel="noopener">Посмотреть текущий сайт <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a>
 </div>
 <form method="post" action="/admin/actions.php" enctype="multipart/form-data">
  <?=csrf()?><input type="hidden" name="action" value="save_government_layout">

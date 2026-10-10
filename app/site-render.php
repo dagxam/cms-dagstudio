@@ -62,7 +62,7 @@ if ($activeTemplate === 'government') {
   <div class="cms-page-detail-center"><?php cms_page_module($pageConfig['before'],$activeTemplate); ?>
   <?php endif;?>
   <article class="article-page">
-    <a class="back" href="/?kind=<?=h($record['kind'])?>">← Назад к разделу</a>
+    <a class="back" href="/?kind=<?=h($record['kind'])?>"><i class="fa-solid fa-arrow-left cms-icon-inline" aria-hidden="true"></i> Назад к разделу</a>
     <div class="eyebrow"><?=h($moduleLabels[$record['kind']]??'Материал')?></div>
     <h1><?=h($record['title'])?></h1>
     <?php $articleCover=cms_content_image((int)$record['id']); if($articleCover):?>
@@ -85,7 +85,7 @@ if ($activeTemplate === 'government') {
       <h1 id="site-main-title"><?=h($kind!==''?$moduleLabels[$kind]:$siteContent['title'])?></h1>
       <p class="lead"><?=h($kind!==''?$siteDescription:$siteContent['description'])?></p>
       <div class="hero-actions">
-        <?php if($siteContent['cta']!==''): ?><a class="button" href="<?=h(safe_template_url($siteContent['cta_url'])&&$siteContent['cta_url']!==''?$siteContent['cta_url']:'#materials')?>"><?=h($siteContent['cta'])?> ↗</a><?php endif;?>
+        <?php if($siteContent['cta']!==''): ?><a class="button" href="<?=h(safe_template_url($siteContent['cta_url'])&&$siteContent['cta_url']!==''?$siteContent['cta_url']:'#materials')?>"><?=h($siteContent['cta'])?> <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a><?php endif;?>
         <?php if($siteContent['secondary']!==''): ?><a class="button button-outline" href="<?=h(safe_template_url($siteContent['secondary_url'])&&$siteContent['secondary_url']!==''?$siteContent['secondary_url']:'#contact')?>"><?=h($siteContent['secondary'])?></a><?php endif;?>
       </div>
     </div>
@@ -144,7 +144,7 @@ if ($activeTemplate === 'government') {
     ?>
     <section class="section-block site-block site-block-<?=h($section)?>">
       <div class="section-heading"><div><div class="eyebrow"><?=h($moduleLabels[$section])?></div><h2><?=h($sectionTitle)?></h2></div>
-        <a class="site-see-all" href="/?kind=<?=h($section)?>">Все материалы ↗</a></div>
+        <a class="site-see-all" href="/?kind=<?=h($section)?>">Все материалы <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div>
       <div class="cards site-content-grid">
         <?php foreach($items as $item): ?>
         <a class="content-card box cms-visual-card" href="/?p=<?=rawurlencode($item['slug'])?>">
@@ -163,7 +163,7 @@ if ($activeTemplate === 'government') {
           <h3><?=h($item['title'])?></h3>
           <p><?=h(mb_strimwidth((string)($item['summary'] ?: ($item['body'] ?? '')),0,180,'…','UTF-8'))?></p>
           <?php if($item['kind']==='product' && $item['price']!==null): ?><span class="price"><?=h(number_format((float)$item['price'],2,',',' '))?> ₽</span><?php endif;?>
-          <span class="card-link"><?=h(['product'=>'Посмотреть товар','service'=>'Подробнее об услуге','news'=>'Читать новость','page'=>'Открыть страницу'][$item['kind']])?> <span>↗</span></span>
+          <span class="card-link"><?=h(['product'=>'Посмотреть товар','service'=>'Подробнее об услуге','news'=>'Читать новость','page'=>'Открыть страницу'][$item['kind']])?> <span><i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></span></span>
           </span>
         </a>
         <?php endforeach;?>

@@ -7,7 +7,7 @@ $c=cms_contacts($selected);
 ?>
 <div class="eyebrow">НАСТРОЙКИ / КОНТАКТЫ</div>
 <div class="heading-row"><div><h1>Контакты сайта</h1>
-<p class="muted">Укажите телефоны, адреса, email, часы работы и дополнительные реквизиты. У каждого шаблона свои данные.</p></div><a href="/?module=contact" target="_blank" rel="noopener" class="button button-outline">Открыть страницу контактов ↗</a></div>
+<p class="muted">Укажите телефоны, адреса, email, часы работы и дополнительные реквизиты. У каждого шаблона свои данные.</p></div><a href="/?module=contact" target="_blank" rel="noopener" class="button button-outline">Открыть страницу контактов <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div>
 <nav class="cms-menu-tabs" aria-label="Выбор шаблона контактов">
 <?php foreach(template_catalog() as $id=>$tpl):?>
 <a href="?section=contacts&amp;tpl=<?=h($id)?>" class="<?=$selected===$id?'active':''?>"><?=h($tpl['label'])?> <?=$id===site_template()?'· активен':''?></a>

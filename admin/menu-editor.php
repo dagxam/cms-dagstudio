@@ -6,7 +6,7 @@ if(!isset(template_catalog()[$menuTpl]))$menuTpl=site_template();
 ?>
 <div class="eyebrow">НАВИГАЦИЯ ПО ШАБЛОНАМ</div><div class="heading-row"><div>
 <h1>Главное меню сайта</h1><p class="muted">У каждого шаблона собственные пункты меню. Переключение темы не стирает ссылки других вариантов.</p>
-</div><a class="button button-outline" href="/" target="_blank" rel="noopener">Просмотр сайта ↗</a></div>
+</div><a class="button button-outline" href="/" target="_blank" rel="noopener">Просмотр сайта <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div>
 <nav class="cms-menu-tabs" aria-label="Шаблоны меню"><?php foreach(template_catalog() as $id=>$tpl):?>
 <a class="<?=$id===$menuTpl?'active':''?>" href="?section=menus&amp;tpl=<?=h($id)?>"><?=h($tpl['label'])?> <?=$id===site_template()?'· активен':''?></a>
 <?php endforeach;?></nav>

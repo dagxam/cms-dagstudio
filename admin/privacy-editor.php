@@ -6,7 +6,7 @@ $p=cms_privacy();
 <div class="eyebrow">НАСТРОЙКИ / КОНФИДЕНЦИАЛЬНОСТЬ</div>
 <div class="heading-row"><div><h1>Персональные данные и конфиденциальность</h1>
 <p class="muted">Реквизиты оператора, срок обработки, отдельный документ согласия и настройки сторонних видео. Данные каждой организации настраиваются владельцем сайта.</p>
-</div><a class="button button-outline" href="/privacy.php" target="_blank" rel="noopener">Просмотреть политику ↗</a></div>
+</div><a class="button button-outline" href="/privacy.php" target="_blank" rel="noopener">Просмотреть политику <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div>
 <div class="box form-panel cms-privacy-admin">
 <form method="post" action="/admin/actions.php"><?=csrf()?><input type="hidden" name="action" value="save_privacy">
 <fieldset><legend>Сведения об операторе</legend>

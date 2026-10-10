@@ -18,7 +18,7 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
     <p class="muted"><?=$editing
         ? 'Настраивайте только выбранный шаблон. Для изменения типа сайта вернитесь к выбору.'
         : 'Выберите тип сайта. После выбора откроются настройки именно этого шаблона. Материалы и пользователи сохраняются.'?></p></div>
-  <a class="button button-outline" href="/" target="_blank" rel="noopener">↗ Посмотреть сайт</a>
+  <a class="button button-outline" href="/" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i> Посмотреть сайт</a>
 </div>
 <?php if (!$editing): ?>
 <div class="template-selection-intro"><span class="template-selection-index">01</span><div><h2>Выберите тип вашего сайта</h2><p>Настройки станут доступны на следующем шаге. Активный шаблон можно открыть сразу для редактирования.</p></div></div>
@@ -46,15 +46,15 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
       <p class="muted template-choice-description"><?=h($tpl['description'])?></p>
       <div class="template-choice-actions">
         <?php if ($selectedTemplate === $code): ?>
-          <a class="button" href="/admin/index.php?section=templates&amp;view=edit&amp;tab=appearance">Настроить шаблон ↗</a>
+          <a class="button" href="/admin/index.php?section=templates&amp;view=edit&amp;tab=appearance">Настроить шаблон <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a>
         <?php else: ?>
           <form method="post" action="/admin/actions.php"><?=csrf()?>
             <input type="hidden" name="action" value="select_template">
             <input type="hidden" name="template" value="<?=h($code)?>">
-            <button class="button" type="submit">Выбрать шаблон →</button>
+            <button class="button" type="submit">Выбрать шаблон <i class="fa-solid fa-arrow-right cms-icon-inline" aria-hidden="true"></i></button>
           </form>
         <?php endif; ?>
-        <a href="/?preview_template=<?=h($code)?>" class="template-preview-link" target="_blank" rel="noopener">Предпросмотр ↗</a>
+        <a href="/?preview_template=<?=h($code)?>" class="template-preview-link" target="_blank" rel="noopener">Предпросмотр <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a>
       </div>
     </div>
   </article>
@@ -72,8 +72,8 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
     </div>
   </div>
   <div class="template-editor-current-actions">
-    <a class="button button-outline" href="/admin/index.php?section=templates">← Сменить шаблон</a>
-    <a class="button" href="/" target="_blank" rel="noopener">Посмотреть сайт ↗</a>
+    <a class="button button-outline" href="/admin/index.php?section=templates"><i class="fa-solid fa-arrow-left cms-icon-inline" aria-hidden="true"></i> Сменить шаблон</a>
+    <a class="button" href="/" target="_blank" rel="noopener">Посмотреть сайт <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a>
   </div>
 </div>
 <nav class="template-editor-tabs" aria-label="Настройки выбранного шаблона">
@@ -100,7 +100,7 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
             style="--preview-accent:<?=h($palette['accent'])?>;--preview-bg:<?=h($palette['background'])?>;--preview-ink:<?=h($palette['ink'])?>;--preview-surface:<?=h($palette['surface'])?>;--preview-border:<?=h($palette['border'])?>">
             <div class="template-palette-demo-header"><span><i class="fa-solid fa-palette" aria-hidden="true"></i> <?=h($catalog[$selectedTemplate]['label'])?></span><span><i class="fa-solid fa-bars" aria-hidden="true"></i></span></div>
             <div class="template-palette-demo-content"><strong>Пример оформления</strong><p>Заголовок и текст на фоне выбранной темы.</p>
-              <span class="template-palette-demo-button">Подробнее →</span>
+              <span class="template-palette-demo-button">Подробнее <i class="fa-solid fa-arrow-right cms-icon-inline" aria-hidden="true"></i></span>
               <span class="template-palette-demo-tile">Карточка содержимого</span>
             </div>
           </div>

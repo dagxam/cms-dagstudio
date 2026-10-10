@@ -106,7 +106,7 @@ foreach ($types as $key=>$label) {
 <p class="muted">Управляйте содержимым сайта из единой административной панели.</p>
 <div class="stat-grid">
 <?php foreach($counts as $key=>$count): ?><a class="stat box" href="?section=<?=h($key)?>">
-<span class="muted"><?=h($types[$key])?></span><strong><?=number_format($count,0,',',' ')?></strong><span class="stat-link">Перейти в раздел ↗</span></a><?php endforeach; ?>
+<span class="muted"><?=h($types[$key])?></span><strong><?=number_format($count,0,',',' ')?></strong><span class="stat-link">Перейти в раздел <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></span></a><?php endforeach; ?>
 </div>
 <div class="box welcome"><h2>Ваш сайт под контролем</h2>
 <p class="muted">Начните с создания страницы или новости. В разделе «Настройки → Выбор темы» настройте оформление и главную страницу.</p>
@@ -119,7 +119,7 @@ $row = $record ?: ['title'=>'','slug'=>'','summary'=>'','body'=>'','price'=>'','
 $cover=$record?cms_content_image((int)$record['id']):null;
 ?>
 <div class="eyebrow">РЕДАКТОР МАТЕРИАЛОВ</div>
-<a class="back" href="?section=<?=h($kind)?>">← Вернуться к списку</a>
+<a class="back" href="?section=<?=h($kind)?>"><i class="fa-solid fa-arrow-left cms-icon-inline" aria-hidden="true"></i> Вернуться к списку</a>
 <h1><?=$record?'Редактирование':'Новый материал'?></h1>
 <div class="box form-panel cms-content-editor"><form method="post" action="/admin/actions.php" enctype="multipart/form-data">
 <?=csrf()?><input type="hidden" name="action" value="save_content">
@@ -214,7 +214,7 @@ $covers=cms_content_image_map($rows);
 <label>Контактный e-mail<input name="contact_email" type="email" required value="<?=h(config_value('contact_email'))?>"></label>
 <label>URL политики обработки персональных данных<input name="privacy_url" maxlength="500" placeholder="/?p=privacy" value="<?=h(config_value('privacy_url'))?>"></label><p class="muted">Пока этот адрес не задан, форма обращений отключена.</p>
 <div class="settings-template-note"><strong>Текущий тип: <?=h(template_catalog()[site_template()]['label'])?></strong><p class="muted">Тип и оформление сайта меняются в разделе <a href="?section=templates">«Настройки → Выбор темы»</a>.</p><input type="hidden" name="site_type" value="<?=h(config_value('site_type'))?>"></div>
-<div class="settings-template-note"><strong>Подключение и расположение модулей настраиваются в подразделе «Модули».</strong><p class="muted"><a href="/admin/index.php?section=modules">Открыть включение, отключение и расположение модулей →</a></p></div>
+<div class="settings-template-note"><strong>Подключение и расположение модулей настраиваются в подразделе «Модули».</strong><p class="muted"><a href="/admin/index.php?section=modules">Открыть включение, отключение и расположение модулей <i class="fa-solid fa-arrow-right cms-icon-inline" aria-hidden="true"></i></a></p></div>
 <button class="button" type="submit">Сохранить настройки</button></form></div>
 
 <?php elseif ($section==='users'):

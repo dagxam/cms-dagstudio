@@ -7,7 +7,7 @@ $s=cms_socials($selected);
 ?>
 <div class="eyebrow">НАСТРОЙКИ / СОЦИАЛЬНЫЕ СЕТИ</div>
 <div class="heading-row"><div><h1>Социальные сети</h1>
-<p class="muted">Ссылки для каждого шаблона настраиваются независимо. Пустые ссылки не появляются на сайте.</p></div><a href="/" target="_blank" rel="noopener" class="button button-outline">Посмотреть сайт ↗</a></div>
+<p class="muted">Ссылки для каждого шаблона настраиваются независимо. Пустые ссылки не появляются на сайте.</p></div><a href="/" target="_blank" rel="noopener" class="button button-outline">Посмотреть сайт <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div>
 <nav class="cms-menu-tabs" aria-label="Выбор шаблона соцсетей">
 <?php foreach(template_catalog() as $id=>$tpl):?>
 <a href="?section=socials&amp;tpl=<?=h($id)?>" class="<?=$selected===$id?'active':''?>"><?=h($tpl['label'])?> <?=$id===site_template()?'· активен':''?></a>

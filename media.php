@@ -148,9 +148,9 @@ foreach(cms_module_ids($tpl,'nav') as $module){
     $embedded=cms_video_embed((string)$external['original_url']);?>
     <article class="cms-media-detail cms-media-detail-video">
       <div class="cms-media-detail-meta"><span class="cms-media-topic">Видеогалерея · <?=h($external['provider']==='vk'?'VK Видео':'Rutube')?></span><span class="cms-age-mark"><?=h($external['age_rating'])?></span></div>
-      <?php if($embedded):?><div class="cms-video-frame cms-video-consent" data-privacy-video-url="<?=h($embedded['embed'])?>" data-video-title="<?=h($external['title'])?>"><div class="cms-video-permission"><p>Видео размещено на сторонней платформе. Передача данных сервису начинается только после вашего разрешения.</p><button type="button" data-privacy-video-enable>Разрешить и воспроизвести</button><a href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Открыть видео на платформе ↗</a></div></div><?php endif;?>
+      <?php if($embedded):?><div class="cms-video-frame cms-video-consent" data-privacy-video-url="<?=h($embedded['embed'])?>" data-video-title="<?=h($external['title'])?>"><div class="cms-video-permission"><p>Видео размещено на сторонней платформе. Передача данных сервису начинается только после вашего разрешения.</p><button type="button" data-privacy-video-enable>Разрешить и воспроизвести</button><a href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Открыть видео на платформе <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div></div><?php endif;?>
       <?php if($external['description']):?><p class="cms-media-description"><?=nl2br(h($external['description']))?></p><?php endif;?>
-      <a class="cms-media-detail-link" href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Смотреть на видеоплатформе ↗</a>
+      <a class="cms-media-detail-link" href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Смотреть на видеоплатформе <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a>
     </article>
   <?php elseif($item):?>
     <article class="cms-media-detail cms-media-detail-<?=h($item['category'])?>">
@@ -163,7 +163,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
         <div class="cms-media-document-download">
           <span class="cms-media-document-icon" aria-hidden="true"><?=cms_fa_icon('documents')?></span>
           <div><strong><?=h($item['original_name'])?></strong><p><?=number_format(((int)$item['size_bytes'])/1048576,2,',',' ')?> МБ · <?=h(strtoupper(pathinfo((string)$item['original_name'],PATHINFO_EXTENSION)))?></p></div>
-          <a class="cms-media-action" href="/media.php?file=<?=(int)$item['id']?>">Скачать документ <span aria-hidden="true">↓</span></a>
+          <a class="cms-media-action" href="/media.php?file=<?=(int)$item['id']?>">Скачать документ <span aria-hidden="true"><i class="fa-solid fa-download cms-icon-inline" aria-hidden="true"></i></span></a>
         </div>
       <?php endif;?>
       <?php if($item['description']):?><p class="cms-media-description"><?=nl2br(h((string)$item['description']))?></p><?php endif;?>
@@ -183,7 +183,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
             <div class="cms-media-tile-meta"><span><?=h($v['provider']==='vk'?'VK Видео':'Rutube')?></span><span><?=h($v['age_rating'])?></span></div>
             <h2><a href="/media.php?type=video&amp;external=<?=(int)$v['id']?>"><?=h($v['title'])?></a></h2>
             <?php if($v['description']):?><p><?=h(mb_strimwidth((string)$v['description'],0,150,'…','UTF-8'))?></p><?php endif;?>
-            <a class="cms-media-tile-cta" href="/media.php?type=video&amp;external=<?=(int)$v['id']?>">Смотреть <span aria-hidden="true">↗</span></a>
+            <a class="cms-media-tile-cta" href="/media.php?type=video&amp;external=<?=(int)$v['id']?>">Смотреть <span aria-hidden="true"><i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></span></a>
           </div>
         </article>
       <?php endforeach;endif;?>
@@ -198,14 +198,14 @@ foreach(cms_module_ids($tpl,'nav') as $module){
           <div class="cms-media-tile-meta"><span><?=h(['photo'=>'Фотография','document'=>'Документ','video'=>'Видео'][$f['category']])?></span><span><?=h($f['age_rating'])?></span></div>
           <h2><a href="<?=h($link)?>"><?=h($f['title'])?></a></h2>
           <?php if($f['description']):?><p><?=h(mb_strimwidth((string)$f['description'],0,150,'…','UTF-8'))?></p><?php endif;?>
-          <a class="cms-media-tile-cta" href="<?=h($link)?>"><?=$f['category']==='document'?'Открыть документ':($f['category']==='video'?'Смотреть видео':'Смотреть фото')?><span aria-hidden="true">↗</span></a>
+          <a class="cms-media-tile-cta" href="<?=h($link)?>"><?=$f['category']==='document'?'Открыть документ':($f['category']==='video'?'Смотреть видео':'Смотреть фото')?><span aria-hidden="true"><i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></span></a>
         </div>
       </article>
       <?php endforeach;?>
     </div>
     <?php if(!$files&&!$linkedVideos):?><div class="cms-media-empty"><span aria-hidden="true"><i class="fa-solid fa-folder-open"></i></span><h2>Материалов пока нет</h2><p>Здесь появятся опубликованные материалы этого раздела.</p></div><?php endif;?>
   <?php endif;?>
-  <?php if($item||$external):?><a class="cms-media-back" href="/media.php?type=<?=h($activeSection)?>">← К разделу «<?=h($sectionTitle)?>»</a><?php endif;?>
+  <?php if($item||$external):?><a class="cms-media-back" href="/media.php?type=<?=h($activeSection)?>"><i class="fa-solid fa-arrow-left cms-icon-inline" aria-hidden="true"></i> К разделу «<?=h($sectionTitle)?>»</a><?php endif;?>
 </main>
 <footer class="cms-media-footer">
   <div><strong><?=h($siteName)?></strong><span>© <?=date('Y')?> · <?=h($siteContent['footer_text'])?></span></div>

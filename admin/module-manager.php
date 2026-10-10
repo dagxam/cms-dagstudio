@@ -12,7 +12,7 @@ $enabled=cms_enabled_module_keys();
 <div class="heading-row"><div>
   <h1>Модули сайта</h1>
   <p class="muted">Включайте нужные функции и независимо настраивайте, где они отображаются в каждом шаблоне. Отключение не удаляет содержимое.</p>
-</div><a class="button button-outline" href="/" target="_blank" rel="noopener">↗ Посмотреть сайт</a></div>
+</div><a class="button button-outline" href="/" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i> Посмотреть сайт</a></div>
 <section class="box cms-module-manager">
   <div class="cms-module-manager-heading"><span class="template-section-index">01</span><div><h2>Подключение модулей</h2><p class="muted">Это общие переключатели для всех шаблонов. Выключенный модуль скрывается на сайте, но файлы и публикации остаются в базе.</p></div></div>
   <form method="post" action="/admin/actions.php">

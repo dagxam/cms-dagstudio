@@ -79,7 +79,7 @@ if ($search!=='')$govTitle='Результаты поиска';
     <a class="government-quick-link" href="<?=h($quick['url'])?>"><?=h($quick['label'])?></a>
     <?php endforeach;?>
     <?php if($gov['quick_title']!=='' && safe_template_url($gov['quick_url'])):?>
-    <a class="government-reception" href="<?=h($gov['quick_url'])?>"><?=h($gov['quick_title'])?> ↗</a>
+    <a class="government-reception" href="<?=h($gov['quick_url'])?>"><?=h($gov['quick_title'])?> <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a>
     <?php endif;?>
   </div>
 </div>
@@ -114,7 +114,7 @@ if ($search!=='')$govTitle='Результаты поиска';
       <?php if(!empty($govArticle['summary'])):?><p class="government-lead"><?=h((string)$govArticle['summary'])?></p><?php endif;?>
       <div class="government-article-body"><?=nl2br(h((string)($govArticle['body']??'')))?></div>
       <?php if($govArticle['kind']==='product' && $govArticle['price']!==null):?><strong class="price"><?=h(number_format((float)$govArticle['price'],2,',',' '))?> ₽</strong><?php endif;?>
-      <a class="government-return" href="/">← Вернуться на главную</a>
+      <a class="government-return" href="/"><i class="fa-solid fa-arrow-left cms-icon-inline" aria-hidden="true"></i> Вернуться на главную</a>
       <?php if($pageConfig):cms_page_module($pageConfig['after'],'government'); ?></div>
       <?php if($pageConfig['right']):?><aside class="cms-page-detail-sidebar" aria-label="Боковые блоки справа"><?php foreach($pageConfig['right'] as $widget):cms_module_sidebar($widget,'government');endforeach;?></aside><?php endif;?>
       </div><?php endif;?>
@@ -171,7 +171,7 @@ if ($search!=='')$govTitle='Результаты поиска';
           $covers=cms_content_image_map($items);
         ?>
         <section class="government-section government-section-<?=h($section)?>">
-          <div class="government-section-title"><h2><?=h($section==='news'?$siteContent['news_title']:$moduleLabels[$section])?></h2><a href="/?kind=<?=h($section)?>">Все материалы →</a></div>
+          <div class="government-section-title"><h2><?=h($section==='news'?$siteContent['news_title']:$moduleLabels[$section])?></h2><a href="/?kind=<?=h($section)?>">Все материалы <i class="fa-solid fa-arrow-right cms-icon-inline" aria-hidden="true"></i></a></div>
           <?php if($items):?><div class="government-materials">
             <?php foreach($items as $item):?><article class="government-material cms-government-material">
               <a class="cms-government-material-thumb" href="/?p=<?=rawurlencode($item['slug'])?>" aria-label="<?=h($item['title'])?>">
@@ -210,11 +210,11 @@ if ($search!=='')$govTitle='Результаты поиска';
     <?php endif;?>
     <?php if($gov['show_announcements']==='1'):?>
     <section class="government-widget"><h2 class="government-widget-muted"><?=h($gov['announcements_title'])?></h2><p><?=nl2br(h($gov['announcements_text']))?></p>
-      <?php if(module_enabled('news')):?><a href="/?kind=news">Все новости →</a><?php endif;?></section>
+      <?php if(module_enabled('news')):?><a href="/?kind=news">Все новости <i class="fa-solid fa-arrow-right cms-icon-inline" aria-hidden="true"></i></a><?php endif;?></section>
     <?php endif;?>
     <?php if($gov['show_links']==='1' && $gov['right_links']):?>
     <section class="government-widget government-widget-links"><h2><?=h($gov['links_title'])?></h2>
-      <nav aria-label="Полезные ссылки"><?php foreach($gov['right_links'] as $link):?><a href="<?=h($link['url'])?>"><?=h($link['label'])?> <span>↗</span></a><?php endforeach;?></nav>
+      <nav aria-label="Полезные ссылки"><?php foreach($gov['right_links'] as $link):?><a href="<?=h($link['url'])?>"><?=h($link['label'])?> <span><i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></span></a><?php endforeach;?></nav>
     </section>
     <?php endif;?>
     <?php if($gov['office_phone']!==''):?><div class="government-phone"><span>Телефон администрации</span><strong><?=h($gov['office_phone'])?></strong></div><?php endif;?>
