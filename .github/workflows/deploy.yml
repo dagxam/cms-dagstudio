@@ -45,6 +45,7 @@ jobs:
           node --check assets/template-palettes.js
           node --check assets/government.js
           node --check assets/accessibility.js
+          node --check assets/privacy.js
           node --check assets/content-editor.js
       - name: Smoke-тест базы данных
         env:
@@ -86,6 +87,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/government.php
+      - name: Конфиденциальность, согласия и контрастные настройки
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/privacy.php
       - name: Возрастная маркировка, доступность и медиатека
         env:
           DAG_CMS_TEST_MODE: '1'
