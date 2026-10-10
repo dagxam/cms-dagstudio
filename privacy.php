@@ -39,6 +39,6 @@ $title='Политика обработки персональных данны�
 <p>Можно запросить сведения об обработке данных, их уточнение, удаление при наличии законных оснований или отзыв согласия. Направьте обращение оператору по адресу <a href="mailto:<?=h($p['email'])?>"><?=h($p['email'])?></a>. Отзыв согласия не отменяет обработку, необходимую в силу иных законных оснований.</p>
 <p>Отдельный документ: <a href="/consent.php">Согласие на обработку персональных данных</a>.</p>
 <?php endif;?>
-</main><footer class="cms-legal-footer"><?=cms_privacy_links()?> <span>© <?=date('Y')?> <?=h($siteName)?></span></footer>
+</main><div class="cms-legal-social-footer"><?=cms_render_social_links($active,'footer')?></div><footer class="cms-legal-footer"><?=cms_privacy_links()?> <span>© <?=date('Y')?> <?=h($siteName)?></span></footer>
 <?=cms_cookie_controls()?>
 </body></html>
