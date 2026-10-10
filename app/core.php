@@ -115,5 +115,6 @@ require_once __DIR__ . '/content-images.php';
 
 require_once __DIR__ . '/modules.php';
 require_once __DIR__ . '/menus.php';
+require_once __DIR__ . '/public-header.php';
 require_once __DIR__ . '/page-options.php';
 require_once __DIR__ . '/video-links.php';
