@@ -302,3 +302,206 @@ html[data-theme] body.site-page.cms-vision-active :is(.cms-media-grid,.site-cont
 /* Раскрывающаяся панель не сжимается до ширины кнопки. */
 .cms-vision-toolbar{inset-inline-start:auto;inset-inline-end:0;max-width:calc(100vw - 24px)}
 @media(max-width:620px){.cms-vision-toolbar{inset-inline-start:10px;inset-inline-end:10px;max-width:none}}
+
+
+/* Единая двухстрочная шапка CMS во всех шаблонах и разделах. */
+/* Общее меню соответствует /media.php: бренд + действия, затем навигация. */
+body.site-page .cms-unified-header{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    position:relative;
+    z-index:40;
+    background:var(--site-surface)!important;
+    color:var(--site-ink)!important;
+    border-bottom:1px solid var(--site-border)!important;
+    padding:0 max(18px,calc((100vw - var(--site-width,1200px))/2))!important;
+    box-shadow:none;
+}
+body.site-page .cms-unified-header .cms-media-header-inner{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:clamp(12px,2vw,26px)!important;
+    flex-wrap:wrap;
+    width:100%;
+    min-width:0;
+    min-height:100px;
+    padding:14px 0;
+    border-bottom:1px solid var(--site-border)!important;
+    background:transparent!important;
+    color:var(--site-ink)!important;
+}
+body.site-page .cms-unified-header .cms-media-brand{
+    display:flex!important;
+    align-items:center;
+    gap:15px;
+    flex:1 1 220px;
+    min-width:0;
+    text-decoration:none!important;
+    color:var(--site-ink)!important;
+}
+body.site-page .cms-unified-header .cms-media-brand>span:last-child{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+}
+body.site-page .cms-unified-header .cms-media-brand small{
+    color:var(--site-accent)!important;
+    font-size:10px;
+    letter-spacing:.1em;
+    font-weight:800;
+    text-transform:uppercase;
+}
+body.site-page .cms-unified-header .cms-media-brand strong{
+    color:var(--site-ink)!important;
+    font-size:clamp(16px,1.6vw,23px);
+    line-height:1.25;
+    font-weight:800;
+    overflow-wrap:anywhere;
+}
+body.site-page .cms-unified-header .cms-media-brand-mark,
+body.site-page .cms-unified-header .cms-header-uploaded-logo{
+    position:relative;
+    display:block;
+    flex:0 0 60px;
+    width:60px;
+    height:60px;
+    max-width:60px;
+    object-fit:contain;
+}
+body.site-page .cms-unified-header .cms-media-brand-mark img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+body.site-page .cms-unified-header .cms-media-header-actions{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end;
+    flex:0 1 auto;
+    gap:10px;
+    min-width:0;
+    max-width:100%;
+    flex-wrap:wrap;
+}
+body.site-page .cms-unified-header .cms-media-header-actions .theme-toggle,
+body.site-page .cms-unified-header .cms-media-header-actions .cms-vision-switch,
+body.site-page .cms-unified-header .cms-media-header-actions .cms-header-login{
+    display:inline-flex!important;
+    align-items:center;
+    justify-content:center;
+    min-height:42px!important;
+    height:auto!important;
+    padding:9px 13px!important;
+    border:1px solid var(--site-border)!important;
+    border-radius:7px!important;
+    color:var(--site-ink)!important;
+    background:transparent!important;
+    font-size:12px!important;
+    line-height:1.35!important;
+    font-weight:700;
+    white-space:normal!important;
+    text-align:center;
+    text-decoration:none!important;
+}
+body.site-page .cms-unified-header .cms-media-header-actions .theme-toggle{
+    width:48px;
+    min-width:48px;
+    font-size:18px!important;
+    padding:8px!important;
+}
+body.site-page .cms-unified-header .cms-media-header-actions .cms-vision-switch:hover,
+body.site-page .cms-unified-header .cms-media-header-actions .theme-toggle:hover,
+body.site-page .cms-unified-header .cms-media-header-actions .cms-header-login:hover{
+    border-color:var(--site-accent)!important;
+    color:var(--site-accent)!important;
+}
+body.site-page .cms-unified-header .cms-media-header-actions .cms-age-mark{
+    color:var(--site-ink)!important;
+    flex:0 0 auto;
+    font-size:13px;
+}
+body.site-page .cms-unified-header .cms-media-site-nav{
+    display:flex!important;
+    align-items:center;
+    gap:5px;
+    width:100%;
+    max-width:100%;
+    padding:10px 0!important;
+    margin:0;
+    overflow-x:auto;
+    scrollbar-width:thin;
+    background:transparent!important;
+    border:0!important;
+    flex-wrap:nowrap!important;
+    min-height:55px;
+}
+body.site-page .cms-unified-header .cms-media-site-nav a{
+    display:inline-flex!important;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    min-height:39px!important;
+    padding:8px 13px!important;
+    border-radius:6px;
+    border:1px solid transparent;
+    text-decoration:none!important;
+    color:var(--site-ink)!important;
+    font-size:12px!important;
+    font-weight:700;
+    line-height:1.4!important;
+    white-space:nowrap!important;
+}
+body.site-page .cms-unified-header .cms-media-site-nav a:hover,
+body.site-page .cms-unified-header .cms-media-site-nav a:focus-visible,
+body.site-page .cms-unified-header .cms-media-site-nav a[aria-current="page"]{
+    color:var(--site-accent)!important;
+    background:color-mix(in srgb,var(--site-accent) 9%,var(--site-surface))!important;
+    border-color:var(--site-border)!important;
+}
+body.site-page .cms-unified-official-strip{
+    background:color-mix(in srgb,var(--site-accent) 75%,#102d47)!important;
+    color:#fff!important;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.12em;
+    padding:9px max(18px,calc((100vw - var(--site-width,1200px))/2));
+}
+body.site-page .cms-unified-official-strip span{margin-left:12px;font-weight:400;opacity:.9}
+body.site-template-government .cms-government-main-banner{margin:18px 0 14px;min-height:155px}
+body.site-template-government .cms-government-main-banner .government-banner-content{min-height:155px}
+/* В специальном режиме сохраняется единая двухстрочная шапка с переносом меню. */
+body.site-page.cms-vision-active .cms-unified-header,
+body.site-page.cms-vision-active .cms-unified-header .cms-media-header-inner,
+body.site-page.cms-vision-active .cms-unified-header .cms-media-site-nav{
+    background:var(--vision-bg)!important;
+    color:var(--vision-ink)!important;
+    border-color:var(--vision-ink)!important;
+}
+body.site-page.cms-vision-active .cms-unified-header .cms-media-site-nav{flex-wrap:wrap!important;overflow:visible!important}
+body.site-page.cms-vision-active .cms-unified-header .cms-media-site-nav a{color:var(--vision-link)!important;white-space:normal!important}
+body.site-page.cms-vision-active .cms-unified-header .cms-media-brand strong{color:var(--vision-ink)!important}
+body.site-page.cms-vision-active .cms-unified-header .cms-media-header-actions .cms-vision-switch,
+body.site-page.cms-vision-active .cms-unified-header .cms-media-header-actions .cms-header-login,
+body.site-page.cms-vision-active .cms-unified-header .cms-media-header-actions .theme-toggle{
+    color:var(--vision-ink)!important;
+    border-color:var(--vision-ink)!important;
+    background:var(--vision-bg)!important;
+}
+@media(max-width:820px){
+ body.site-page .cms-unified-header .cms-media-header-inner{min-height:84px}
+ body.site-page .cms-unified-header .cms-media-brand-mark,
+ body.site-page .cms-unified-header .cms-header-uploaded-logo{flex-basis:48px;width:48px;height:48px;max-width:48px}
+ body.site-page .cms-unified-header .cms-media-header-actions{justify-content:flex-start}
+}
+@media(max-width:560px){
+ body.site-page .cms-unified-header .cms-media-header-inner{align-items:flex-start!important;flex-direction:column;gap:12px!important}
+ body.site-page .cms-unified-header .cms-media-brand{flex:0 1 auto;width:100%}
+ body.site-page .cms-unified-header .cms-media-header-actions{width:100%;gap:7px}
+ body.site-page .cms-unified-header .cms-media-site-nav{padding:7px 0!important}
+}
+@media print{body.site-page .cms-unified-header .cms-media-header-actions{display:none!important}}
