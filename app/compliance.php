@@ -5,7 +5,7 @@ function cms_accessibility(): array {
     $defaults=[
         'enabled'=>'1', 'font_scale'=>'150', 'contrast'=>'high',
         'line_spacing'=>'normal', 'show_images'=>'1', 'underlines'=>'1',
-        'grayscale'=>'0', 'letter_spacing'=>'normal',
+        'grayscale'=>'0', 'letter_spacing'=>'normal', 'motion'=>'1',
     ];
     $raw=json_decode(config_value('accessibility_options','{}'),true);
     if(!is_array($raw))return $defaults;
@@ -14,7 +14,7 @@ function cms_accessibility(): array {
     if(!in_array($defaults['contrast'],['high','blackwhite','yellowblack'],true))$defaults['contrast']='high';
     if(!in_array($defaults['line_spacing'],['normal','wide'],true))$defaults['line_spacing']='normal';
     if(!in_array($defaults['letter_spacing'],['normal','wide'],true))$defaults['letter_spacing']='normal';
-    foreach(['enabled','show_images','underlines','grayscale'] as $key)
+    foreach(['enabled','show_images','underlines','grayscale','motion'] as $key)
         $defaults[$key]= $defaults[$key]==='1'?'1':'0';
     return $defaults;
 }
@@ -26,8 +26,18 @@ function cms_age_mark(): string {
     return '<span class="cms-age-mark" aria-label="Возрастная маркировка '.h(cms_age_rating()).'">'.h(cms_age_rating()).'</span>';
 }
 function cms_accessibility_control(): string {
-    if(cms_accessibility()['enabled']!=='1')return '';
-    return '<button class="cms-vision-switch" type="button" data-accessibility-toggle aria-pressed="false" aria-label="Включить версию для слабовидящих">◉ <span>Для слабовидящих</span></button>';
+    if(cms_accessibility()['enabled']!=='1' && site_template()!=='government')return '';
+    return '<div class="cms-vision-control">'.
+      '<button class="cms-vision-switch" type="button" data-accessibility-toggle aria-controls="cms-vision-toolbar" aria-expanded="false" aria-pressed="false" aria-label="Включить версию для слабовидящих">◉ <span>Для слабовидящих</span></button>'.
+      '<div class="cms-vision-toolbar" id="cms-vision-toolbar" data-vision-toolbar hidden role="group" aria-label="Настройки версии для слабовидящих">'.
+        '<label>Размер текста <select data-vision-option="scale" aria-label="Размер текста">'.
+          '<option value="125">125%</option><option value="150">150%</option><option value="175">175%</option><option value="200">200%</option></select></label>'.
+        '<label>Цветовая схема <select data-vision-option="contrast" aria-label="Цветовая схема">'.
+          '<option value="high">Чёрный на белом</option><option value="blackwhite">Белый на чёрном</option><option value="yellowblack">Жёлтый на чёрном</option></select></label>'.
+        '<label class="cms-vision-check"><input type="checkbox" data-vision-option="underlines"> Подчёркивать ссылки</label>'.
+        '<label class="cms-vision-check"><input type="checkbox" data-vision-option="motion"> Убрать анимацию</label>'.
+        '<button type="button" class="cms-vision-reset" data-vision-reset>Сбросить настройки</button>'.
+      '</div></div>';
 }
 function cms_accessibility_attributes(): string {
     $settings=cms_accessibility();
@@ -39,6 +49,7 @@ function cms_accessibility_attributes(): string {
         'data-vision-images'=>$settings['show_images'],
         'data-vision-underline'=>$settings['underlines'],
         'data-vision-grayscale'=>$settings['grayscale'],
+        'data-vision-motion'=>$settings['motion'],
     ];
     $out='';
     foreach($attrs as $key=>$value)$out.=' '.$key.'="'.h($value).'"';
