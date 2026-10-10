@@ -24,5 +24,5 @@ $design=template_design($template);
 <p>Оператор: <?=h($p['operator'])?>. Адрес: <?=h($p['address'])?>. Отозвать согласие или запросить сведения: <a href="mailto:<?=h($p['email'])?>"><?=h($p['email'])?></a>.</p>
 <p>Политика обработки данных: <a href="<?=h(cms_privacy_url())?>">читать документ</a>.</p>
 <?php endif;?>
-</main><footer class="cms-legal-footer"><?=cms_privacy_links()?><span>© <?=date('Y')?> <?=h(config_value('site_name'))?></span></footer><?=cms_cookie_controls()?>
+</main><div class="cms-legal-social-footer"><?=cms_render_social_links($template,'footer')?></div><footer class="cms-legal-footer"><?=cms_privacy_links()?><span>© <?=date('Y')?> <?=h(config_value('site_name'))?></span></footer><?=cms_cookie_controls()?>
 </body></html>
