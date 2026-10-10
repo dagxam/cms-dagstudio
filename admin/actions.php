@@ -140,6 +140,36 @@ try {
         log_action('modules.layout',$template);
         $_SESSION['flash']='Расположение модулей для шаблона «'.template_catalog()[$template]['label'].'» обновлено.';
         $back='/admin/index.php?section=modules&tpl='.rawurlencode($template);
+    } elseif ($action === 'save_privacy') {
+        require_module('settings');
+        $fields=[
+            'privacy_operator'=>250,'privacy_address'=>500,'privacy_email'=>190,
+            'privacy_purpose'=>2000,'privacy_retention'=>2000,'privacy_processors'=>2000,
+            'privacy_version'=>50,
+        ];
+        $values=[];
+        foreach($fields as $name=>$limit) {
+            $raw=$_POST[$name]??'';
+            if(!is_string($raw) || mb_strlen($raw)>$limit || str_contains($raw,chr(0)))
+                throw new RuntimeException('Некорректные данные в поле '.$name);
+            $values[$name]=trim($raw);
+        }
+        foreach(['privacy_operator','privacy_address','privacy_email','privacy_purpose','privacy_retention','privacy_version'] as $required)
+            if($values[$required]==='')throw new RuntimeException('Заполните обязательные реквизиты политики.');
+        if(!filter_var($values['privacy_email'],FILTER_VALIDATE_EMAIL))
+            throw new RuntimeException('Укажите корректный email оператора.');
+        if(!preg_match('/^[a-zA-Z0-9._-]{4,50}$/D',$values['privacy_version']))
+            throw new RuntimeException('Версия документа: 4–50 букв, цифр, точек или дефисов.');
+        $values['privacy_published']=isset($_POST['privacy_published'])?'1':'0';
+        $q=database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+        database()->beginTransaction();
+        try{
+            foreach($values as $name=>$value)$q->execute([$name,$value]);
+            log_action('privacy.update',$values['privacy_version']);
+            database()->commit();
+        }catch(Throwable $e){if(database()->inTransaction())database()->rollBack();throw $e;}
+        $_SESSION['flash']='Параметры конфиденциальности сохранены.';
+        $back='/admin/index.php?section=privacy';
     } elseif ($action === 'save_compliance') {
         require_module('settings');
         $age=(string)($_POST['site_age_rating']??'');
