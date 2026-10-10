@@ -42,7 +42,7 @@ if ($activeTemplate === 'government') {
   <script src="/assets/theme.js?v=palette4" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=templates3">
   <link rel="stylesheet" href="/assets/templates.css?v=dark6">
-  <link rel="stylesheet" href="/assets/media.css?v=privacy6">
+  <link rel="stylesheet" href="/assets/media.css?v=unified7">
   <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
   <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>
