@@ -120,7 +120,8 @@ foreach(cms_module_ids($tpl,'nav') as $module){
 <link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-<?=template_default_mode($tpl)==='light'?'light':'dark'?>.svg">
 <script>try{const k='dagstudio-template-<?=h($tpl)?>';const t=localStorage.getItem(k);document.documentElement.dataset.theme=t==='light'||t==='dark'?t:'<?=h(template_default_mode($tpl))?>'}catch(e){document.documentElement.dataset.theme='<?=h(template_default_mode($tpl))?>'}</script>
 <script src="/assets/theme.js?v=gallery4" defer></script>
-<script src="/assets/accessibility.js?v=gallery4" defer></script>
+<script src="/assets/accessibility.js?v=a11y4" defer></script>
+<script src="/assets/privacy.js?v=privacy4" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=gallery4">
 <link rel="stylesheet" href="/assets/templates.css?v=gallery4">
 <link rel="stylesheet" href="/assets/media.css?v=gallery4">
@@ -171,7 +172,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
     $embedded=cms_video_embed((string)$external['original_url']);?>
     <article class="cms-media-detail cms-media-detail-video">
       <div class="cms-media-detail-meta"><span class="cms-media-topic">Видеогалерея · <?=h($external['provider']==='vk'?'VK Видео':'Rutube')?></span><span class="cms-age-mark"><?=h($external['age_rating'])?></span></div>
-      <?php if($embedded):?><div class="cms-video-frame"><iframe src="<?=h($embedded['embed'])?>" title="<?=h($external['title'])?>" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><?php endif;?>
+      <?php if($embedded):?><div class="cms-video-frame cms-video-consent" data-privacy-video-url="<?=h($embedded['embed'])?>" data-video-title="<?=h($external['title'])?>"><div class="cms-video-permission"><p>Видео размещено на сторонней платформе. Передача данных сервису начинается только после вашего разрешения.</p><button type="button" data-privacy-video-enable>Разрешить и воспроизвести</button><a href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Открыть видео на платформе ↗</a></div></div><?php endif;?>
       <?php if($external['description']):?><p class="cms-media-description"><?=nl2br(h($external['description']))?></p><?php endif;?>
       <a class="cms-media-detail-link" href="<?=h($external['original_url'])?>" target="_blank" rel="noopener noreferrer">Смотреть на видеоплатформе ↗</a>
     </article>
@@ -234,5 +235,7 @@ foreach(cms_module_ids($tpl,'nav') as $module){
   <div><strong><?=h($siteName)?></strong><span>© <?=date('Y')?> · <?=h($siteContent['footer_text'])?></span></div>
   <div><span><?=cms_age_mark()?></span><span>Создано на DAG STUDIO CMS</span></div>
 </footer>
+<div class="cms-media-bottom-privacy"><?=cms_privacy_links()?></div>
+<?=cms_cookie_controls()?>
 <?=cms_age_gate()?>
 </body></html>
