@@ -148,7 +148,9 @@ if ($search!=='')$govTitle='Результаты поиска';
         <section class="government-section"><?php cms_module_media_block($section); ?></section>
         <?php elseif($section==='contact'):?>
         <section class="government-section" id="contact">
-          <h2><?=h($siteContent['contact_title'])?></h2>
+          <h2><?=h(cms_contacts('government')['title'])?></h2>
+          <?php $govContacts=cms_contacts('government');if($govContacts['intro']!==''):?><p class="muted"><?=nl2br(h($govContacts['intro']))?></p><?php endif;?>
+          <?=cms_render_contact_details('government')?>
           <?php if($message!==''):?><div class="notice" role="status"><?=h($message)?></div><?php endif;?>
           <?php if($error!==''):?><div class="error" role="alert"><?=h($error)?></div><?php endif;?>
           <?php if($privacyReady):?>
@@ -224,6 +226,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 </div>
 <footer class="government-footer"><?=cms_age_mark()?><span>© <?=date('Y')?> <?=h($siteName)?>. <?=h($siteContent['footer_text'])?> <?=h($gov['footer_note'])?></span><span>Работает на DAG STUDIO CMS
 <?php foreach(cms_module_ids('government','footer') as $id):?><?=cms_module_compact($id,'footer')?><?php endforeach;?></span></footer>
+<div class="cms-government-social-footer"><?=cms_render_social_links('government','footer')?></div>
 <div class="cms-legal-footer-links"><?=cms_privacy_links()?></div>
 </div>
 <?=cms_cookie_controls()?>
