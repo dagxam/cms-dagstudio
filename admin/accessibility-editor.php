@@ -29,6 +29,7 @@ $vision=cms_accessibility();$rating=cms_age_rating();
 <label class="check"><input type="checkbox" name="show_images" value="1" <?=$vision['show_images']==='1'?'checked':''?>> Сохранять изображения в специальной версии</label>
 <label class="check"><input type="checkbox" name="underlines" value="1" <?=$vision['underlines']==='1'?'checked':''?>> Подчёркивать ссылки</label>
 <label class="check"><input type="checkbox" name="grayscale" value="1" <?=$vision['grayscale']==='1'?'checked':''?>> Переводить в оттенки серого</label>
-<p class="muted">Режим использует семантическую разметку, доступные кнопки и навигацию с клавиатуры. Перед вводом муниципального сайта в эксплуатацию обязательны отдельное тестирование при масштабе браузера 200%, проверка программами экранного доступа и доступности самих PDF-файлов.</p>
+<label class="check"><input type="checkbox" name="motion" value="1" <?=$vision['motion']==='1'?'checked':''?>> Отключать анимацию в специальной версии</label>
+<p class="muted">Для официальных сайтов версия для слабовидящих должна оставаться доступной. Панель посетителя поддерживает размер шрифта до 200%, высокую контрастность, подчёркивание ссылок и отключение движения. Перед вводом муниципального сайта в эксплуатацию обязательны отдельное тестирование при масштабе браузера 200%, проверка программами экранного доступа и доступности самих PDF-файлов.</p>
 </fieldset>
 <button class="button" type="submit">Сохранить параметры</button></form></div>
