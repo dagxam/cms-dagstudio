@@ -123,8 +123,8 @@ foreach(cms_module_ids($tpl,'nav') as $module){
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=gallery4">
-<link rel="stylesheet" href="/assets/templates.css?v=gallery4">
-<link rel="stylesheet" href="/assets/media.css?v=gallery4">
+<link rel="stylesheet" href="/assets/templates.css?v=dark5">
+<link rel="stylesheet" href="/assets/media.css?v=privacy5">
 <style id="dag-site-palettes"><?=template_palette_css($design,$tpl)?></style>
 </head>
 <body class="site-page site-template-<?=h($tpl)?> cms-media-page cms-media-layout-<?=h($activeSection)?> <?=$tpl==='government'?'government-page cms-media-official':''?>" <?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$tpl))?>">
