@@ -529,6 +529,30 @@ try {
             @chmod($dir.'/'.$filename,0644);
             $values['hero_image_path']='/assets/uploads/'.$filename;
         }
+        $values['hero_logo_path']=(string)(template_content()['hero_logo_path']??'');
+        if(site_template()!=='government') {
+            if(!empty($_POST['remove_hero_logo']))$values['hero_logo_path']='';
+            $file=$_FILES['hero_logo']??null;
+            if(is_array($file)&&(int)($file['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE) {
+                if((int)$file['error']!==UPLOAD_ERR_OK ||
+                   !is_uploaded_file((string)($file['tmp_name']??'')) ||
+                   (int)($file['size']??0)<1||(int)$file['size']>3*1024*1024)
+                    throw new RuntimeException('Не удалось загрузить логотип правого блока. Максимальный размер — 3 МБ.');
+                $mime=(new finfo(FILEINFO_MIME_TYPE))->file((string)$file['tmp_name']);
+                $ext=['image/png'=>'png','image/jpeg'=>'jpg','image/webp'=>'webp'][$mime]??null;
+                $dimensions=@getimagesize((string)$file['tmp_name']);
+                if(!$ext||!$dimensions||($dimensions['mime']??'')!==$mime||
+                   $dimensions[0]<1||$dimensions[1]<1||$dimensions[0]>4500||$dimensions[1]>4500)
+                    throw new RuntimeException('Эмблема должна быть настоящим изображением PNG, JPG или WebP размером до 4500 пикселей.');
+                $dir=dirname(__DIR__).'/assets/uploads';
+                if(!is_dir($dir)||!is_writable($dir))throw new RuntimeException('Папка для загрузок недоступна.');
+                $filename='hero-logo-'.bin2hex(random_bytes(16)).'.'.$ext;
+                if(!move_uploaded_file((string)$file['tmp_name'],$dir.'/'.$filename))
+                    throw new RuntimeException('Не удалось сохранить логотип правого блока.');
+                @chmod($dir.'/'.$filename,0644);
+                $values['hero_logo_path']='/assets/uploads/'.$filename;
+            }
+        }
         $maps=json_decode(config_value('template_content_by_type','{}'),true);
         if (!is_array($maps)) $maps=[];
         $maps[site_template()]=$values;
