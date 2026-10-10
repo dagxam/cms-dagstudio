@@ -36,8 +36,16 @@ function cms_render_public_header(string $template): void {
     $label=template_catalog()[$template]['label']??'Сайт';
     $links=cms_public_menu_links($template);
     ?>
-    <?php if($template==='government'):?>
-    <div class="cms-media-official-strip cms-unified-official-strip">ОФИЦИАЛЬНЫЙ САЙТ <span>Информация для граждан и организаций</span></div>
+    <?php if($template==='government'):
+      $govHeader=government_layout();?>
+    <div class="cms-media-official-strip cms-unified-official-strip">
+      <strong>ОФИЦИАЛЬНЫЙ САЙТ</strong>
+      <?php if($govHeader['show_topbar']==='1'):?>
+        <?php if($govHeader['location']!==''):?><span><?=h($govHeader['location'])?></span><?php endif;?>
+        <?php if($govHeader['show_date']==='1'):?><time data-government-datetime datetime="<?=h(date('Y-m-d'))?>"><?=h(date('d.m.Y'))?></time><?php endif;?>
+        <?php if($govHeader['office_phone']!==''):?><span><?=h($govHeader['office_phone'])?></span><?php endif;?>
+      <?php else:?><span>Информация для граждан и организаций</span><?php endif;?>
+    </div>
     <?php endif;?>
     <header class="cms-media-header cms-unified-header">
       <div class="cms-media-header-inner">
