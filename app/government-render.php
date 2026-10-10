@@ -42,9 +42,9 @@ if ($search!=='')$govTitle='Результаты поиска';
 <script src="/assets/theme.js?v=government5" defer></script>
 <script src="/assets/government.js?v=government5" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=government5">
-<link rel="stylesheet" href="/assets/templates.css?v=dark5">
+<link rel="stylesheet" href="/assets/templates.css?v=dark6">
 <link rel="stylesheet" href="/assets/government.css?v=government5">
-<link rel="stylesheet" href="/assets/media.css?v=privacy5">
+<link rel="stylesheet" href="/assets/media.css?v=privacy6">
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
 <style id="dag-site-palettes"><?=template_palette_css($design,'government')?></style>
