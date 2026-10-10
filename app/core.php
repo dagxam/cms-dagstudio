@@ -109,6 +109,7 @@ require_once __DIR__ . '/templates.php';
 require_once __DIR__ . '/government.php';
 
 require_once __DIR__ . '/compliance.php';
+require_once __DIR__ . '/privacy.php';
 require_once __DIR__ . '/media.php';
 require_once __DIR__ . '/content-images.php';
 
