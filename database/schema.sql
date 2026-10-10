@@ -95,3 +95,12 @@ CREATE TABLE IF NOT EXISTS content_images (
  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
  CONSTRAINT fk_content_cover FOREIGN KEY (content_id) REFERENCES content(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Подтверждение отдельного согласия при отправке обращения
+CREATE TABLE IF NOT EXISTS cms_message_consents (
+ message_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+ consent_version VARCHAR(50) NOT NULL,
+ consent_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ consent_text_hash CHAR(64) NOT NULL,
+ FOREIGN KEY(message_id) REFERENCES messages(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
