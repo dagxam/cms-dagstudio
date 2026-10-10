@@ -34,7 +34,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Панель управления — DAG STUDIO CMS</title>
-<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=templates3"><link rel="stylesheet" href="/assets/templates.css?v=dark6"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
+<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=templates3"><link rel="stylesheet" href="/assets/templates.css?v=contacts8"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
 <body class="admin-layout">
 <aside class="sidebar">
 <a class="brand" href="/admin/index.php"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span>DAG STUDIO <b>CMS</b></span></a>
