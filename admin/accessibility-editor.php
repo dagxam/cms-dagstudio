@@ -20,7 +20,7 @@ $vision=cms_accessibility();$rating=cms_age_rating();
 <label>Увеличение текста
 <select name="font_scale"><?php foreach(['125','150','175','200'] as $size):?><option value="<?=h($size)?>" <?=$vision['font_scale']===$size?'selected':''?>><?=h($size)?>%</option><?php endforeach;?></select></label>
 <label>Контраст
-<select name="contrast"><?php foreach(['high'=>'Повышенный контраст','blackwhite'=>'Чёрный на белом','yellowblack'=>'Жёлтый на чёрном'] as $value=>$label):?><option value="<?=h($value)?>" <?=$vision['contrast']===$value?'selected':''?>><?=h($label)?></option><?php endforeach;?></select></label>
+<select name="contrast"><?php foreach(['high'=>'Чёрный на белом','blackwhite'=>'Белый на чёрном','yellowblack'=>'Жёлтый на чёрном'] as $value=>$label):?><option value="<?=h($value)?>" <?=$vision['contrast']===$value?'selected':''?>><?=h($label)?></option><?php endforeach;?></select></label>
 <label>Межстрочный интервал
 <select name="line_spacing"><option value="normal" <?=$vision['line_spacing']==='normal'?'selected':''?>>Обычный</option><option value="wide" <?=$vision['line_spacing']==='wide'?'selected':''?>>Увеличенный</option></select></label>
 <label>Интервал между буквами
