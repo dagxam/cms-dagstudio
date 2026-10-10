@@ -199,8 +199,8 @@ $covers=cms_content_image_map($rows);
 <label>Описание сайта<textarea name="site_description" maxlength="300" rows="3"><?=h(config_value('site_description'))?></textarea></label>
 <label>Контактный e-mail<input name="contact_email" type="email" required value="<?=h(config_value('contact_email'))?>"></label>
 <label>URL политики обработки персональных данных<input name="privacy_url" maxlength="500" placeholder="/?p=privacy" value="<?=h(config_value('privacy_url'))?>"></label><p class="muted">Пока этот адрес не задан, форма обращений отключена.</p>
-<div class="settings-template-note"><strong>Текущий тип: <?=h(template_catalog()[site_template()]['label'])?></strong><p class="muted">Тип и оформление сайта меняются в разделе <a href="?section=templates">«Шаблоны и дизайн»</a>.</p><input type="hidden" name="site_type" value="<?=h(config_value('site_type'))?>"></div>
-<div class="settings-template-note"><strong>Управление модулями вынесено в отдельный раздел.</strong><p class="muted"><a href="/admin/index.php?section=modules">Открыть включение, отключение и расположение модулей →</a></p></div>
+<div class="settings-template-note"><strong>Текущий тип: <?=h(template_catalog()[site_template()]['label'])?></strong><p class="muted">Тип и оформление сайта меняются в разделе <a href="?section=templates">«Настройки → Выбор темы»</a>.</p><input type="hidden" name="site_type" value="<?=h(config_value('site_type'))?>"></div>
+<div class="settings-template-note"><strong>Подключение и расположение модулей настраиваются в подразделе «Модули».</strong><p class="muted"><a href="/admin/index.php?section=modules">Открыть включение, отключение и расположение модулей →</a></p></div>
 <button class="button" type="submit">Сохранить настройки</button></form></div>
 
 <?php elseif ($section==='users'):
