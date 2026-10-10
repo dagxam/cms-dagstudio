@@ -26,7 +26,7 @@ try{
     ob_start();
     include $root.'/media.php';
     $html=(string)ob_get_clean();
-    $checks=['site-template-'.$tpl,'cms-media-site-nav','cms-media-grid','cms-media-tile',
+    $checks=['site-template-'.$tpl,'cms-media-site-nav','cms-media-grid',
              'cms-media-head','cms-media-filters','/assets/templates.css',
              'dag-site-palettes','data-theme-storage-key="dagstudio-template-'.$tpl.'"',
              'cms-media-footer','cms-media-header'];
@@ -34,6 +34,8 @@ try{
         throw new RuntimeException('Не найден '. $part . ' при выводе '.$tpl.'/'.$type);
     $names=['document'=>'Документы','photo'=>'Фотогалерея','video'=>'Видеогалерея'];
     if(!str_contains($html,$names[$type]))throw new RuntimeException('Неправильный заголовок.');
+    if(!str_contains($html,'cms-media-tile')&&!str_contains($html,'cms-media-empty'))
+        throw new RuntimeException('Нет ни карточек, ни пустого состояния.');
     if(strlen($html)<2500)throw new RuntimeException('HTML неожиданно короткий.');
     echo '[OK] Медиараздел '.$type.' в шаблоне '.$tpl.PHP_EOL;
 }finally{
