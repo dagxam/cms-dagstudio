@@ -43,7 +43,8 @@ if ($activeTemplate === 'government') {
   <link rel="stylesheet" href="/assets/style.css?v=templates3">
   <link rel="stylesheet" href="/assets/templates.css?v=covers1">
   <link rel="stylesheet" href="/assets/media.css?v=legal2">
-  <script src="/assets/accessibility.js?v=legal2" defer></script>
+  <script src="/assets/accessibility.js?v=a11y4" defer></script>
+<script src="/assets/privacy.js?v=privacy4" defer></script>
   <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>
 </head>
 <body class="<?=h($siteClass)?>"<?=cms_accessibility_attributes()?> style="<?=h(template_style($design,$activeTemplate))?>">
@@ -144,7 +145,7 @@ if ($activeTemplate === 'government') {
         <?php if($siteContent['address']!==''): ?><p><strong>Адрес:</strong> <?=h($siteContent['address'])?></p><?php endif;?>
         <p><?=h(config_value('contact_email'))?></p>
       </div>
-      <?php if($privacyUrl): ?><div class="box contact-form">
+      <?php if($privacyReady): ?><div class="box contact-form">
         <?php if($message): ?><div class="notice"><?=h($message)?></div><?php endif;?>
         <?php if($error): ?><div class="error"><?=h($error)?></div><?php endif;?>
         <form method="post" action="/?module=contact#contact"><?=csrf()?>
@@ -153,7 +154,7 @@ if ($activeTemplate === 'government') {
           <label>Ваше имя<input required maxlength="120" name="name" value="<?=h($_POST['name'] ?? '')?>"></label>
           <label>Электронная почта<input required type="email" name="email" value="<?=h($_POST['email'] ?? '')?>"></label>
           <label>Сообщение<textarea required minlength="10" maxlength="5000" rows="5" name="body"><?=h($_POST['body'] ?? '')?></textarea></label>
-          <label class="check privacy-check"><input type="checkbox" name="consent" value="1" required> Даю согласие на обработку данных согласно <a href="<?=h($privacyUrl)?>" target="_blank" rel="noopener noreferrer">политике обработки персональных данных</a>.</label>
+          <label class="check privacy-check"><input type="checkbox" name="consent" value="1" required> Даю отдельное согласие на обработку данных для ответа на обращение. <a href="/consent.php" target="_blank" rel="noopener">Текст согласия</a>. <a href="/privacy.php" target="_blank" rel="noopener">Политика обработки персональных данных</a>.</label>
           <button class="button" type="submit">Отправить сообщение</button>
         </form>
       </div><?php else: ?><div class="box site-contact-prompt"><p>Форма обращений станет доступна после публикации политики обработки персональных данных.</p></div><?php endif;?>
@@ -204,6 +205,7 @@ if ($activeTemplate === 'government') {
   <div><strong><?=h($siteName)?></strong><br><?=h($siteContent['footer_text'])?></div>
   <div><?=date('Y')?> · Работает на <strong>DAG STUDIO CMS</strong>
   <?php foreach(cms_module_ids($activeTemplate,'footer') as $id):?><?=cms_module_compact($id,'footer')?><?php endforeach;?></div>
-</div></footer>
+</div><div class="container cms-legal-footer-links"><?=cms_privacy_links()?></div></footer>
+<?=cms_cookie_controls()?>
 <?=cms_age_gate()?>
 </body></html>
