@@ -78,6 +78,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/template-editor.php
+      - name: Проверка вложенного меню Настройки и прав доступа
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/admin-settings-menu.php
       - name: Проверка настроек официального сайта
         env:
           DAG_CMS_TEST_MODE: '1'
