@@ -6,7 +6,7 @@ header('X-Robots-Tag: noindex, nofollow');
 $me = require_account();
 $section = (string)($_GET['section'] ?? 'dashboard');
 $types = kinds();
-if (!in_array($section, array_merge(['dashboard','edit','templates','settings','users','messages','documents','photos','videos','accessibility','privacy','modules','menus','contacts','socials'],array_keys($types)),true)) $section='dashboard';
+if (!in_array($section, array_merge(['dashboard','profile','edit','templates','settings','users','messages','documents','photos','videos','accessibility','privacy','modules','menus','contacts','socials'],array_keys($types)),true)) $section='dashboard';
 if ($section === 'edit') {
     $id = max(0,(int)($_GET['id'] ?? 0));
     $record = null;
@@ -20,7 +20,7 @@ if ($section === 'edit') {
     if (!array_key_exists($kind,$types)) { http_response_code(404); exit('Раздел не найден'); }
     require_module($kind);
     if (!module_enabled($kind)) { http_response_code(404); exit('Модуль отключён'); }
-} elseif ($section !== 'dashboard') {
+} elseif ($section !== 'dashboard' && $section !== 'profile') {
     require_module(in_array($section,['accessibility','privacy','modules','menus','contacts','socials'],true)?'settings':(in_array($section,['documents','photos','videos'],true)?'media':$section));
     if (isset($types[$section]) && !module_enabled($section)) {
         http_response_code(404);
@@ -34,7 +34,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Панель управления — DAG STUDIO CMS</title>
-<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=fa672-local2"><link rel="stylesheet" href="/assets/templates.css?v=contacts8"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
+<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=profile3"><link rel="stylesheet" href="/assets/templates.css?v=contacts8"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/admin-profile.js?v=profile1" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
 <body class="admin-layout">
 <aside class="sidebar">
 <a class="brand" href="/admin/index.php"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span>DAG STUDIO <b>CMS</b></span></a>
@@ -88,20 +88,77 @@ $settingsAvailable=allowed('settings')||allowed('messages')||allowed('users');
 'modules'=>'Настройки / Модули','accessibility'=>'Настройки / Доступность и возраст',
 'privacy'=>'Настройки / Конфиденциальность',
 'contacts'=>'Настройки / Контакты','socials'=>'Настройки / Социальные сети',
-'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span><span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span></button><div class="admin-account-actions">
-  <span class="user-pill"><i class="fa-solid fa-user" aria-hidden="true"></i> <?=h($me['name'])?> · <?=h($me['role'])?></span>
-  <form class="admin-logout-form" method="post" action="/admin/login.php"><?=csrf()?>
-    <input type="hidden" name="logout" value="1">
-    <button class="admin-logout-button" type="submit" title="Выйти из аккаунта" aria-label="Выйти из аккаунта">
-      <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Выйти</span>
-    </button>
-  </form>
+'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи','profile'=>'Настройки профиля'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span><span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span></button><div class="admin-account-actions">
+  <details class="cms-profile-menu" data-profile-menu>
+    <summary class="user-pill cms-profile-trigger" aria-label="Меню пользователя: <?=h($me['name'])?>">
+      <i class="fa-solid fa-user" aria-hidden="true"></i>
+      <span class="cms-profile-trigger-name"><?=h($me['name'])?> · <?=h($me['role'])?></span>
+      <i class="fa-solid fa-chevron-down cms-profile-chevron" aria-hidden="true"></i>
+    </summary>
+    <div class="cms-profile-dropdown">
+      <div class="cms-profile-dropdown-heading">
+        <span class="cms-profile-avatar" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
+        <span><strong><?=h($me['name'])?></strong><small><?=h($me['email'])?></small></span>
+      </div>
+      <a class="cms-profile-dropdown-link <?=$section==='profile'?'active':''?>" href="/admin/index.php?section=profile" <?=$section==='profile'?'aria-current="page"':''?>>
+        <i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Настройки профиля</span>
+      </a>
+      <form class="cms-profile-dropdown-form" method="post" action="/admin/login.php">
+        <?=csrf()?><input type="hidden" name="logout" value="1">
+        <button class="cms-profile-dropdown-link cms-profile-logout" type="submit">
+          <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Выйти</span>
+        </button>
+      </form>
+    </div>
+  </details>
 </div></div></header>
 <main class="main">
 <?php if ($flash): ?><div class="notice"><?=h($flash)?></div><?php endif; ?>
 <?php if ($flashError): ?><div class="error"><?=h($flashError)?></div><?php endif; ?>
 
-<?php if ($section==='dashboard'):
+<?php if ($section==='profile'): ?>
+<div class="eyebrow">ЛИЧНЫЙ КАБИНЕТ / ПРОФИЛЬ</div>
+<div class="heading-row cms-profile-page-header"><div>
+  <h1>Настройки профиля</h1>
+  <p class="muted">Личные данные и безопасность вашей учётной записи. Роль и права доступа здесь не изменяются.</p>
+</div></div>
+<div class="cms-profile-settings">
+  <section class="box form-panel cms-profile-settings-card">
+    <h2><i class="fa-solid fa-id-card" aria-hidden="true"></i> Личные данные</h2>
+    <form method="post" action="/admin/actions.php">
+      <?=csrf()?><input type="hidden" name="action" value="save_profile">
+      <label>Имя пользователя
+        <input type="text" name="profile_name" autocomplete="name" minlength="2" maxlength="120" required value="<?=h($me['name'])?>">
+      </label>
+      <label>Электронная почта
+        <input type="email" name="profile_email" autocomplete="email" maxlength="190" required value="<?=h($me['email'])?>">
+      </label>
+      <label>Текущий пароль для подтверждения изменений
+        <input type="password" name="current_password" autocomplete="current-password" required>
+      </label>
+      <button class="button" type="submit"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Сохранить профиль</button>
+    </form>
+  </section>
+  <section class="box form-panel cms-profile-settings-card">
+    <h2><i class="fa-solid fa-lock" aria-hidden="true"></i> Изменить пароль</h2>
+    <p class="muted">Новый пароль должен содержать не менее 12 символов. Для защиты учётной записи введите действующий пароль.</p>
+    <form method="post" action="/admin/actions.php">
+      <?=csrf()?><input type="hidden" name="action" value="change_profile_password">
+      <label>Текущий пароль
+        <input type="password" name="current_password" autocomplete="current-password" required>
+      </label>
+      <label>Новый пароль
+        <input type="password" name="new_password" autocomplete="new-password" minlength="12" maxlength="72" required>
+      </label>
+      <label>Повторите новый пароль
+        <input type="password" name="confirm_password" autocomplete="new-password" minlength="12" maxlength="72" required>
+      </label>
+      <button class="button" type="submit"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Изменить пароль</button>
+    </form>
+  </section>
+</div>
+
+<?php elseif ($section==='dashboard'):
 $counts=[];
 foreach ($types as $key=>$label) {
     if (!allowed($key) || !module_enabled($key)) continue;

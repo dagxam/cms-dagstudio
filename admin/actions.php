@@ -12,7 +12,33 @@ $action = (string)($_POST['action'] ?? '');
 $back = '/admin/index.php';
 
 try {
-    if ($action === 'save_template_menu') {
+    if ($action === 'save_profile') {
+        // Изменять свой профиль могут также редакторы; менять роль здесь нельзя.
+        $back='/admin/index.php?section=profile';
+        $me=require_account();
+        $name=$_POST['profile_name']??null;
+        $email=$_POST['profile_email']??null;
+        $current=$_POST['current_password']??null;
+        if(!is_string($name)||!is_string($email)||!is_string($current)) {
+            throw new RuntimeException('Проверьте заполненные поля профиля.');
+        }
+        cms_profile_update_identity(database(),(int)$me['id'],$name,$email,$current);
+        log_action('profile.details.update',(string)$me['id']);
+        $_SESSION['flash']='Имя и электронная почта успешно обновлены.';
+    } elseif ($action === 'change_profile_password') {
+        $back='/admin/index.php?section=profile';
+        $me=require_account();
+        $current=$_POST['current_password']??null;
+        $new=$_POST['new_password']??null;
+        $repeat=$_POST['confirm_password']??null;
+        if(!is_string($current)||!is_string($new)||!is_string($repeat)) {
+            throw new RuntimeException('Проверьте заполненные поля пароля.');
+        }
+        cms_profile_update_password(database(),(int)$me['id'],$current,$new,$repeat);
+        session_regenerate_id(true);
+        log_action('profile.password.update',(string)$me['id']);
+        $_SESSION['flash']='Пароль обновлён. Используйте новый пароль при следующем входе.';
+    } elseif ($action === 'save_template_menu') {
         require_module('settings');
         $template=(string)($_POST['template']??'');
         if(!isset(template_catalog()[$template]))throw new RuntimeException('Неизвестный шаблон.');

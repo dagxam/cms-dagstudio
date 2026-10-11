@@ -44,6 +44,7 @@ jobs:
       - name: Проверка синтаксиса JavaScript
         run: |
           node --check assets/theme.js
+          node --check assets/admin-profile.js
           node --check assets/template-palettes.js
           node --check assets/government.js
           node --check assets/accessibility.js
@@ -61,6 +62,14 @@ jobs:
           TEST_DB_USER: 'root'
           TEST_DB_PASS: 'testpassword'
         run: php tests/smoke.php
+      - name: Настройки профиля и безопасность собственной учётной записи
+        env:
+          DAG_CMS_TEST_MODE: '1'
+          TEST_DB_HOST: '127.0.0.1'
+          TEST_DB_NAME: 'dagcms_test'
+          TEST_DB_USER: 'root'
+          TEST_DB_PASS: 'testpassword'
+        run: php tests/profile.php
       - name: Проверка восстановления доступа администратора
         env:
           DAG_CMS_TEST_MODE: '1'

@@ -810,3 +810,70 @@ html[data-theme="light"] .admin-header-controls .theme-toggle::before{transform:
  .admin-logout-button{min-height:40px;padding:8px 11px}
 }
 @media(max-width:430px){.admin-logout-button span{display:none}.admin-account-actions .user-pill{max-width:39vw}.admin-header-controls{gap:6px}}
+
+/* DAG STUDIO CMS: доступное выпадающее меню текущего пользователя. */
+.topbar{z-index:15}
+.cms-profile-menu{position:relative;display:block;min-width:0;flex:0 1 auto}
+.cms-profile-trigger{
+  display:inline-flex!important;align-items:center;gap:9px;cursor:pointer;user-select:none;
+  min-height:40px;max-width:270px;padding:8px 13px;border:1px solid var(--border);
+  border-radius:999px;background:var(--panel);color:var(--text)!important;
+  font-size:12px;font-weight:700;line-height:1.25;
+  transition:background-color .16s,border-color .16s;
+  list-style:none;
+}
+.cms-profile-trigger::-webkit-details-marker{display:none}
+.cms-profile-trigger::marker{content:""}
+.cms-profile-trigger .fa-user{flex:0 0 auto;color:var(--accent-light)}
+.cms-profile-trigger-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cms-profile-chevron{font-size:10px;flex:0 0 auto;opacity:.75;transition:transform .16s}
+.cms-profile-menu[open] .cms-profile-chevron{transform:rotate(180deg)}
+.cms-profile-trigger:hover,.cms-profile-menu[open] .cms-profile-trigger{
+  border-color:var(--accent);background:var(--panel2)}
+.cms-profile-trigger:focus-visible,.cms-profile-dropdown-link:focus-visible{
+  outline:3px solid var(--accent-light);outline-offset:2px}
+.cms-profile-dropdown{
+  position:absolute;right:0;top:calc(100% + 12px);z-index:50;
+  width:min(300px,calc(100vw - 28px));padding:8px;
+  border-radius:15px;border:1px solid var(--border);background:var(--panel);
+  box-shadow:0 18px 50px rgba(0,0,0,.25);
+}
+.cms-profile-dropdown-heading{
+  display:flex;align-items:center;gap:11px;min-width:0;
+  padding:13px 11px 15px;margin-bottom:6px;border-bottom:1px solid var(--border)}
+.cms-profile-avatar{
+  display:grid;place-items:center;flex:0 0 37px;height:37px;
+  color:var(--accent-light);border-radius:12px;background:rgba(185,107,69,.12)}
+.cms-profile-dropdown-heading>span:last-child{display:grid;gap:3px;min-width:0}
+.cms-profile-dropdown-heading strong{font-size:13px;overflow-wrap:anywhere;color:var(--text)}
+.cms-profile-dropdown-heading small{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.cms-profile-dropdown-link{
+  display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;
+  border:0;border-radius:9px;background:transparent;color:var(--text);
+  font-size:13px;font-weight:650;text-decoration:none;text-align:left;cursor:pointer}
+.cms-profile-dropdown-link .fa-solid{width:17px;flex:0 0 17px;text-align:center;color:var(--accent-light)}
+.cms-profile-dropdown-link:hover,.cms-profile-dropdown-link.active{
+  color:var(--accent-light);background:rgba(185,107,69,.12)}
+.cms-profile-dropdown-form{padding-top:5px;margin-top:5px;border-top:1px solid var(--border)}
+.cms-profile-logout{color:var(--red)}
+.cms-profile-logout .fa-solid{color:var(--red)}
+.cms-profile-logout:hover{color:var(--red);background:rgba(195,69,69,.1)}
+.cms-profile-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;max-width:1100px}
+.cms-profile-settings-card{max-width:none;width:100%;margin:0;padding:27px}
+.cms-profile-settings-card h2{display:flex;gap:10px;align-items:center;font-size:22px;margin-bottom:17px}
+.cms-profile-settings-card h2 .fa-solid{font-size:19px;color:var(--accent)}
+.cms-profile-settings-card .button{margin-top:6px}
+html[data-theme="light"] .cms-profile-trigger{background:#fffdf9;color:#4b3429!important;border-color:#e7dace}
+html[data-theme="light"] .cms-profile-trigger .fa-user{color:#97502e}
+html[data-theme="light"] .cms-profile-dropdown{background:#fffdf9;border-color:#e7dace;box-shadow:0 15px 44px rgba(69,36,18,.16)}
+html[data-theme="light"] .cms-profile-dropdown-link{color:#4b3429}
+html[data-theme="light"] .cms-profile-dropdown-link .fa-solid{color:#97502e}
+html[data-theme="light"] .cms-profile-dropdown-link:hover{background:#f6ece3;color:#97502e}
+html[data-theme="light"] .cms-profile-logout,.cms-profile-logout .fa-solid{color:#b4423b}
+@media(max-width:1050px){.cms-profile-settings{grid-template-columns:1fr}}
+@media(max-width:720px){
+ .cms-profile-trigger{max-width:min(62vw,270px)}
+ .cms-profile-dropdown{right:0}
+ .cms-profile-settings-card{padding:20px}
+}
+@media(prefers-reduced-motion:reduce){.cms-profile-chevron{transition:none}}
