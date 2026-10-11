@@ -37,7 +37,7 @@ $headerEnd=strpos($head,'</header>',$headerStart);
 $topbar=substr($head,$headerStart,$headerEnd-$headerStart);
 icon_assert(!str_contains($nav,'Вы вошли как')&&!str_contains($nav,'name="logout"'),
     'Имя пользователя и выход удалены из боковой панели');
-icon_assert(str_contains($topbar,'name="logout"')&&str_contains($topbar,'admin-logout-button'),
+icon_assert(str_contains($topbar,'name="logout"')&&str_contains($topbar,'cms-profile-dropdown-form')&&str_contains($topbar,'cms-profile-menu'),
     'Форма выхода перенесена в правую часть верхней панели');
 icon_assert(str_contains($topbar,'user-pill')&&str_contains($topbar,'<?=h($me[\'name\'])?>'),
     'Имя пользователя показывается в правой части верхней панели');
