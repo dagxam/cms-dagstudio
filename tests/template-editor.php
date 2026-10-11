@@ -10,6 +10,7 @@ function csrf(): string {return '<input type="hidden" name="csrf" value="test">'
 function h(?string $value): string {return htmlspecialchars($value??'',ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');}
 require dirname(__DIR__).'/app/templates.php';
 require dirname(__DIR__).'/app/government.php';
+require dirname(__DIR__).'/app/home-blocks.php';
 define('DAG_CMS_ADMIN_VIEW',true);
 function editor_render(string $template,string $view='',string $tab='appearance'): string {
     global $config;
