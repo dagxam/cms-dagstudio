@@ -76,6 +76,20 @@ if(getenv('TEST_CONTACT_SOCIAL_TEST')==='1') {
         $template=>['hero_logo_path'=>'/assets/uploads/hero-logo-'.str_repeat('a',32).'.png']
     ])]);
 }
+if(getenv('TEST_HOME_BLOCKS')==='1'){
+    $make=static function(string $title,string $place,bool $enabled):array {
+        return ['id'=>bin2hex(random_bytes(8)),'type'=>'banner','placement'=>$place,'enabled'=>$enabled,
+                'title'=>$title,'kicker'=>'ТЕСТ БЛОКА','text'=>'Редактируемый текст',
+                'button'=>'Открыть','url'=>'/?kind=news','items'=>[]];
+    };
+    $up->execute(['cms_home_blocks_by_type',json_encode([
+        $id=>[
+            $make('Верхний блок для '.$id,'top',true),
+            $make('Нижний блок для '.$id,'bottom',true),
+            $make('Скрытый блок для '.$id,'top',false),
+        ]
+    ],JSON_UNESCAPED_UNICODE)]);
+}
 file_put_contents($config,'<?php return '.var_export($c,true).';');
 try {
     $_SERVER['REQUEST_METHOD']='GET';
@@ -109,6 +123,16 @@ try {
         !str_contains($html,'html[data-theme="light"] body.site-page') ||
         !str_contains($html,'html[data-theme="dark"] body.site-page')) {
         throw new RuntimeException('HTML не прошёл проверку для шаблона '.$id);
+    }
+    if(getenv('TEST_HOME_BLOCKS')==='1'){
+        if(!str_contains($html,'Верхний блок для '.$id)||
+           !str_contains($html,'Нижний блок для '.$id)||
+           !str_contains($html,'cms-custom-home-banner')||
+           str_contains($html,'Скрытый блок для '.$id)) {
+            throw new RuntimeException('Собственные блоки главной отображаются неправильно: '.$id);
+        }
+        if(strpos($html,'Верхний блок для '.$id)>strpos($html,'Нижний блок для '.$id))
+            throw new RuntimeException('Порядок пользовательских блоков нарушен: '.$id);
     }
     if(getenv('TEST_MODULE_LAYOUT_TEST')==='1') {
         foreach(['cms-module-widget-news','cms-module-widget-page',

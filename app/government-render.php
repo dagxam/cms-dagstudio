@@ -42,7 +42,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 <script src="/assets/theme.js?v=government5" defer></script>
 <script src="/assets/government.js?v=government5" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
-<link rel="stylesheet" href="/assets/templates.css?v=contacts8">
+<link rel="stylesheet" href="/assets/templates.css?v=homeblocks1">
 <link rel="stylesheet" href="/assets/government.css?v=government5">
 <link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
@@ -136,6 +136,7 @@ if ($search!=='')$govTitle='Результаты поиска';
         <?php if($siteContent['description']!==''):?><p><?=h($siteContent['description'])?></p><?php endif;?>
       </div>
       <?php endif;?>
+      <?php if($kind==='' && $requestedWidget===''):cms_home_render('government','top');endif;?>
       <?php foreach($govSections as $section):?>
         <?php if($section==='features'):?>
         <section class="government-section" id="features">
@@ -192,6 +193,7 @@ if ($search!=='')$govTitle='Результаты поиска';
         </section>
         <?php endif;?>
       <?php endforeach;?>
+      <?php if($kind==='' && $requestedWidget===''):cms_home_render('government','bottom');endif;?>
     <?php endif;?>
   </main>
   <?php if($govRight):?>

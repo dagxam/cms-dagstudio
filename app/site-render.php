@@ -44,7 +44,7 @@ if ($activeTemplate === 'government') {
   <script>var dagDefaultTheme=<?=json_encode(template_default_mode($activeTemplate))?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-template-<?=h($activeTemplate)?>");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
   <script src="/assets/theme.js?v=palette4" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
-  <link rel="stylesheet" href="/assets/templates.css?v=contacts8">
+  <link rel="stylesheet" href="/assets/templates.css?v=homeblocks1">
   <link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
   <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
@@ -103,6 +103,7 @@ if ($activeTemplate === 'government') {
   <?php if($leftModules):?><aside class="cms-module-sidebar cms-module-sidebar-left" aria-label="Левая колонка модулей">
   <?php foreach($leftModules as $id):?><?php cms_module_sidebar($id,$activeTemplate); ?><?php endforeach;?></aside><?php endif;?>
   <div class="site-sections cms-module-main">
+  <?php if($kind==='' && $requestedWidget===''):cms_home_render($activeTemplate,'top');endif; ?>
   <?php foreach($visibleSections as $section): ?>
     <?php if($section==='features'): ?>
     <section class="section-block site-block site-benefits" id="features">
@@ -172,6 +173,7 @@ if ($activeTemplate === 'government') {
     </section>
     <?php endif;?>
   <?php endforeach;?>
+  <?php if($kind==='' && $requestedWidget===''):cms_home_render($activeTemplate,'bottom');endif; ?>
   </div>
   <?php if($rightModules):?><aside class="cms-module-sidebar cms-module-sidebar-right" aria-label="Правая колонка модулей">
   <?php foreach($rightModules as $id):?><?php cms_module_sidebar($id,$activeTemplate); ?><?php endforeach;?></aside><?php endif;?>

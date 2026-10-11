@@ -233,6 +233,7 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
   </section>
 </div>
 <?php elseif ($activeTab === 'blocks'): ?>
+<?php require __DIR__ . '/home-blocks-editor.php'; ?>
 <section class="template-edit-card box template-sections-panel">
   <div class="template-edit-head"><span class="template-section-index">04</span><div><h2>Блоки главной страницы</h2><p class="muted">Включайте, выключайте и меняйте порядок отображения. Пустые разделы не показывают фиктивные публикации.</p></div></div>
   <form method="post" action="/admin/actions.php"><?=csrf()?>

@@ -640,6 +640,51 @@ try {
         log_action('template.content',site_template());
         $_SESSION['flash']='Тексты, бренд и меню обновлены.';
         $back='/admin/index.php?section=templates&view=edit&tab=content';
+    } elseif (in_array($action,['save_home_block','delete_home_block','toggle_home_block','move_home_block'],true)) {
+        require_module('settings');
+        $template=$_POST['template']??null;
+        $id=$_POST['id']??'';
+        if(!is_string($template)||!isset(template_catalog()[$template])||!is_string($id)||
+           ($id!==''&&!preg_match('/^[a-f0-9]{16}$/D',$id)))
+            throw new RuntimeException('Некорректный запрос к конструктору блоков.');
+        $back='/admin/index.php?section=templates&view=edit&tab=blocks&tpl='.rawurlencode($template);
+        $blocks=cms_home_blocks($template);
+        if($action==='save_home_block') {
+            $old=null;$index=null;
+            if($id!==''){$index=cms_home_index($blocks,$id);$old=$blocks[$index];}
+            elseif(count($blocks)>=16)throw new RuntimeException('Достигнут предел в 16 блоков.');
+            $input=$_POST;
+            // Признак включения не может быть установлен через произвольную строку.
+            $input['enabled']=isset($_POST['enabled'])&&$_POST['enabled']==='1'?'1':'0';
+            $block=cms_home_normalize($input,$old);
+            if($index===null)$blocks[]=$block;
+            else $blocks[$index]=$block;
+            cms_home_save($template,$blocks);
+            log_action('home.block.save',$template.':'.$block['id']);
+            $_SESSION['flash']='Блок главной страницы сохранён.';
+        }else {
+            if($id==='')throw new RuntimeException('Блок не выбран.');
+            $index=cms_home_index($blocks,$id);
+            if($action==='delete_home_block') {
+                array_splice($blocks,$index,1);
+                $_SESSION['flash']='Блок удалён.';
+            }elseif($action==='toggle_home_block') {
+                $blocks[$index]['enabled']=!$blocks[$index]['enabled'];
+                $_SESSION['flash']='Видимость блока изменена.';
+            }else{
+                $dir=$_POST['direction']??'';
+                if(!is_string($dir)||!in_array($dir,['up','down'],true))
+                    throw new RuntimeException('Недопустимое направление перемещения.');
+                $delta=$dir==='up'?-1:1;
+                $swap=$index+$delta;
+                while(isset($blocks[$swap]) && $blocks[$swap]['placement']!==$blocks[$index]['placement'])
+                    $swap+=$delta;
+                if(isset($blocks[$swap]))[$blocks[$index],$blocks[$swap]]=[$blocks[$swap],$blocks[$index]];
+                $_SESSION['flash']='Порядок блоков обновлён.';
+            }
+            cms_home_save($template,$blocks);
+            log_action('home.block.'.$action,$template.':'.$id);
+        }
     } elseif ($action === 'save_template_sections') {
         require_module('settings');
         $enabled=$_POST['active_sections']??[];
