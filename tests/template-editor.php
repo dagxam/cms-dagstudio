@@ -59,6 +59,17 @@ foreach (array_keys(template_catalog()) as $type) {
             str_contains($homepage,'save_template_design'),
             $type.' — конструктор администрации недоступен');
     }
+    $leader=editor_render($type,'edit','leader');
+    if($type==='government'){
+        assert_editor(str_contains($leader,'save_government_leader') &&
+            str_contains($leader,'data-leader-preview-img') &&
+            str_contains($leader,'name="leader_initials"'),
+            $type.' — отдельная вкладка главы администрации');
+    }else{
+        assert_editor(!str_contains($leader,'save_government_leader')&&
+            str_contains($leader,'save_template_design'),
+            $type.' — данные главы скрыты в другом шаблоне');
+    }
     $gov=editor_render($type,'edit','government');
     if($type==='government'){
         assert_editor(str_contains($gov,'save_government_layout') &&

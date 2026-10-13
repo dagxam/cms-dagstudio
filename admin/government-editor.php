@@ -9,7 +9,6 @@ $govLabels=[
  'show_intro'=>'Вводная информация на главной',
  'show_date'=>'Дата и часы',
  'show_accessibility'=>'Кнопка для слабовидящих',
- 'show_leader'=>'Блок руководителя',
  'show_schedule'=>'График приёма',
  'show_announcements'=>'Анонсы',
  'show_links'=>'Полезные ссылки',
@@ -112,19 +111,11 @@ $govLabels=[
  <fieldset class="government-editor-group">
   <legend>Правый информационный столбец</legend>
   <div class="template-fields">
-    <label>Заголовок руководителя<input name="leader_title" maxlength="190" value="<?=h($gov['leader_title'])?>"></label>
-    <label>ФИО руководителя<input name="leader_name" maxlength="160" value="<?=h($gov['leader_name'])?>" placeholder="Иванов Иван Иванович"></label>
-    <label>Фамилия и инициалы (кратко)<input name="leader_initials" maxlength="100" value="<?=h($gov['leader_initials'])?>" placeholder="Иванов И. И."></label>
-    <label class="template-field-wide">Описание должности / краткая информация
-      <textarea name="leader_description" rows="2" maxlength="5000"><?=h($gov['leader_description'])?></textarea>
-    </label>
-    <label>Фотография руководителя (PNG/JPG/WebP, до 2 МБ)
-      <input type="file" name="leader_photo" accept="image/png,image/jpeg,image/webp">
-    </label>
-    <?php if($gov['leader_image']!==''):?>
-    <div class="template-current-logo"><img src="<?=h($gov['leader_image'])?>" alt="Фото руководителя">
-      <label class="check"><input type="checkbox" value="1" name="remove_leader_photo"> Удалить фотографию</label></div>
-    <?php endif;?>
+    <div class="government-editor-help template-field-wide">
+      <strong><i class="fa-solid fa-user-tie" aria-hidden="true"></i> Данные главы администрации</strong>
+      <p>Фотография, ФИО, инициалы и должность теперь редактируются в отдельной вкладке, поэтому сохраняются независимо от параметров колонок.</p>
+      <a href="/admin/index.php?section=templates&amp;view=edit&amp;tab=leader#government-leader"><i class="fa-solid fa-camera" aria-hidden="true"></i> Открыть настройки главы администрации</a>
+    </div>
     <label>Заголовок графика приёма<input name="schedule_title" maxlength="190" value="<?=h($gov['schedule_title'])?>"></label>
     <label>Заголовок анонсов<input name="announcements_title" maxlength="190" value="<?=h($gov['announcements_title'])?>"></label>
     <label class="template-field-wide">График приёма

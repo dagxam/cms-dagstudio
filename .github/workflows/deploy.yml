@@ -47,6 +47,7 @@ jobs:
           node --check assets/admin-profile.js
           node --check assets/home-blocks.js
           node --check assets/government-home.js
+          node --check assets/government-leader.js
           node --check assets/template-palettes.js
           node --check assets/government.js
           node --check assets/accessibility.js
@@ -116,6 +117,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/government.php
+      - name: Фотография, инициалы и данные главы администрации
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/government-leader.php
       - name: Конфиденциальность, согласия и контрастные настройки
         env:
           DAG_CMS_TEST_MODE: '1'
@@ -160,6 +165,15 @@ jobs:
               php tests/render-media.php "$template" "$kind"
             done
           done
+      - name: Публичный вывод фотографии и ФИО главы администрации
+        env:
+          DAG_CMS_TEST_MODE: '1'
+          TEST_GOV_LEADER: '1'
+          TEST_DB_HOST: '127.0.0.1'
+          TEST_DB_NAME: 'dagcms_test'
+          TEST_DB_USER: 'root'
+          TEST_DB_PASS: 'testpassword'
+        run: php tests/render-templates.php government
       - name: Проверка реальной компоновки главной администрации
         env:
           DAG_CMS_TEST_MODE: '1'

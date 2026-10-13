@@ -108,6 +108,14 @@ if(getenv('TEST_GOV_COMPOSER')==='1' && $id==='government'){
         'documents'=>['style'=>'accent','title'=>'Документы на главной']
     ],JSON_UNESCAPED_UNICODE)]);
 }
+if(getenv('TEST_GOV_LEADER')==='1' && $id==='government'){
+    $up->execute(['government_layout',json_encode([
+        'leader_title'=>'Глава района','leader_name'=>'Тестов Тест Тестович',
+        'leader_initials'=>'Тестов Т. Т.','leader_description'=>'Руководитель администрации',
+        'show_leader'=>'1',
+        'leader_image'=>'/assets/uploads/leader-'.str_repeat('a',32).'.webp',
+    ],JSON_UNESCAPED_UNICODE)]);
+}
 file_put_contents($config,'<?php return '.var_export($c,true).';');
 try {
     $_SERVER['REQUEST_METHOD']='GET';
@@ -151,6 +159,15 @@ try {
         }
         if(strpos($html,'Верхний блок для '.$id)>strpos($html,'Нижний блок для '.$id))
             throw new RuntimeException('Порядок пользовательских блоков нарушен: '.$id);
+    }
+    if(getenv('TEST_GOV_LEADER')==='1' && $id==='government'){
+        if(!str_contains($html,'Тестов Т. Т.')||
+           !str_contains($html,'Тестов Тест Тестович')||
+           !str_contains($html,'Руководитель администрации')||
+           !str_contains($html,'government-leader-photo')||
+           !str_contains($html,'leader-'.str_repeat('a',32).'.webp')) {
+            throw new RuntimeException('Фото, ФИО и инициалы главы не выведены в административном шаблоне.');
+        }
     }
     if(getenv('TEST_GOV_COMPOSER')==='1' && $id==='government'){
         $n=strpos($html,'Новости с карточками');

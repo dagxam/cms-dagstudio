@@ -378,6 +378,30 @@ try {
         log_action('media.delete',(string)$id);
         $_SESSION['flash']='Файл удалён.';
         $back='/admin/index.php?section='.(['document'=>'documents','photo'=>'photos','video'=>'videos'][$category??($item['category']??'document')]??'documents');
+    } elseif ($action === 'save_government_leader') {
+        require_module('settings');
+        $back='/admin/index.php?section=templates&view=edit&tab=leader#government-leader';
+        if(site_template()!=='government')throw new RuntimeException('Настройки главы доступны только в теме администрации.');
+        $current=government_layout();
+        $updated=government_leader_values($_POST,$current);
+        $remove=isset($_POST['remove_leader_photo']) && $_POST['remove_leader_photo']==='1';
+        $file=$_FILES['leader_photo']??null;
+        if($file!==null&&!is_array($file))throw new RuntimeException('Некорректная загрузка фотографии.');
+        $hasNewPhoto=is_array($file) && (int)($file['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE;
+        if($remove && $hasNewPhoto)throw new RuntimeException('Выберите одно действие: заменить фотографию или удалить её.');
+        $newPhoto=null;
+        try{
+            if($hasNewPhoto)$newPhoto=government_leader_uploaded_photo($file);
+            if($remove)$updated['leader_image']='';
+            if($newPhoto!==null)$updated['leader_image']=$newPhoto;
+            database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+                ->execute(['government_layout',json_encode($updated,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE|JSON_THROW_ON_ERROR)]);
+        }catch(Throwable $exception){
+            if($newPhoto!==null)@unlink(dirname(__DIR__).$newPhoto);
+            throw $exception;
+        }
+        log_action('government.leader','updated');
+        $_SESSION['flash']='Данные главы администрации и фотография сохранены.';
     } elseif ($action === 'save_government_layout') {
         require_module('settings');
         if (site_template()!=='government') {
@@ -392,7 +416,6 @@ try {
             'search_placeholder'=>120, 'search_button'=>55,
             'quick_title'=>100, 'quick_url'=>300, 'appeal_url'=>500, 'left_title'=>120,
             'center_title'=>150, 'center_intro'=>5000,
-            'leader_title'=>120, 'leader_name'=>160, 'leader_initials'=>100, 'leader_description'=>1000,
             'schedule_title'=>150, 'schedule_text'=>2000,
             'announcements_title'=>150, 'announcements_text'=>2000,
             'links_title'=>150, 'footer_note'=>240,
@@ -426,7 +449,7 @@ try {
             $updated[$key]=$width;
         }
         foreach(['show_topbar','show_banner','show_search','show_date','show_accessibility',
-            'show_leader','show_schedule','show_announcements','show_links'] as $key) {
+            'show_schedule','show_announcements','show_links'] as $key) {
             $updated[$key]=isset($_POST[$key]) && $_POST[$key]==='1'?'1':'0';
         }
         foreach(['left_menu'=>24,'right_links'=>12,'quick_links'=>12] as $key=>$max) {
@@ -434,32 +457,6 @@ try {
                 throw new RuntimeException('Ошибка редактирования списка: '.$key);
             }
             $updated[$key]=government_parse_link_text($_POST[$key],$max);
-        }
-        if (!empty($_POST['remove_leader_photo'])) $updated['leader_image']='';
-        if (isset($_FILES['leader_photo']) && is_array($_FILES['leader_photo']) &&
-            (int)($_FILES['leader_photo']['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE) {
-            $file=$_FILES['leader_photo'];
-            if ((int)$file['error']!==UPLOAD_ERR_OK ||
-                !is_uploaded_file((string)($file['tmp_name']??'')) ||
-                (int)$file['size']<1 || (int)$file['size']>2*1024*1024) {
-                throw new RuntimeException('Фотография руководителя: максимальный размер 2 МБ.');
-            }
-            $fileInfo=new finfo(FILEINFO_MIME_TYPE);
-            $type=$fileInfo->file((string)$file['tmp_name']);
-            $ext=['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'][$type]??null;
-            $dimensions=@getimagesize((string)$file['tmp_name']);
-            if (!$ext || !$dimensions || ($dimensions[0]??0)<1 ||
-                ($dimensions[1]??0)<1 || ($dimensions[0]??0)>2800 || ($dimensions[1]??0)>2800) {
-                throw new RuntimeException('Нужно изображение JPEG, PNG или WebP до 2800 пикселей.');
-            }
-            $dir=dirname(__DIR__).'/assets/uploads';
-            if (!is_dir($dir) || !is_writable($dir)) throw new RuntimeException('Каталог assets/uploads недоступен для записи.');
-            $filename='leader-'.bin2hex(random_bytes(16)).'.'.$ext;
-            if (!move_uploaded_file((string)$file['tmp_name'],$dir.'/'.$filename)) {
-                throw new RuntimeException('Не удалось сохранить фотографию руководителя.');
-            }
-            @chmod($dir.'/'.$filename,0644);
-            $updated['leader_image']='/assets/uploads/'.$filename;
         }
         database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
             ->execute(['government_layout',json_encode($updated,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);

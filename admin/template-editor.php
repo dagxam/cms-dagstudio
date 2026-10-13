@@ -11,6 +11,7 @@ $editorTabs = ['appearance'=>'Внешний вид','content'=>'Содержи�
 if ($selectedTemplate === 'government') {
     $editorTabs['homepage']='Главная администрации';
     $editorTabs['government']='Настройки администрации';
+    $editorTabs['leader']='Глава администрации';
 }
 $activeTab = (string)($_GET['tab'] ?? 'appearance');
 if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
@@ -261,6 +262,9 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
 
 <?php elseif ($activeTab === 'homepage' && $selectedTemplate === 'government'): ?>
 <?php require __DIR__ . '/government-home-editor.php'; ?>
+
+<?php elseif ($activeTab === 'leader' && $selectedTemplate === 'government'): ?>
+<?php require __DIR__ . '/government-leader-editor.php'; ?>
 
 <?php elseif ($activeTab === 'government' && $selectedTemplate === 'government'): ?>
 

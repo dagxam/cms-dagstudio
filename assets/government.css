@@ -307,3 +307,22 @@
 @media(max-width:650px){.government-page .government-section.gov-module-style-cards,
  .government-page .government-section.gov-module-style-accent{padding:16px;margin:16px 0}
  .government-page .gov-module-style-cards .government-materials{grid-template-columns:minmax(0,1fr)}}
+
+/* Карточка руководителя на публичном официальном сайте. */
+.government-page .government-leader{border:1px solid var(--gov-border);background:var(--gov-surface);
+ border-radius:var(--site-radius,8px);overflow:hidden;text-align:center}
+.government-page .government-leader h2{font-size:17px;line-height:1.4;font-weight:750;padding:16px 15px;
+ background:var(--gov-bg);color:var(--gov-text);border-bottom:1px solid var(--gov-border)}
+.government-page .government-leader-photo{width:min(76%,205px);height:auto;aspect-ratio:4/5;
+ object-fit:cover;object-position:center top;display:block;margin:17px auto 7px;
+ border:1px solid var(--gov-border);border-radius:8px;background:var(--gov-bg)}
+.government-page .government-leader-portrait-placeholder{display:grid;place-items:center;
+ width:min(76%,205px);aspect-ratio:4/5;margin:17px auto 7px;
+ background:var(--gov-bg);color:var(--gov-blue);font-size:59px;
+ border:1px solid var(--gov-border);border-radius:8px}
+.government-page .government-leader .government-leader-initials{display:block;
+ font-weight:800;font-size:17px;line-height:1.45;padding:9px 13px 0;color:var(--gov-blue);overflow-wrap:anywhere}
+.government-page .government-leader .government-leader-fullname{padding:4px 15px 2px;margin:0;
+ font-size:16px;font-weight:650;color:var(--gov-text);line-height:1.5}
+.government-page .government-leader .government-leader-description{padding:9px 15px 17px;
+ margin:0;color:var(--gov-text);font-size:14px;line-height:1.6;white-space:pre-line}

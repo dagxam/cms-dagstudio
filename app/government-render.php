@@ -46,7 +46,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 <script src="/assets/government.js?v=government5" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
 <link rel="stylesheet" href="/assets/templates.css?v=govcomposer1">
-<link rel="stylesheet" href="/assets/government.css?v=govcomposer1">
+<link rel="stylesheet" href="/assets/government.css?v=leader1">
 <link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
@@ -205,10 +205,14 @@ if ($search!=='')$govTitle='Результаты поиска';
     <?php if($gov['show_leader']==='1'):?>
     <section class="government-widget government-leader">
       <h2><?=h($gov['leader_title'])?></h2>
-      <?php if($gov['leader_image']!==''):?><img class="government-leader-photo" src="<?=h($gov['leader_image'])?>" alt="<?=h($gov['leader_name']!==''?'Фотография: '.$gov['leader_name']:'Фотография руководителя')?>" loading="lazy"><?php endif;?>
+      <?php if($gov['leader_image']!==''):?>
+        <img class="government-leader-photo" src="<?=h($gov['leader_image'])?>" alt="<?=h($gov['leader_name']!==''?'Фотография: '.$gov['leader_name']:'Фотография главы администрации')?>" loading="lazy" decoding="async">
+      <?php else:?>
+        <span class="government-leader-portrait-placeholder" aria-hidden="true"><i class="fa-solid fa-user-tie"></i></span>
+      <?php endif;?>
       <?php if($gov['leader_initials']!==''):?><strong class="government-leader-initials"><?=h($gov['leader_initials'])?></strong><?php endif;?>
       <?php if($gov['leader_name']!==''):?><p class="government-leader-fullname"><?=h($gov['leader_name'])?></p><?php endif;?>
-      <?php if($gov['leader_description']!==''):?><p><?=h($gov['leader_description'])?></p><?php endif;?>
+      <?php if($gov['leader_description']!==''):?><p class="government-leader-description"><?=h($gov['leader_description'])?></p><?php endif;?>
     </section>
     <?php endif;?>
     <?php if($gov['show_schedule']==='1'):?>

@@ -20,6 +20,7 @@ $enabledModules=cms_enabled_module_keys();
 <div class="gov-composer-shortcuts">
  <a href="/admin/index.php?section=templates&amp;view=edit&amp;tab=government"><i class="fa-solid fa-sliders" aria-hidden="true"></i><span><strong>Шапка и колонки</strong><small>Логотип, баннер, навигация, руководитель</small></span></a>
  <a href="/admin/index.php?section=templates&amp;view=edit&amp;tab=blocks&amp;tpl=government&amp;block=new#home-editor"><i class="fa-solid fa-square-plus" aria-hidden="true"></i><span><strong>Создать свой блок</strong><small>Текст, баннер, карточки и показатели</small></span></a>
+ <a href="/admin/index.php?section=templates&amp;view=edit&amp;tab=leader#government-leader"><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span><strong>Глава администрации</strong><small>Фотография, ФИО, инициалы и должность</small></span></a>
  <a href="/admin/index.php?section=modules&amp;tpl=government"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i><span><strong>Подключить модули</strong><small>Включение функций без удаления материалов</small></span></a>
 </div>
 <form class="gov-composer-form" method="post" action="/admin/actions.php" data-gov-composer>
