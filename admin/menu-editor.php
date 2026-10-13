@@ -19,3 +19,64 @@ if(!isset(template_catalog()[$menuTpl]))$menuTpl=site_template();
 <p class="muted">До 20 основных пунктов и 10 подпунктов на каждый. Пример: «Каталог | /?kind=product» и следующей строкой «  - Новинки | /?kind=product». Модули, настроенные для области «Верхнее меню», дополняют это меню без повторения одинаковых ссылок.</p>
 <button class="button" type="submit">Сохранить меню этого шаблона</button>
 </form></div>
+
+<?php
+$menuModuleEntries=cms_menu_module_entries($menuTpl);
+$menuModuleSelected=[];
+foreach($menuModuleEntries as $entry)$menuModuleSelected[$entry['id']]=$entry;
+$menuModuleParents=cms_menu_for_template($menuTpl);
+?>
+<section class="box cms-menu-modules">
+  <div class="cms-menu-modules-heading">
+    <span class="cms-menu-modules-heading-icon"><i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i></span>
+    <div><h2>Модули в главном меню — <?=h(template_catalog()[$menuTpl]['label'])?></h2>
+    <p class="muted">Добавляйте подключённые модули прямо в меню этого шаблона. Их расположение в колонках или на главной странице не изменится. Каждый шаблон настраивается независимо.</p></div>
+  </div>
+  <form method="post" action="/admin/actions.php">
+    <?=csrf()?>
+    <input type="hidden" name="action" value="save_menu_modules">
+    <input type="hidden" name="template" value="<?=h($menuTpl)?>">
+    <div class="cms-menu-module-grid">
+      <?php foreach(cms_modules() as $id=>$module):
+        $chosen=$menuModuleSelected[$id]??null;
+        $available=cms_module_enabled($id);
+      ?>
+      <article class="cms-menu-module-card <?=$available?'':'cms-menu-module-unavailable'?>">
+        <div class="cms-menu-module-top">
+          <span class="cms-menu-module-icon" aria-hidden="true"><?=cms_fa_icon($id)?></span>
+          <div class="cms-menu-module-title"><strong><?=h($module['label'])?></strong>
+            <small><?=h($module['description'])?></small></div>
+          <?php if(!$available):?><span class="cms-menu-module-state">Отключён</span><?php endif;?>
+        </div>
+        <label class="cms-menu-module-check">
+          <input type="checkbox" name="menu_modules[<?=h($id)?>][enabled]" value="1"
+            <?=$chosen!==null&&$available?'checked':''?> <?=$available?'':'disabled'?>>
+          <span>Показывать в главном меню</span>
+        </label>
+        <div class="cms-menu-module-fields">
+          <label>Порядок
+            <input type="number" name="menu_modules[<?=h($id)?>][order]" min="1" max="999"
+              value="<?=(int)($chosen['order']??100)?>" <?=$available?'':'disabled'?>>
+          </label>
+          <label>Расположение ссылки
+            <select name="menu_modules[<?=h($id)?>][parent]" <?=$available?'':'disabled'?>>
+              <option value="">Основное меню</option>
+              <?php foreach($menuModuleParents as $parent):
+                if($parent['url']===cms_module_href($id))continue;
+              ?>
+                <option value="<?=h($parent['url'])?>" <?=($chosen['parent']??'')===$parent['url']?'selected':''?>>
+                  Подменю: <?=h($parent['label'])?>
+                </option>
+              <?php endforeach;?>
+            </select>
+          </label>
+        </div>
+      </article>
+      <?php endforeach;?>
+    </div>
+    <div class="cms-menu-modules-actions">
+      <p class="muted">Отключённый в CMS модуль не показывается на сайте. Для его подключения перейдите в <a href="/admin/index.php?section=modules"><strong>«Модули»</strong></a>. Порядок задаётся числом: меньшее значение — раньше в меню. Для подменю сначала сохраните родительский пункт выше.</p>
+      <button class="button" type="submit"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Сохранить модули меню «<?=h(template_catalog()[$menuTpl]['label'])?>»</button>
+    </div>
+  </form>
+</section>

@@ -138,6 +138,20 @@ if(getenv('TEST_SHOP_VIEW')==='1' && $id==='store'){
         ['label'=>'Обувь','url'=>'/?kind=product&category=special-shop-testing']]]
     ]],JSON_UNESCAPED_UNICODE)]);
 }
+if(getenv('TEST_MENU_MODULES')==='1'){
+    $up->execute(['cms_modules_enabled',
+        json_encode(array_keys(['page'=>1,'news'=>1,'service'=>1,'product'=>1,
+            'documents'=>1,'photos'=>1,'videos'=>1,'features'=>1,'contact'=>1]))]);
+    $up->execute(['cms_menus_by_type',json_encode([
+        $id=>[['label'=>'Разделы сайта','url'=>'/','children'=>[]]]
+    ],JSON_UNESCAPED_UNICODE)]);
+    $up->execute(['cms_menu_modules_by_type',json_encode([
+        $id=>[
+            ['id'=>'news','parent'=>'/','order'=>10],
+            ['id'=>'photos','parent'=>'','order'=>20],
+        ]
+    ],JSON_UNESCAPED_UNICODE)]);
+}
 file_put_contents($config,'<?php return '.var_export($c,true).';');
 try {
     $_SERVER['REQUEST_METHOD']='GET';
@@ -171,6 +185,20 @@ try {
         !str_contains($html,'html[data-theme="light"] body.site-page') ||
         !str_contains($html,'html[data-theme="dark"] body.site-page')) {
         throw new RuntimeException('HTML не прошёл проверку для шаблона '.$id);
+    }
+    if(getenv('TEST_MENU_MODULES')==='1'){
+        if(!str_contains($html,'<summary>Разделы сайта')||
+           !str_contains($html,'cms-nav-submenu')||
+           !str_contains($html,'href="/?kind=news"')||
+           !str_contains($html,'href="/media.php?type=photo"')) {
+            throw new RuntimeException('Вложенные модули главного меню не появились в шаблоне '.$id);
+        }
+        $navStart=strpos($html,'<nav class="cms-media-site-nav"');
+        $navEnd=strpos($html,'</nav>',$navStart);
+        $navigation=substr($html,$navStart,$navEnd-$navStart);
+        if(substr_count($navigation,'href="/?kind=news"')!==1||
+           substr_count($navigation,'href="/media.php?type=photo"')!==1)
+            throw new RuntimeException('Повторяющиеся ссылки модулей в шаблоне '.$id);
     }
     if(getenv('TEST_SHOP_VIEW')==='1' && $id==='store'){
         foreach(['Лучшие товары магазина','Тестовые кроссовки','Обувь','cms-shop-category-link',

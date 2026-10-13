@@ -1072,3 +1072,47 @@ html[data-theme] body.site-page .privacy-check a{text-decoration:underline;text-
  .cms-shop-filters label{min-width:100%}
  .cms-shop-filters .button{width:100%}
 }
+
+/* Главное меню: индивидуальный выбор модулей для каждого шаблона */
+.cms-menu-modules{margin-top:23px;padding:clamp(18px,2.7vw,30px)}
+.cms-menu-modules-heading{display:flex;align-items:flex-start;gap:16px;margin-bottom:23px}
+.cms-menu-modules-heading-icon{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;
+ background:color-mix(in srgb,var(--accent) 16%,var(--panel));border:1px solid var(--border);
+ color:var(--accent-light);font-size:20px;border-radius:13px}
+.cms-menu-modules-heading h2{font-size:clamp(19px,2vw,24px);margin:0 0 7px}
+.cms-menu-modules-heading p{font-size:12px;line-height:1.7;margin:0;max-width:830px}
+.cms-menu-module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.cms-menu-module-card{min-width:0;padding:18px;border:1px solid var(--border);
+ border-radius:13px;background:var(--panel2);transition:border-color .18s}
+.cms-menu-module-card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--border))}
+.cms-menu-module-unavailable{border-style:dashed}
+.cms-menu-module-top{display:flex;align-items:center;gap:12px;min-width:0}
+.cms-menu-module-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;
+ border-radius:11px;background:color-mix(in srgb,var(--accent) 14%,var(--panel));
+ color:var(--accent-light);font-size:20px}
+.cms-menu-module-title{display:grid;min-width:0;gap:4px;flex:1}
+.cms-menu-module-title strong{font-size:14px;line-height:1.35}
+.cms-menu-module-title small{color:var(--muted);font-size:11px;line-height:1.5}
+.cms-menu-module-state{flex:0 0 auto;border-radius:999px;border:1px solid var(--border);
+ padding:5px 8px;color:var(--red);font-size:10px;font-weight:750}
+.cms-menu-module-check{display:flex;align-items:center;gap:11px;margin:17px 0 13px;
+ padding:12px 13px;background:var(--panel);border:1px solid var(--border);
+ border-radius:9px;cursor:pointer;font-size:12px;font-weight:750}
+.cms-menu-module-check input{width:19px;height:19px;flex:0 0 19px;min-height:0;margin:0;
+ accent-color:var(--accent)}
+.cms-menu-module-check input:disabled{cursor:not-allowed}
+.cms-menu-module-fields{display:grid;grid-template-columns:minmax(86px,.5fr) minmax(140px,1.5fr);gap:12px}
+.cms-menu-module-fields label{font-size:11px;color:var(--muted);margin:0;min-width:0}
+.cms-menu-module-fields input,.cms-menu-module-fields select{min-height:44px;margin-top:7px;
+ box-sizing:border-box;width:100%;min-width:0;background:var(--panel);color:var(--text);
+ border:1px solid var(--border);border-radius:9px}
+.cms-menu-module-fields select:disabled,.cms-menu-module-fields input:disabled{opacity:.45}
+.cms-menu-modules-actions{display:flex;justify-content:space-between;align-items:center;
+ gap:20px;margin-top:24px;flex-wrap:wrap;padding-top:21px;border-top:1px solid var(--border)}
+.cms-menu-modules-actions p{font-size:12px;line-height:1.7;max-width:660px;flex:1 1 320px;margin:0}
+.cms-menu-modules-actions p a{color:var(--accent-light);text-decoration:underline}
+.cms-menu-modules-actions .button{flex:0 0 auto}
+@media(max-width:980px){.cms-menu-module-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.cms-menu-module-fields{grid-template-columns:minmax(0,1fr)}
+ .cms-menu-modules-actions .button{width:100%;white-space:normal}
+ .cms-menu-modules-heading{gap:11px}.cms-menu-modules-heading-icon{width:39px;height:39px;flex-basis:39px}}

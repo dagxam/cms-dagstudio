@@ -78,6 +78,20 @@ try {
         log_action('shop.order.update',(string)$id.':'.$status);
         $_SESSION['flash']='Статус заказа сохранён.';
         $back='/admin/index.php?section=orders';
+    } elseif ($action === 'save_menu_modules') {
+        require_module('settings');
+        $template=$_POST['template']??null;
+        if(!is_string($template)||!isset(template_catalog()[$template]))
+            throw new RuntimeException('Неизвестный шаблон главного меню.');
+        $chosen=cms_menu_module_validate($template,$_POST['menu_modules']??[]);
+        $maps=json_decode(config_value('cms_menu_modules_by_type','{}'),true);
+        if(!is_array($maps))$maps=[];
+        $maps[$template]=$chosen;
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['cms_menu_modules_by_type',json_encode($maps,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);
+        log_action('menu.modules.save',$template);
+        $_SESSION['flash']='Модули главного меню шаблона «'.template_catalog()[$template]['label'].'» сохранены.';
+        $back='/admin/index.php?section=menus&tpl='.rawurlencode($template);
     } elseif ($action === 'save_template_menu') {
         require_module('settings');
         $template=(string)($_POST['template']??'');

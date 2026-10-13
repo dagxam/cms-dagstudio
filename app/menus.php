@@ -91,3 +91,56 @@ function cms_menu_visible(string $template):array{
     }
     return $result;
 }
+
+/** Модули главного меню задаются отдельно для каждой темы, независимо от колонок. */
+function cms_menu_module_entries(string $template):array {
+    if(!isset(template_catalog()[$template]))return [];
+    $maps=json_decode(config_value('cms_menu_modules_by_type','{}'),true);
+    $items=is_array($maps)?($maps[$template]??null):null;
+    if(!is_array($items)){
+        // Обратная совместимость: до настройки меню модули из зоны nav выводятся по-старому.
+        $items=[];
+        foreach(cms_module_ids($template,'nav') as $index=>$id)
+            $items[]=['id'=>$id,'parent'=>'','order'=>($index+1)*10];
+    }
+    $result=[];$seen=[];
+    foreach(array_slice($items,0,count(cms_modules())) as $item){
+        if(!is_array($item))continue;
+        $id=$item['id']??null;
+        if(!is_string($id)||!isset(cms_modules()[$id])||isset($seen[$id]))continue;
+        $parent=$item['parent']??'';
+        $order=$item['order']??100;
+        if(!is_string($parent)||mb_strlen($parent)>400||($parent!==''&&!safe_template_url($parent)))$parent='';
+        if(!is_int($order)&&!(is_string($order)&&ctype_digit($order)))$order=100;
+        $order=max(1,min(999,(int)$order));
+        $result[]=['id'=>$id,'parent'=>$parent,'order'=>$order];
+        $seen[$id]=true;
+    }
+    $indexes=array_flip(array_keys(cms_modules()));
+    usort($result,static fn(array $a,array $b):int=>
+        ($a['order']<=>$b['order'])?:($indexes[$a['id']]<=>$indexes[$b['id']]));
+    return $result;
+}
+function cms_menu_module_validate(string $template,mixed $raw):array {
+    if(!isset(template_catalog()[$template]))throw new RuntimeException('Неизвестный шаблон меню.');
+    if(!is_array($raw)||count($raw)>count(cms_modules()))
+        throw new RuntimeException('Недопустимые настройки модулей главного меню.');
+    $parents=array_fill_keys(array_column(cms_menu_for_template($template),'url'),true);
+    $output=[];
+    foreach($raw as $id=>$item) {
+        if(!is_string($id)||!isset(cms_modules()[$id])||!is_array($item))
+            throw new RuntimeException('Неизвестный модуль главного меню.');
+        if(($item['enabled']??null)!=='1')continue;
+        $parent=$item['parent']??null;$order=$item['order']??null;
+        if(!cms_module_enabled($id))
+            throw new RuntimeException('Сначала включите модуль «'.cms_module_label($id).'» в разделе «Модули».');
+        if(!is_string($parent)||($parent!==''&&!isset($parents[$parent]))||
+           !is_string($order)||!ctype_digit($order)||(int)$order<1||(int)$order>999)
+            throw new RuntimeException('Проверьте родительский пункт и порядок модуля «'.cms_module_label($id).'».');
+        $output[]=['id'=>$id,'parent'=>$parent,'order'=>(int)$order];
+    }
+    $indexes=array_flip(array_keys(cms_modules()));
+    usort($output,static fn(array $a,array $b):int=>
+        ($a['order']<=>$b['order'])?:($indexes[$a['id']]<=>$indexes[$b['id']]));
+    return $output;
+}

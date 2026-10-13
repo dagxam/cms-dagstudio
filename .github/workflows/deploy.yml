@@ -183,6 +183,18 @@ jobs:
           TEST_DB_USER: 'root'
           TEST_DB_PASS: 'testpassword'
         run: php tests/render-templates.php government
+      - name: Модули главного меню отдельно для четырёх шаблонов
+        env:
+          DAG_CMS_TEST_MODE: '1'
+          TEST_MENU_MODULES: '1'
+          TEST_DB_HOST: '127.0.0.1'
+          TEST_DB_NAME: 'dagcms_test'
+          TEST_DB_USER: 'root'
+          TEST_DB_PASS: 'testpassword'
+        run: |
+          for type in organization company store government; do
+            php tests/render-templates.php "$type"
+          done
       - name: Магазин с категориями, лучшими товарами и подменю
         env:
           DAG_CMS_TEST_MODE: '1'

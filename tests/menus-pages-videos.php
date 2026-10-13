@@ -48,6 +48,77 @@ foreach(['organization','company','store','government'] as $type) {
 }
 check_ext(cms_public_menu_links('company')[0]['label']==='Связь','Свой порядок пунктов компании сохраняется в общей шапке');
 
+$cfg['cms_menus_by_type']=json_encode([
+ 'company'=>[
+   ['label'=>'Каталог услуг','url'=>'/?kind=service','children'=>[]],
+   ['label'=>'Главная','url'=>'/','children'=>[]]
+ ],
+ 'store'=>[['label'=>'Каталог','url'=>'/?kind=product','children'=>[]]]
+],JSON_UNESCAPED_UNICODE);
+$cfg['cms_menu_modules_by_type']=json_encode([
+ 'company'=>[
+   ['id'=>'news','parent'=>'/?kind=service','order'=>10],
+   ['id'=>'photos','parent'=>'','order'=>20],
+ ],
+ 'government'=>[
+   ['id'=>'documents','parent'=>'','order'=>10],
+ ],
+ 'store'=>[
+   ['id'=>'product','parent'=>'','order'=>15],
+ ],
+ 'organization'=>[],
+],JSON_UNESCAPED_UNICODE);
+$company=cms_public_menu_links('company');
+check_ext($company[0]['label']==='Каталог услуг' &&
+          count($company[0]['children'])===1 &&
+          $company[0]['children'][0]['url']==='/?kind=news',
+          'Подключённый модуль размещается в подменю компании');
+check_ext(count(array_filter($company,static fn($item)=>$item['url']==='/media.php?type=photo'))===1,
+          'Включённая фотогалерея выводится отдельно в меню компании');
+$government=cms_public_menu_links('government');
+check_ext(in_array('/media.php?type=document',array_column($government,'url'),true) &&
+          !in_array('/media.php?type=photo',array_column($government,'url'),true),
+          'Администрация имеет свой независимый список модулей');
+$store=cms_public_menu_links('store');
+check_ext(count(array_filter($store,static fn($item)=>$item['url']==='/?kind=product'))===1,
+          'Товарный модуль не дублирует существующий пункт магазина');
+$organization=cms_public_menu_links('organization');
+check_ext(count($organization)>0 && !in_array('/media.php?type=photo',array_column($organization,'url'),true),
+          'Пустой модульный список организации не наследует другие шаблоны');
+$before=count(cms_public_menu_links('company'));
+$cfg['cms_modules_enabled']='["page","service","photos","documents","product"]';
+$after=cms_public_menu_links('company');
+check_ext(count($after[0]['children'])===0 &&
+          count($after)<=$before,
+          'Глобально отключённый модуль исчезает, без удаления его настроек');
+unset($cfg['cms_modules_enabled']);
+$validation=cms_menu_module_validate('company',[
+ 'news'=>['enabled'=>'1','parent'=>'/?kind=service','order'=>'5'],
+ 'photos'=>['enabled'=>'1','parent'=>'','order'=>'20'],
+]);
+check_ext(count($validation)===2 && $validation[0]['id']==='news' && $validation[0]['parent']==='/?kind=service',
+          'Сохраняются модуль, родительский пункт и сортировка');
+foreach([
+ ['unknown'=>['enabled'=>'1','parent'=>'','order'=>'1']],
+ ['news'=>['enabled'=>'1','parent'=>'https://invalid.example','order'=>'1']],
+ ['news'=>['enabled'=>'1','parent'=>'','order'=>'0']],
+] as $invalid) {
+ try {cms_menu_module_validate('company',$invalid);check_ext(false,'Отклонение неверного модуля');}
+ catch(RuntimeException $e) {check_ext(true,'Неверный модуль, родитель или порядок отклоняется');}
+}
+$cfg['cms_menu_modules_by_type']='{}';
+$cfg['cms_menus_by_type']='{}';
+$menuMarkup=file_get_contents(dirname(__DIR__).'/admin/menu-editor.php');
+$menuActions=file_get_contents(dirname(__DIR__).'/admin/actions.php');
+check_ext(str_contains($menuMarkup,'name="action" value="save_menu_modules"') &&
+          str_contains($menuMarkup,'menu_modules[') &&
+          str_contains($menuMarkup,'Выберите шаблон')===false,
+          'В главном меню есть отдельный редактор модулей по шаблонам');
+check_ext(str_contains($menuActions,"$"."action === 'save_menu_modules'") &&
+          str_contains($menuActions,'cms_menu_module_validate'),
+          'Параметры модулей проверяются перед сохранением');
+
+
 $cfg['cms_page_options']=json_encode(['42'=>['before'=>'news','after'=>'photos',
     'left'=>['documents','page'],'right'=>['videos','contact']]]);
 $o=cms_page_options(42);

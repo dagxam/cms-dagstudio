@@ -24,8 +24,26 @@ function cms_public_menu_links(string $template): array {
     foreach(cms_menu_visible($template) as $link) {
         $add((string)($link['label']??''),(string)($link['url']??''),$link['children']??[]);
     }
-    foreach(cms_module_ids($template,'nav') as $id) {
-        $add(cms_module_label($id),cms_module_href($id));
+    foreach(cms_menu_module_entries($template) as $entry) {
+        $id=$entry['id'];
+        if(!cms_module_enabled($id))continue;
+        $url=cms_module_href($id);
+        // Модуль уже может быть указан вручную, в том числе как подпункт.
+        if(isset($used[$url]))continue;
+        $parent=$entry['parent'];
+        $inserted=false;
+        if($parent!==''){
+            foreach($links as &$link){
+                if($link['url']!==$parent)continue;
+                if(count($link['children'])>=10)break;
+                $link['children'][]=['label'=>cms_module_label($id),'url'=>$url];
+                $used[$url]=true;
+                $inserted=true;
+                break;
+            }
+            unset($link);
+        }
+        if(!$inserted)$add(cms_module_label($id),$url);
     }
     // Ссылки, добавленные в старом редакторе, остаются до сохранения нового меню.
     if(!cms_menu_configured($template)){
