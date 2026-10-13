@@ -180,3 +180,98 @@
  .government-page .government-columns{display:block}
  .government-main{border:0;padding:0;box-shadow:none}
 }
+
+/* Доступный официальный интерфейс — ПП РФ № 102 от 07.02.2026.
+   Не задаёт обязательную законом цветовую гамму: палитры выбираются по проверке контраста. */
+.government-page{font-size:16px;line-height:1.65;overflow-wrap:break-word}
+.government-page .government-container{max-width:min(100%,var(--site-width,1480px))}
+.government-page .government-identity-copy strong{line-height:1.22;letter-spacing:0}
+.government-page .government-identity-copy small,
+.government-page .government-identity-copy span,
+.government-page .government-banner-content>span,
+.government-page .government-banner-content small,
+.government-page .government-introduction p,
+.government-page .government-feature p,
+.government-page .government-material p,
+.government-page .government-material-date,
+.government-page .government-widget p,
+.government-page .government-widget small,
+.government-page .government-footer,
+.government-page .government-material-kind,
+.government-page .government-utility-info{opacity:1}
+.government-page .government-utility,.government-page .government-utility-button{font-size:14px}
+.government-page .government-identity-copy small,.government-page .government-identity-copy span{font-size:14px}
+.government-page .government-introduction p,.government-page .government-article-body,
+.government-page .government-contact label,.government-page .government-search-result p,
+.government-page .government-widget p,.government-page .government-feature p,
+.government-page .government-material p,.government-page .government-lead{font-size:16px;line-height:1.7}
+.government-page .government-main h2{font-size:clamp(21px,2vw,26px)}
+.government-page .government-main h3,.government-page .government-feature strong,
+.government-page .government-widget h2,.government-page .government-leader strong{font-size:17px}
+.government-page .government-widget small,.government-page .government-section-title a,
+.government-page .government-material-date,.government-page .government-material-kind,
+.government-page .government-footer{font-size:14px}
+.government-page .government-left-nav a,.government-page .government-quick-link,
+.government-page .government-reception,.government-page .government-widget-links nav a,
+.government-page .government-widget>a{font-size:16px;min-height:44px;line-height:1.45}
+.government-page .government-search input,.government-page .government-search button,
+.government-page .government-contact input,.government-page .government-contact textarea{font-size:16px;min-height:44px}
+.government-page .government-search-icon{margin:0;display:flex;align-items:center;min-width:25px}
+.government-page .government-searchbar{min-height:52px}
+.government-page .government-reception{background:var(--gov-contrast);color:var(--gov-blue)!important;border:1px solid var(--gov-contrast)}
+.government-page .government-reception:hover{background:var(--gov-surface);color:var(--gov-blue)!important}
+.government-page :where(a,button,input,select,textarea):focus-visible,
+.government-page .government-left-nav a:focus-visible{outline:3px solid var(--gov-blue)!important;outline-offset:3px!important}
+.government-page .government-searchbar :where(a,button):focus-visible,
+.government-page .government-sidebar-heading :focus-visible{outline:3px solid var(--gov-contrast)!important}
+.government-page .government-search button:hover,
+.government-page .government-quick-link:hover{filter:none;text-decoration:underline}
+.government-page .government-left-nav a:hover,.government-page .government-left-nav a:focus-visible{padding-left:14px;filter:none;text-decoration:underline}
+.government-page .government-breadcrumb,.government-page .government-material-date{flex-wrap:wrap;white-space:normal}
+.government-page .government-section-title{flex-wrap:wrap}
+.government-page .government-section-title a{white-space:normal}
+.government-page .government-banner:before{background:linear-gradient(90deg,rgba(7,20,35,.95),rgba(7,20,35,.84) 55%,rgba(7,20,35,.48))}
+.government-page .government-banner-content{color:#fff}
+.government-page .government-banner-content small{font-size:16px;line-height:1.5}
+.government-page .government-appeal-info{padding:20px;border:1px solid var(--gov-border);border-left:4px solid var(--gov-blue);background:var(--gov-bg)}
+.government-page .government-appeal-info p{font-size:16px;line-height:1.7;margin:0 0 15px}
+.government-page .government-appeal-info .government-appeal-warning{font-weight:650;color:var(--gov-text)}
+.government-page .government-appeal-link{display:inline-flex;align-items:center;gap:10px;min-height:44px;
+ padding:12px 17px;margin:2px 0 14px;background:var(--gov-blue);color:var(--gov-contrast)!important;
+ font-size:16px;line-height:1.4;font-weight:750;text-decoration:none;border-radius:var(--site-radius,6px)}
+.government-page .government-appeal-link:hover{filter:brightness(.9);text-decoration:underline}
+.government-page .government-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+ clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.government-page .government-material,.government-page .government-widget,
+.government-page .government-main,.government-page .government-feature{min-width:0;max-width:100%}
+.government-page .government-material-copy,.government-page .cms-government-material-copy{min-width:0;overflow-wrap:anywhere}
+.government-page .government-material p,.government-page .government-feature p{overflow-wrap:anywhere}
+@media(max-width:1150px){
+ .government-page .government-columns,
+ .government-page.government-layout-both .government-columns,
+ .government-page.government-layout-swap .government-columns,
+ .government-page.government-layout-left .government-columns,
+ .government-page.government-layout-right .government-columns,
+ .government-page.government-layout-none .government-columns{
+   grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"main" "left" "right"!important;gap:14px}
+ .government-page .government-left-nav{grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:6px}
+ .government-page .government-masthead{grid-template-columns:minmax(0,1fr)}
+ .government-page .government-right{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr))}
+ .government-page .government-searchbar{flex-wrap:wrap}
+ .government-page .government-quick-actions{justify-content:flex-start;flex-wrap:wrap}
+}
+@media(max-width:480px){
+ .government-page .government-container{width:calc(100% - 24px)}
+ .government-page .government-search{flex-wrap:wrap}
+ .government-page .government-search input{flex:1 1 100%;width:100%}
+ .government-page .government-search button{flex:1 1 100%}
+ .government-page .government-quick-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+ .government-page .government-quick-actions a{white-space:normal;text-align:center}
+ .government-page .government-main{padding:18px 14px}
+ .government-page .government-banner-content{padding:18px}
+ .government-page .government-material{flex-wrap:wrap}
+ .government-page .government-material-date{flex-basis:100%}
+ .government-page .government-feature-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){.government-page *, .government-page *::before,
+ .government-page *::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}

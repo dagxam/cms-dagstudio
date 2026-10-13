@@ -16,6 +16,10 @@ $privacyReady = cms_privacy()['ready'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'contact') {
     if (!cms_module_enabled('contact')) {http_response_code(404);exit('Раздел обращений отключён.');}
+    if (site_template()==='government') {
+        http_response_code(403);
+        exit('Официальные электронные обращения принимаются только через сервис с идентификацией и аутентификацией заявителя.');
+    }
     verify_token();
     if (!$privacyReady || empty($_POST['consent']) || ($_POST['consent']??'')!=='1') {
         http_response_code(400);

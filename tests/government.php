@@ -33,4 +33,25 @@ check_gov($gov['leader_image']==='','Недостоверный URL изобра
 $settings['government_layout']='{"layout":"unexpected","left_width":"999999"}';
 $gov=government_layout();
 check_gov($gov['layout']==='both' && $gov['left_width']==='240','Некорректная конфигурация безопасно нормализуется');
+$light=template_default_palettes('government')['light'];
+$dark=template_default_palettes('government')['dark'];
+foreach(['light'=>$light,'dark'=>$dark] as $mode=>$colors){
+    check_gov(template_government_palette_errors($colors)===[],'Контраст официальной темы '.$mode);
+    check_gov(template_contrast_ratio($colors['ink'],$colors['background'])>=4.5,'Контраст основного текста '.$mode.' не ниже 4.5');
+    check_gov(template_contrast_ratio($colors['accent'],$colors['surface'])>=4.5,'Контраст ссылок на карточках '.$mode.' не ниже 4.5');
+}
+$bad=$light;$bad['accent']='#eeeeee';
+check_gov(template_government_palette_errors($bad)!==[],'Неконтрастная палитра отклоняется');
+$settings['government_layout']='{"appeal_url":"javascript:alert(1)"}';
+check_gov(government_layout()['appeal_url']==='','Опасная ссылка для обращений отклоняется');
+$settings['government_layout']='{"appeal_url":"http://example.test/appeal"}';
+check_gov(government_layout()['appeal_url']==='','Незащищённая HTTP-ссылка для обращений отклоняется');
+$settings['government_layout']='{"appeal_url":"https://example.test/appeal"}';
+check_gov(government_layout()['appeal_url']==='https://example.test/appeal','Проверенная HTTPS-ссылка может быть указана');
+$public=file_get_contents(dirname(__DIR__).'/app/government-render.php');
+$index=file_get_contents(dirname(__DIR__).'/index.php');
+$editor=file_get_contents(dirname(__DIR__).'/admin/government-editor.php');
+check_gov(!str_contains($public,'<form class="government-contact"')&&str_contains($public,'government-appeal-link'),'Незащищённая форма заменена ссылкой на сервис идентификации');
+check_gov(str_contains($index,"site_template()==='government'")&&str_contains($index,"http_response_code(403)"),'Отправка обходным POST-запросом на администрации запрещена');
+check_gov(str_contains($editor,'name="appeal_url"')&&str_contains($editor,'№ 102'),'Администратор может настроить портал и получает нормативные пояснения');
 echo "Настройки администрации проверены.\n";

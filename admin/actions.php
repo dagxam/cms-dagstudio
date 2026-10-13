@@ -349,7 +349,7 @@ try {
             'working_hours'=>150, 'office_phone'=>80, 'top_note'=>180,
             'banner_title'=>180, 'banner_text'=>360,
             'search_placeholder'=>120, 'search_button'=>55,
-            'quick_title'=>100, 'quick_url'=>300, 'left_title'=>120,
+            'quick_title'=>100, 'quick_url'=>300, 'appeal_url'=>500, 'left_title'=>120,
             'center_title'=>150, 'center_intro'=>5000,
             'leader_title'=>120, 'leader_name'=>160, 'leader_initials'=>100, 'leader_description'=>1000,
             'schedule_title'=>150, 'schedule_text'=>2000,
@@ -365,6 +365,12 @@ try {
         }
         if ($updated['quick_url']!=='' && !safe_template_url($updated['quick_url'])) {
             throw new RuntimeException('Некорректный адрес интернет-приёмной.');
+        }
+        if ($updated['appeal_url']!=='' &&
+            (!filter_var($updated['appeal_url'],FILTER_VALIDATE_URL) ||
+             !str_starts_with(strtolower($updated['appeal_url']),'https://') ||
+             preg_match('/[\\x00-\\x20\\x7f]/',$updated['appeal_url']))) {
+            throw new RuntimeException('Для официальных обращений укажите действующую HTTPS-ссылку на сервис с авторизацией.');
         }
         $layout=(string)($_POST['layout']??'');
         if (!in_array($layout,['both','swap','left','right','none'],true)) {
@@ -496,6 +502,12 @@ try {
                     throw new RuntimeException('Введите цвет в формате #RRGGBB для каждого поля.');
                 }
                 $design['palettes'][$mode][$key] = strtolower($value);
+            }
+        }
+        if(site_template()==='government'){
+            foreach(['light','dark'] as $mode){
+                $errors=template_government_palette_errors($design['palettes'][$mode]);
+                if($errors)throw new RuntimeException('Тема «Администрация», режим «'.($mode==='light'?'светлый':'тёмный').'»: '.implode(' ',$errors));
             }
         }
         // Обратная совместимость для старого однопалитрового редактора.

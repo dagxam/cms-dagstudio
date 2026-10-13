@@ -42,8 +42,8 @@ if ($search!=='')$govTitle='Результаты поиска';
 <script src="/assets/theme.js?v=government5" defer></script>
 <script src="/assets/government.js?v=government5" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
-<link rel="stylesheet" href="/assets/templates.css?v=homeblocks1">
-<link rel="stylesheet" href="/assets/government.css?v=government5">
+<link rel="stylesheet" href="/assets/templates.css?v=gov-access2026-1">
+<link rel="stylesheet" href="/assets/government.css?v=gov-access2026-1">
 <link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
@@ -70,7 +70,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 <?php if($gov['show_search']==='1'):?>
 <div class="government-searchbar">
   <form method="get" action="/" role="search" class="government-search">
-    <label for="government-search-input" class="government-search-icon" aria-label="Поиск"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></label>
+    <label for="government-search-input" class="government-search-icon"><span class="government-sr-only">Поиск по сайту</span><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></label>
     <input id="government-search-input" type="search" name="q" value="<?=h($search)?>" placeholder="<?=h($gov['search_placeholder'])?>" maxlength="120">
     <button type="submit"><?=h($gov['search_button'])?></button>
   </form>
@@ -154,17 +154,15 @@ if ($search!=='')$govTitle='Результаты поиска';
           <?=cms_render_contact_details('government')?>
           <?php if($message!==''):?><div class="notice" role="status"><?=h($message)?></div><?php endif;?>
           <?php if($error!==''):?><div class="error" role="alert"><?=h($error)?></div><?php endif;?>
-          <?php if($privacyReady):?>
-          <form class="government-contact" method="post" action="/?module=contact#contact"><?=csrf()?>
-            <input type="hidden" name="action" value="contact">
-            <div class="honeypot" aria-hidden="true"><label>Сайт<input tabindex="-1" name="website" autocomplete="off"></label></div>
-            <label>Ваше имя<input required name="name" maxlength="120" value="<?=h($_POST['name']??'')?>"></label>
-            <label>E-mail<input required name="email" type="email" maxlength="190" value="<?=h($_POST['email']??'')?>"></label>
-            <label>Сообщение<textarea required name="body" minlength="10" maxlength="5000" rows="4"><?=h($_POST['body']??'')?></textarea></label>
-            <label class="check privacy-check"><input type="checkbox" name="consent" value="1" required> Даю отдельное согласие на обработку данных для ответа на обращение. <a href="/consent.php" target="_blank" rel="noopener">Текст согласия</a>. <a href="/privacy.php" target="_blank" rel="noopener">Политика обработки данных</a>.</label>
-            <button type="submit" class="button">Отправить обращение</button>
-          </form>
-          <?php else:?><p>Электронная форма обращений будет доступна после публикации политики обработки персональных данных. Контакты указаны в правой колонке.</p><?php endif;?>
+          <div class="government-appeal-info" role="region" aria-label="Подача официального обращения">
+            <p>Обращения в электронной форме в орган местного самоуправления направляются через систему, обеспечивающую идентификацию и аутентификацию заявителя. Обычное сообщение по электронной почте не заменяет такое обращение.</p>
+            <?php if($gov['appeal_url']!==''):?>
+              <a class="government-appeal-link" href="<?=h($gov['appeal_url'])?>" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Подать электронное обращение через защищённый сервис</a>
+            <?php else:?>
+              <p class="government-appeal-warning">Администрация пока не указала ссылку на официальный сервис подачи электронных обращений. Уточните порядок обращения по телефону или на личном приёме.</p>
+            <?php endif;?>
+            <?php if($gov['working_hours']!==''):?><p>Личный приём: <?=h($gov['working_hours'])?></p><?php endif;?>
+          </div>
         </section>
         <?php elseif(isset($moduleLabels[$section]) && module_enabled($section)):
           $q=database()->prepare("SELECT * FROM content WHERE kind=? AND status='published' ORDER BY created_at DESC LIMIT 7");

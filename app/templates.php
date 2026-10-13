@@ -53,7 +53,7 @@ function template_catalog(): array
         'government' => [
             'label'=>'Администрация', 'caption'=>'Официальный сайт',
             'description'=>'Строгая структура: новости, документы, услуги и обращения граждан.',
-            'accent'=>'#4f83b7', 'background'=>'#f7f9fb', 'ink'=>'#344b60',
+            'accent'=>'#17456b', 'background'=>'#f4f7fb', 'ink'=>'#1b2c3d',
             'font'=>'system', 'hero'=>'official', 'cards'=>'outlined', 'header'=>'official',
             'radius'=>'6', 'width'=>'1480',
             'eyebrow'=>'Официальный информационный портал',
@@ -87,8 +87,8 @@ function template_default_palettes(string $id): array
             'dark'=>['accent'=>'#f0ad6c','background'=>'#141820','ink'=>'#f8f1e8','surface'=>'#242b33','border'=>'#594b3e'],
         ],
         'government'=>[
-            'light'=>['accent'=>'#4f83b7','background'=>'#f7f9fb','ink'=>'#344b60','surface'=>'#ffffff','border'=>'#d4e0eb'],
-            'dark'=>['accent'=>'#86b4e1','background'=>'#132333','ink'=>'#eaf2f9','surface'=>'#213a50','border'=>'#42617a'],
+            'light'=>['accent'=>'#17456b','background'=>'#f4f7fb','ink'=>'#1b2c3d','surface'=>'#ffffff','border'=>'#bacbdb'],
+            'dark'=>['accent'=>'#b6d6fa','background'=>'#0e1b29','ink'=>'#f1f6fb','surface'=>'#182b3d','border'=>'#60788e'],
         ],
     ];
     return $presets[$id] ?? $presets['company'];
@@ -123,7 +123,43 @@ function template_design_palettes(array $design, string $id): array
             }
         }
     }
+    if ($id === 'government') {
+        // В ранее сохранённых темах тоже исключаем неконтрастное оформление.
+        foreach (['light','dark'] as $mode) {
+            if (template_government_palette_errors($palettes[$mode])) {
+                $palettes[$mode] = template_default_palettes('government')[$mode];
+            }
+        }
+    }
     return $palettes;
+}
+
+/** WCAG/GOST: относительная яркость и контраст для проверки палитры. */
+function template_color_luminance(string $hex): float {
+    $channels=[];
+    for($i=1;$i<7;$i+=2){
+        $value=hexdec(substr($hex,$i,2))/255;
+        $channels[]=($value<=0.04045)?$value/12.92:(($value+0.055)/1.055)**2.4;
+    }
+    return 0.2126*$channels[0]+0.7152*$channels[1]+0.0722*$channels[2];
+}
+function template_contrast_ratio(string $a,string $b): float {
+    $first=template_color_luminance($a);$second=template_color_luminance($b);
+    return (max($first,$second)+0.05)/(min($first,$second)+0.05);
+}
+function template_government_palette_errors(array $palette): array {
+    foreach(['accent','background','ink','surface','border'] as $key){
+        if(!isset($palette[$key])||!is_string($palette[$key])||!preg_match('/^#[0-9a-fA-F]{6}$/D',$palette[$key]))
+            return ['Неверный формат цвета '.$key.'.'];
+    }
+    $errors=[];
+    foreach(['background'=>'фоном страницы','surface'=>'фоном карточек'] as $field=>$label){
+        if(template_contrast_ratio($palette['ink'],$palette[$field])<4.5)
+            $errors[]='Контраст основного текста с '.$label.' должен быть не меньше 4,5:1.';
+        if(template_contrast_ratio($palette['accent'],$palette[$field])<4.5)
+            $errors[]='Контраст ссылок и акцентного текста с '.$label.' должен быть не меньше 4,5:1.';
+    }
+    return $errors;
 }
 
 /** Контрастная окраска кнопок для произвольно выбранного акцента. */

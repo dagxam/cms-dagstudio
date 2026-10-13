@@ -7,8 +7,8 @@ function government_defaults(): array
     return [
         'name'=>'Администрация',
         'name_detail'=>'Официальный сайт муниципального образования',
-        'location'=>'Адрес администрации укажите в настройках',
-        'working_hours'=>'Пн–Пт, 09:00–18:00',
+        'location'=>'',
+        'working_hours'=>'',
         'office_phone'=>'',
         'top_note'=>'Официальный информационный портал',
         'banner_title'=>'Наш район — наша история',
@@ -17,6 +17,7 @@ function government_defaults(): array
         'search_button'=>'Найти',
         'quick_title'=>'Интернет-приёмная',
         'quick_url'=>'#contact',
+        'appeal_url'=>'', // Адрес официальной формы с ЕСИА. Не заполнять вымышленной ссылкой.
         'left_title'=>'Разделы сайта',
         'center_title'=>'Главная',
         'center_intro'=>'Добро пожаловать на официальный сайт. Здесь публикуются новости, документы, сведения о работе администрации и информация для жителей.',
@@ -126,6 +127,11 @@ function government_layout(): array
     foreach (['left_width','right_width'] as $key) {
         if (!in_array($defaults[$key],['200','220','240','260','280','300'],true))$defaults[$key]='240';
     }
+    // Для официальных обращений принимаем только HTTPS-портал с авторизацией.
+    if($defaults['appeal_url']!=='' &&
+       (!filter_var($defaults['appeal_url'],FILTER_VALIDATE_URL) ||
+        !str_starts_with(strtolower($defaults['appeal_url']),'https://') ||
+        preg_match('/[\\x00-\\x20\\x7f]/',$defaults['appeal_url'])))$defaults['appeal_url']='';
     if (!preg_match('~^/assets/uploads/leader-[a-f0-9]{32}\\.(?:png|jpg|webp)$~D',$defaults['leader_image'])) {
         $defaults['leader_image']='';
     }
