@@ -8,7 +8,10 @@ $content = template_content();
 $sections = template_active_sections();
 $editing = (string)($_GET['view'] ?? '') === 'edit';
 $editorTabs = ['appearance'=>'Внешний вид','content'=>'Содержимое и бренд','blocks'=>'Блоки главной'];
-if ($selectedTemplate === 'government') $editorTabs['government'] = 'Конструктор администрации';
+if ($selectedTemplate === 'government') {
+    $editorTabs['homepage']='Главная администрации';
+    $editorTabs['government']='Настройки администрации';
+}
 $activeTab = (string)($_GET['tab'] ?? 'appearance');
 if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
 ?>
@@ -255,6 +258,9 @@ if (!array_key_exists($activeTab, $editorTabs)) $activeTab = 'appearance';
     <button class="button template-save" type="submit">Сохранить расположение блоков</button>
   </form>
 </section>
+
+<?php elseif ($activeTab === 'homepage' && $selectedTemplate === 'government'): ?>
+<?php require __DIR__ . '/government-home-editor.php'; ?>
 
 <?php elseif ($activeTab === 'government' && $selectedTemplate === 'government'): ?>
 

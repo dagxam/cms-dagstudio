@@ -275,3 +275,35 @@
 }
 @media(prefers-reduced-motion:reduce){.government-page *, .government-page *::before,
  .government-page *::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Визуальные варианты секций главной администрации — типографика с сохранением доступности. */
+.government-page .government-section.gov-module-style-cards,
+.government-page .government-section.gov-module-style-accent{padding:22px;border:1px solid var(--gov-border);
+ border-radius:var(--site-radius,6px);margin:22px 0;background:var(--gov-surface)}
+.government-page .government-section.gov-module-style-cards{box-shadow:0 8px 28px rgba(15,38,61,.055)}
+.government-page .government-section.gov-module-style-accent{border-left:5px solid var(--gov-blue);
+ background:color-mix(in srgb,var(--gov-surface) 92%,var(--gov-blue) 8%)}
+.government-page .gov-module-style-accent>.government-section-title,
+.government-page .gov-module-style-cards>.government-section-title{padding-bottom:14px}
+.government-page .gov-module-style-cards .government-materials{display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));gap:15px;margin-top:18px}
+.government-page .gov-module-style-cards .government-material{display:flex;flex-direction:column;
+ padding:0;border:1px solid var(--gov-border);background:var(--gov-bg);border-radius:var(--site-radius,6px);
+ overflow:hidden;min-width:0}
+.government-page .gov-module-style-cards .cms-government-material-thumb{width:100%;max-width:none;aspect-ratio:16/9}
+.government-page .gov-module-style-cards .cms-government-material-thumb img{width:100%;height:100%;object-fit:cover}
+.government-page .gov-module-style-cards .cms-government-material-copy{padding:15px 16px 0}
+.government-page .gov-module-style-cards .government-material-date{padding:0 16px 16px;opacity:1;margin-top:auto}
+.government-page .gov-module-style-cards .government-feature-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}
+.government-page .gov-module-style-accent .government-feature{border-left:3px solid var(--gov-blue)}
+.government-page .gov-module-style-cards .cms-media-module{padding:0;border:0}
+.government-page .gov-module-style-accent .cms-media-module{padding:0;border:0}
+.government-page .gov-module-style-cards .cms-media-module-grid,
+.government-page .gov-module-style-accent .cms-media-module-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,175px),1fr))}
+.government-page .government-section .cms-media-module-card{border-color:var(--gov-border);background:var(--gov-bg)}
+.government-page .government-section .cms-media-module-card:hover,
+.government-page .gov-module-style-cards .government-material:hover{border-color:var(--gov-blue)}
+.government-page .gov-module-style-cards .government-appeal-info{margin-top:18px}
+@media(max-width:650px){.government-page .government-section.gov-module-style-cards,
+ .government-page .government-section.gov-module-style-accent{padding:16px;margin:16px 0}
+ .government-page .gov-module-style-cards .government-materials{grid-template-columns:minmax(0,1fr)}}

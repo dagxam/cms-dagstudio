@@ -116,6 +116,7 @@ require_once __DIR__ . '/media.php';
 require_once __DIR__ . '/content-images.php';
 
 require_once __DIR__ . '/modules.php';
+require_once __DIR__ . '/government-home.php';
 require_once __DIR__ . '/menus.php';
 require_once __DIR__ . '/public-header.php';
 require_once __DIR__ . '/contact-social.php';

@@ -90,6 +90,24 @@ if(getenv('TEST_HOME_BLOCKS')==='1'){
         ]
     ],JSON_UNESCAPED_UNICODE)]);
 }
+if(getenv('TEST_GOV_COMPOSER')==='1' && $id==='government'){
+    $customId='1111222233334444';
+    $block=['id'=>$customId,'type'=>'banner','placement'=>'bottom','enabled'=>true,
+        'title'=>'Блок между документами','kicker'=>'ВАЖНО','text'=>'Редактируемый блок',
+        'button'=>'','url'=>'','items'=>[]];
+    $up->execute(['cms_home_blocks_by_type',json_encode(['government'=>[$block]],JSON_UNESCAPED_UNICODE)]);
+    $positions=['news'=>['area'=>'main','order'=>10],'documents'=>['area'=>'main','order'=>20]];
+    $up->execute(['cms_module_layouts',json_encode(['government'=>$positions],JSON_UNESCAPED_UNICODE)]);
+    $up->execute(['cms_modules_enabled',json_encode(array_keys([
+        'page'=>1,'news'=>1,'service'=>1,'product'=>1,'documents'=>1,'photos'=>1,
+        'videos'=>1,'features'=>1,'contact'=>1
+    ]))]);
+    $up->execute(['cms_government_home_order',json_encode(['m:news','b:'.$customId,'m:documents'])]);
+    $up->execute(['cms_government_home_styles',json_encode([
+        'news'=>['style'=>'cards','title'=>'Новости с карточками'],
+        'documents'=>['style'=>'accent','title'=>'Документы на главной']
+    ],JSON_UNESCAPED_UNICODE)]);
+}
 file_put_contents($config,'<?php return '.var_export($c,true).';');
 try {
     $_SERVER['REQUEST_METHOD']='GET';
@@ -133,6 +151,16 @@ try {
         }
         if(strpos($html,'Верхний блок для '.$id)>strpos($html,'Нижний блок для '.$id))
             throw new RuntimeException('Порядок пользовательских блоков нарушен: '.$id);
+    }
+    if(getenv('TEST_GOV_COMPOSER')==='1' && $id==='government'){
+        $n=strpos($html,'Новости с карточками');
+        $b=strpos($html,'Блок между документами');
+        $d=strpos($html,'Документы на главной');
+        if($n===false||$b===false||$d===false||!($n<$b && $b<$d)||
+            !str_contains($html,'gov-module-style-cards')||
+            !str_contains($html,'gov-module-style-accent')) {
+            throw new RuntimeException('Реальный рендер администратора нарушил состав, порядок или стиль блоков.');
+        }
     }
     if(getenv('TEST_MODULE_LAYOUT_TEST')==='1') {
         foreach(['cms-module-widget-news','cms-module-widget-page',

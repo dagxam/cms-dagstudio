@@ -11,6 +11,8 @@ function h(?string $value): string {return htmlspecialchars($value??'',ENT_QUOTE
 require dirname(__DIR__).'/app/templates.php';
 require dirname(__DIR__).'/app/government.php';
 require dirname(__DIR__).'/app/home-blocks.php';
+require dirname(__DIR__).'/app/modules.php';
+require dirname(__DIR__).'/app/government-home.php';
 define('DAG_CMS_ADMIN_VIEW',true);
 function editor_render(string $template,string $view='',string $tab='appearance'): string {
     global $config;
@@ -46,6 +48,17 @@ foreach (array_keys(template_catalog()) as $type) {
     assert_editor(str_contains($blocks,'save_template_sections') &&
         !str_contains($blocks,'save_template_content'),$type.' — вкладка блоков');
     assert_editor(!str_contains($content,'template-gallery'),$type.' — каталог скрыт в редакторе');
+    $homepage=editor_render($type,'edit','homepage');
+    if($type==='government'){
+        assert_editor(str_contains($homepage,'save_government_home')&&
+            str_contains($homepage,'data-gov-order-list')&&
+            substr_count($homepage,'data-gov-area')===count(cms_modules()),
+            $type.' — визуальный конструктор всех встроенных модулей');
+    }else{
+        assert_editor(!str_contains($homepage,'save_government_home')&&
+            str_contains($homepage,'save_template_design'),
+            $type.' — конструктор администрации недоступен');
+    }
     $gov=editor_render($type,'edit','government');
     if($type==='government'){
         assert_editor(str_contains($gov,'save_government_layout') &&

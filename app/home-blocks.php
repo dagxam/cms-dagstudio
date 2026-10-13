@@ -73,10 +73,10 @@ function cms_home_index(array $blocks,string $id):int {
 }
 
 /** Рендер главных блоков использует цвета и геометрию активной темы. */
-function cms_home_render(string $template,string $placement):void {
+function cms_home_render(string $template,string $placement,?string $onlyId=null):void {
  if(!isset(cms_home_places()[$placement]))return;
  foreach(cms_home_blocks($template) as $block){
-   if(!$block['enabled']||$block['placement']!==$placement)continue;
+   if(!$block['enabled']||($onlyId!==null ? $block['id']!==$onlyId : $block['placement']!==$placement))continue;
    $type=$block['type'];
    echo '<section class="cms-custom-home cms-custom-home-'.h($type).'" aria-labelledby="home-'.h($block['id']).'">';
    echo '<div class="cms-home-copy">';

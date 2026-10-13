@@ -38,6 +38,7 @@ function government_defaults(): array
         'show_topbar'=>'1',
         'show_banner'=>'1',
         'show_search'=>'1',
+        'show_intro'=>'1',
         'show_leader'=>'1',
         'show_schedule'=>'1',
         'show_announcements'=>'1',

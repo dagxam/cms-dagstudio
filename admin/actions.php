@@ -139,6 +139,47 @@ try {
         log_action('modules.enabled',implode(',',$chosen));
         $_SESSION['flash']='Состояние модулей сохранено. Контент отключённых модулей не удалён.';
         $back='/admin/index.php?section=modules';
+    } elseif ($action === 'save_government_home') {
+        require_module('settings');
+        if(site_template()!=='government')throw new RuntimeException('Этот конструктор доступен только для шаблона администрации.');
+        $layoutRaw=$_POST['position']??null;
+        $stylesRaw=$_POST['style']??null;
+        $titlesRaw=$_POST['title']??null;
+        $orderRaw=$_POST['home_order']??[];
+        if(!is_array($layoutRaw)||!is_array($stylesRaw)||!is_array($titlesRaw)||!is_array($orderRaw))
+            throw new RuntimeException('Некорректные параметры главной страницы.');
+        $layout=cms_government_home_validate_layout($layoutRaw);
+        $styles=cms_government_home_validate_styles($stylesRaw,$titlesRaw);
+        $available=[];
+        foreach(cms_home_blocks('government') as $block)
+            if($block['enabled'])$available['b:'.$block['id']]=true;
+        foreach($layout as $id=>$item)
+            if($item['area']==='main' && cms_module_enabled($id))$available['m:'.$id]=true;
+        $order=cms_government_home_normalize_order($orderRaw,$available);
+        // Согласовываем расположение со старым редактором модулей.
+        $position=1;
+        foreach($order as $token){
+            if(!str_starts_with($token,'m:'))continue;
+            $id=substr($token,2);
+            if(isset($layout[$id]))$layout[$id]['order']=$position++;
+        }
+        $maps=json_decode(config_value('cms_module_layouts','{}'),true);
+        if(!is_array($maps))$maps=[];
+        $maps['government']=$layout;
+        $db=database();
+        $db->beginTransaction();
+        try{
+            $stmt=$db->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)');
+            foreach([
+                'cms_module_layouts'=>json_encode($maps,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),
+                'cms_government_home_styles'=>json_encode($styles,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),
+                'cms_government_home_order'=>json_encode($order,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),
+            ] as $name=>$value)$stmt->execute([$name,$value]);
+            $db->commit();
+        }catch(Throwable $e){if($db->inTransaction())$db->rollBack();throw $e;}
+        log_action('government.home',implode(',',$order));
+        $_SESSION['flash']='Главная страница администрации обновлена. Порядок, оформление и расположение модулей сохранены.';
+        $back='/admin/index.php?section=templates&view=edit&tab=homepage#gov-composer-order';
     } elseif ($action === 'save_cms_layout') {
         require_module('settings');
         $template=(string)($_POST['template']??'');

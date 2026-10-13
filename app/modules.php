@@ -153,13 +153,13 @@ function cms_module_sidebar(string $id,string $template): void {
     echo '<a class="cms-module-widget-more" href="'.h(cms_module_href($id)).'">Открыть раздел <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></section>';
 }
 
-function cms_module_media_block(string $module='photos'): void {
+function cms_module_media_block(string $module='photos',?string $customTitle=null): void {
     if(!cms_module_enabled($module))return;
     // Только опубликованные материалы, список ограничен числом карточек.
     $cat=['documents'=>'document','photos'=>'photo','videos'=>'video'][$module]??'photo';
     $items=array_slice(array_values(array_filter(cms_media_list(true),static fn(array $x):bool=>$x['category']===$cat)),0,6);
     echo '<section class="cms-media-module" id="cms-media-section"><div class="section-heading">'
-        .'<h2>'.h(cms_module_label($module)).'</h2><a href="'.h(cms_module_href($module)).'">Все материалы <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div><div class="cms-media-module-grid">';
+        .'<h2>'.h($customTitle??cms_module_label($module)).'</h2><a href="'.h(cms_module_href($module)).'">Все материалы <i class="fa-solid fa-arrow-up-right-from-square cms-icon-inline" aria-hidden="true"></i></a></div><div class="cms-media-module-grid">';
     foreach($items as $item) {
         $id=(int)$item['id'];
         echo '<a class="cms-media-module-card" href="/media.php?view='.$id.'">';

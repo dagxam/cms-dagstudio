@@ -24,6 +24,9 @@ if ($search!=='' && mb_strlen($search)<=120) {
 $requestedWidget=(string)($_GET['module']??'');
 $govSections=$kind!==''?[$kind]:((in_array($requestedWidget,['features','contact'],true)&&cms_module_enabled($requestedWidget))?[$requestedWidget]:cms_module_ids('government','main'));
 $govSections=array_values(array_filter($govSections,static fn(string $id):bool=>cms_module_enabled($id)));
+$govHomePage=(!$govArticle && $slug==='' && $kind==='' && $search==='' && $requestedWidget==='');
+if($govHomePage)$govSections=cms_government_home_order();
+
 $govLogo=$siteLogo;
 $govBanner=$heroImage;
 $govTitle=$kind!==''?($moduleLabels[$kind]??$gov['center_title']):$gov['center_title'];
@@ -42,8 +45,8 @@ if ($search!=='')$govTitle='Результаты поиска';
 <script src="/assets/theme.js?v=government5" defer></script>
 <script src="/assets/government.js?v=government5" defer></script>
 <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
-<link rel="stylesheet" href="/assets/templates.css?v=gov-access2026-1">
-<link rel="stylesheet" href="/assets/government.css?v=gov-access2026-1">
+<link rel="stylesheet" href="/assets/templates.css?v=govcomposer1">
+<link rel="stylesheet" href="/assets/government.css?v=govcomposer1">
 <link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
@@ -129,27 +132,31 @@ if ($search!=='')$govTitle='Результаты поиска';
     <?php else:?>
       <div class="government-breadcrumb"><a href="/">Главная</a><?php if($kind!==''):?><span>›</span><?=h($moduleLabels[$kind]??$kind)?><?php endif;?></div>
       <h1><?=h($govTitle)?></h1>
-      <?php if($kind===''):?>
+      <?php if($govHomePage && $gov['show_intro']==='1'):?>
       <div class="government-introduction">
         <h2><?=h($siteContent['title'])?></h2>
         <p><?=nl2br(h($gov['center_intro']))?></p>
         <?php if($siteContent['description']!==''):?><p><?=h($siteContent['description'])?></p><?php endif;?>
       </div>
       <?php endif;?>
-      <?php if($kind==='' && $requestedWidget===''):cms_home_render('government','top');endif;?>
-      <?php foreach($govSections as $section):?>
-        <?php if($section==='features'):?>
-        <section class="government-section" id="features">
-          <h2><?=h($siteContent['features_title'])?></h2>
+      <?php foreach($govSections as $govSectionToken):
+        $govCustomId=$govHomePage && str_starts_with($govSectionToken,'b:')?substr($govSectionToken,2):null;
+        $section=$govHomePage ? (str_starts_with($govSectionToken,'m:')?substr($govSectionToken,2):'') : $govSectionToken;
+        $govModuleStyle=$govHomePage?(cms_government_home_settings()[$section]['style']??'official'):'official';
+      ?>
+        <?php if($govCustomId!==null): cms_home_render('government','top',$govCustomId); ?>
+        <?php elseif($section==='features'):?>
+        <section class="government-section gov-module-style-<?=h($govModuleStyle)?>" id="features">
+          <h2><?=h($govHomePage?cms_government_home_resolve_title('features',$siteContent['features_title']):$siteContent['features_title'])?></h2>
           <div class="government-feature-grid">
             <?php for($i=1;$i<=3;$i++):?><div class="government-feature"><strong><?=h($siteContent['feature_'.$i.'_title'])?></strong><p><?=h($siteContent['feature_'.$i.'_text'])?></p></div><?php endfor;?>
           </div>
         </section>
         <?php elseif(in_array($section,['documents','photos','videos'],true)):?>
-        <section class="government-section"><?php cms_module_media_block($section); ?></section>
+        <section class="government-section gov-module-style-<?=h($govModuleStyle)?>"><?php cms_module_media_block($section,$govHomePage?cms_government_home_resolve_title($section,cms_module_label($section)):null); ?></section>
         <?php elseif($section==='contact'):?>
-        <section class="government-section" id="contact">
-          <h2><?=h(cms_contacts('government')['title'])?></h2>
+        <section class="government-section gov-module-style-<?=h($govModuleStyle)?>" id="contact">
+          <h2><?=h($govHomePage?cms_government_home_resolve_title('contact',cms_contacts('government')['title']):cms_contacts('government')['title'])?></h2>
           <?php $govContacts=cms_contacts('government');if($govContacts['intro']!==''):?><p class="muted"><?=nl2br(h($govContacts['intro']))?></p><?php endif;?>
           <?=cms_render_contact_details('government')?>
           <?php if($message!==''):?><div class="notice" role="status"><?=h($message)?></div><?php endif;?>
@@ -169,8 +176,8 @@ if ($search!=='')$govTitle='Результаты поиска';
           $q->execute([$section]);$items=$q->fetchAll();
           $covers=cms_content_image_map($items);
         ?>
-        <section class="government-section government-section-<?=h($section)?>">
-          <div class="government-section-title"><h2><?=h($section==='news'?$siteContent['news_title']:$moduleLabels[$section])?></h2><a href="/?kind=<?=h($section)?>">Все материалы <i class="fa-solid fa-arrow-right cms-icon-inline" aria-hidden="true"></i></a></div>
+        <section class="government-section government-section-<?=h($section)?> gov-module-style-<?=h($govModuleStyle)?>">
+          <div class="government-section-title"><h2><?=h($govHomePage?cms_government_home_resolve_title($section,$section==='news'?$siteContent['news_title']:$moduleLabels[$section]):($section==='news'?$siteContent['news_title']:$moduleLabels[$section]))?></h2><a href="/?kind=<?=h($section)?>">Все материалы <i class="fa-solid fa-arrow-right cms-icon-inline" aria-hidden="true"></i></a></div>
           <?php if($items):?><div class="government-materials">
             <?php foreach($items as $item):?><article class="government-material cms-government-material">
               <a class="cms-government-material-thumb" href="/?p=<?=rawurlencode($item['slug'])?>" aria-label="<?=h($item['title'])?>">
@@ -191,8 +198,7 @@ if ($search!=='')$govTitle='Результаты поиска';
         </section>
         <?php endif;?>
       <?php endforeach;?>
-      <?php if($kind==='' && $requestedWidget===''):cms_home_render('government','bottom');endif;?>
-    <?php endif;?>
+     <?php endif;?>
   </main>
   <?php if($govRight):?>
   <aside class="government-right" aria-label="Информация администрации">
