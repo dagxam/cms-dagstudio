@@ -119,6 +119,10 @@ jobs:
         env:
           DAG_CMS_TEST_MODE: '1'
         run: php tests/contact-social.php
+      - name: Фиксация левой панели на компьютере и мобильная адаптивность
+        env:
+          DAG_CMS_TEST_MODE: '1'
+        run: php tests/admin-fixed-sidebar.php
       - name: Проверка всплывающего подменю Настройки и прав доступа
         env:
           DAG_CMS_TEST_MODE: '1'

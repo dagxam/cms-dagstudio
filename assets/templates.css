@@ -1149,3 +1149,28 @@ html[data-theme] body.site-page .privacy-check a{text-decoration:underline;text-
 @media(max-width:600px){.cms-menu-module-fields{grid-template-columns:minmax(0,1fr)}
  .cms-menu-modules-actions .button{width:100%;white-space:normal}
  .cms-menu-modules-heading{gap:11px}.cms-menu-modules-heading-icon{width:39px;height:39px;flex-basis:39px}}
+
+/* Панель администратора: левая навигация фиксирована на компьютерах.
+   Прокручивается только её собственное содержимое; правая область свободно скроллится. */
+@media(min-width:721px){
+  body.admin-layout .sidebar{
+    position:fixed;top:0;left:0;bottom:0;z-index:30;
+    width:254px;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;
+    overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;
+    scrollbar-gutter:stable;
+  }
+  body.admin-layout .workspace{
+    margin-left:254px;width:calc(100% - 254px);min-width:0;
+  }
+}
+@media(min-width:721px) and (max-width:1050px){
+  body.admin-layout .sidebar{width:220px}
+  body.admin-layout .workspace{margin-left:220px;width:calc(100% - 220px)}
+}
+@media(max-width:720px){
+  body.admin-layout .sidebar{
+    position:relative;top:auto;left:auto;bottom:auto;
+    width:100%;height:auto;max-height:none;overflow:visible;
+  }
+  body.admin-layout .workspace{margin-left:0;width:100%}
+}
