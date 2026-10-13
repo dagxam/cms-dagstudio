@@ -34,7 +34,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Панель управления — DAG STUDIO CMS</title>
-<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=homeblocks1"><link rel="stylesheet" href="/assets/templates.css?v=menu-modules1"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/admin-profile.js?v=profile1" defer></script><script src="/assets/home-blocks.js?v=1" defer></script><script src="/assets/government-home.js?v=1" defer></script><script src="/assets/government-leader.js?v=1" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
+<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=homeblocks1"><link rel="stylesheet" href="/assets/templates.css?v=settings-flyout1"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/admin-profile.js?v=profile1" defer></script><script src="/assets/admin-settings-menu.js?v=1" defer></script><script src="/assets/home-blocks.js?v=1" defer></script><script src="/assets/government-home.js?v=1" defer></script><script src="/assets/government-leader.js?v=1" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
 <body class="admin-layout">
 <aside class="sidebar">
 <a class="brand" href="/admin/index.php"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span>DAG STUDIO <b>CMS</b></span></a>
@@ -70,19 +70,29 @@ $settingsOpen=isset($settingsChildren[$section]);
 $settingsAvailable=allowed('settings')||allowed('messages')||allowed('users');
 ?>
 <?php if($settingsAvailable):?>
-<details class="cms-settings-group" <?=$settingsOpen?'open':''?>>
-  <summary class="nav-item cms-settings-summary <?=$settingsOpen?'active':''?>" aria-label="Раздел настроек">
-    <i class="fa-solid fa-gear" aria-hidden="true"></i><span>Настройки</span><span class="cms-settings-chevron" aria-hidden="true"><i class="fa-solid fa-chevron-down"></i></span>
-  </summary>
-  <nav class="cms-settings-children" aria-label="Подразделы настроек">
+<div class="cms-settings-group" data-settings-flyout>
+  <button type="button" class="nav-item cms-settings-trigger <?=$settingsOpen?'active':''?>"
+    data-settings-trigger aria-label="Настройки: открыть подменю" aria-haspopup="true"
+    aria-controls="cms-settings-submenu" aria-expanded="false">
+    <span class="cms-nav-icon" aria-hidden="true"><i class="fa-solid fa-gear"></i></span>
+    <span>Настройки</span><span class="cms-settings-arrow" aria-hidden="true"><i class="fa-solid fa-chevron-right"></i></span>
+  </button>
+  <nav id="cms-settings-submenu" class="cms-settings-popover" data-settings-popover
+    aria-label="Подменю настроек" hidden>
+    <div class="cms-settings-popover-heading">
+      <span class="cms-settings-popover-icon" aria-hidden="true"><i class="fa-solid fa-sliders"></i></span>
+      <span><strong>Настройки CMS</strong><small>Управление сайтом</small></span>
+    </div>
+    <div class="cms-settings-popover-links">
     <?php foreach($settingsChildren as $childKey=>$entry):
       if(!allowed($entry[1]))continue;?>
-      <a class="nav-item cms-settings-child <?=$section===$childKey?'active':''?>" href="/admin/index.php?section=<?=h($childKey)?>" <?=$section===$childKey?'aria-current="page"':''?>>
+      <a class="cms-settings-popover-link <?=$section===$childKey?'active':''?>" href="/admin/index.php?section=<?=h($childKey)?>" <?=$section===$childKey?'aria-current="page"':''?>>
         <span class="cms-nav-icon" aria-hidden="true"><i class="fa-solid <?=h(['settings'=>'fa-sliders','templates'=>'fa-palette','menus'=>'fa-bars','modules'=>'fa-puzzle-piece','accessibility'=>'fa-universal-access','privacy'=>'fa-shield-halved','contacts'=>'fa-address-book','socials'=>'fa-share-nodes','messages'=>'fa-envelope','users'=>'fa-users'][$childKey]??'fa-circle-info')?>"></i></span><?=h($entry[0])?>
       </a>
     <?php endforeach;?>
+    </div>
   </nav>
-</details>
+</div>
 <?php endif;?>
 <div class="sidebar-bottom">
 <a class="nav-item" href="/" target="_blank" rel="noopener"><span class="cms-nav-icon"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span> Открыть сайт</a>
