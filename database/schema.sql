@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS cms_shop_product_meta (
  KEY idx_shop_featured(featured,sort_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Заказ сохраняет снимок цены и товара; банковских реквизитов покупателя нет.
+-- Заказ сохраняет снимок цены и товара, банковские реквизиты покупателя не собираются.
 CREATE TABLE IF NOT EXISTS cms_shop_orders (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  public_number CHAR(16) NOT NULL UNIQUE,
