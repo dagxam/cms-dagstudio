@@ -524,3 +524,27 @@ body.site-page .cms-unified-header .cms-media-header-actions .theme-toggle,
 body.site-page.cms-vision-active .cms-unified-header .cms-media-header-actions .theme-toggle{
   min-height:44px!important;height:44px!important;
 }
+
+/* DAG STUDIO CMS: вложенное главное меню во всех темах, включая мобильные браузеры. */
+body.site-page .cms-unified-header .cms-media-site-nav{overflow:visible!important;flex-wrap:wrap!important;position:relative;z-index:40}
+body.site-page .cms-unified-header{overflow:visible!important}
+body.site-page .cms-unified-header .cms-nav-dropdown{position:relative;display:inline-flex;flex:0 0 auto;min-width:0}
+body.site-page .cms-unified-header .cms-nav-dropdown>summary{display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+ border:1px solid transparent;min-height:39px;padding:8px 13px;border-radius:7px;color:var(--site-ink);
+ font-size:12px;font-weight:750;line-height:1.4;list-style:none;user-select:none}
+body.site-page .cms-unified-header .cms-nav-dropdown>summary::-webkit-details-marker{display:none}
+body.site-page .cms-unified-header .cms-nav-dropdown>summary::marker{content:""}
+body.site-page .cms-unified-header .cms-nav-dropdown>summary .fa-solid{font-size:10px;transition:transform .18s}
+body.site-page .cms-unified-header .cms-nav-dropdown[open]>summary .fa-solid{transform:rotate(180deg)}
+body.site-page .cms-unified-header .cms-nav-dropdown[open]>summary,
+body.site-page .cms-unified-header .cms-nav-dropdown>summary:hover{background:var(--site-surface);color:var(--site-accent);border-color:var(--site-border)}
+body.site-page .cms-unified-header .cms-nav-dropdown>summary:focus-visible{outline:3px solid var(--site-accent);outline-offset:2px}
+body.site-page .cms-unified-header .cms-nav-submenu{position:absolute;top:calc(100% + 7px);left:0;min-width:215px;max-width:min(300px,90vw);
+ z-index:70;background:var(--site-surface);border:1px solid var(--site-border);border-radius:10px;padding:7px;
+ box-shadow:0 15px 38px rgba(0,0,0,.17);display:grid;gap:2px}
+body.site-page .cms-unified-header .cms-nav-submenu a{display:flex!important;justify-content:flex-start;align-items:center;
+ width:100%;white-space:normal!important;overflow-wrap:anywhere;font-size:13px!important;min-height:40px!important;
+ color:var(--site-ink)!important;padding:9px 11px!important;border-radius:6px}
+body.site-page .cms-unified-header .cms-nav-submenu a:focus-visible{outline:2px solid var(--site-accent);outline-offset:0}
+@media(max-width:650px){body.site-page .cms-unified-header .cms-nav-dropdown{max-width:100%}
+ body.site-page .cms-unified-header .cms-nav-submenu{left:0;max-width:calc(100vw - 35px)}}

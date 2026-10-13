@@ -17,6 +17,21 @@ require dirname(__DIR__).'/app/page-options.php';
 require dirname(__DIR__).'/app/video-links.php';
 check_ext(count(cms_menu_for_template('company'))>2,'Стандартное главное меню');
 check_ext(cms_menu_parse("Главная | /\nНовости | /?kind=news")[1]['label']==='Новости','Пункты меню и порядок');
+$nested=cms_menu_parse("Главная | /\nКаталог | /?kind=product\n  - Одежда | /?kind=product&category=clothes\n  - Новинки | /?kind=product&sort=new\nКонтакты | /?module=contact");
+check_ext(count($nested)===3&&count($nested[1]['children'])===2,'Добавление и сортировка вложенного меню');
+check_ext($nested[1]['children'][0]['label']==='Одежда','Подпункты сохраняют введённый порядок');
+foreach(["  - Без родителя | /","Пункт | /\n - Неправильный отступ | /"] as $invalid){
+ try{cms_menu_parse($invalid);check_ext(false,'Недопустимое подменю');}catch(RuntimeException $e){check_ext(true,'Недопустимое подменю отклонено');}
+}
+$cfg['cms_menus_by_type']=json_encode(['company'=>$nested],JSON_UNESCAPED_UNICODE);
+check_ext(count(cms_menu_for_template('company')[1]['children'])===2,'Подпункты сохраняются в структурированном меню');
+check_ext(str_contains(cms_menu_lines('company'),'  - Одежда | /?kind=product&category=clothes'),'Редактор показывает отступы подпунктов');
+$navigation=cms_public_menu_links('company');
+check_ext(count($navigation[1]['children'])===2,'Подменю передаётся публичному шаблону');
+$header=file_get_contents(dirname(__DIR__).'/app/public-header.php');
+check_ext(str_contains($header,'cms-nav-dropdown')&&str_contains($header,'cms-nav-submenu'),'Подменю рисуется в общей шапке');
+$cfg['cms_menus_by_type']='{}';
+
 foreach(['javascript:alert(1)','https://evil.org/thing\nfoo','//bad.com','/bad url'] as $bad){
  try{cms_menu_parse('Тест | '.$bad);check_ext(false,'Запрещённая ссылка');}
  catch(RuntimeException $e){check_ext(true,'Небезопасная ссылка отклонена');}

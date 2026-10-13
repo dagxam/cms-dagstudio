@@ -104,3 +104,47 @@ CREATE TABLE IF NOT EXISTS cms_message_consents (
  consent_text_hash CHAR(64) NOT NULL,
  FOREIGN KEY(message_id) REFERENCES messages(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Магазин: категории и параметры товаров.
+CREATE TABLE IF NOT EXISTS cms_shop_categories (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(120) NOT NULL,
+ slug VARCHAR(120) NOT NULL UNIQUE,
+ sort_order INT NOT NULL DEFAULT 100,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cms_shop_product_meta (
+ product_id BIGINT UNSIGNED PRIMARY KEY,
+ category_id BIGINT UNSIGNED NULL,
+ featured TINYINT(1) NOT NULL DEFAULT 0,
+ sort_order INT NOT NULL DEFAULT 100,
+ FOREIGN KEY (product_id) REFERENCES content(id) ON DELETE CASCADE,
+ FOREIGN KEY (category_id) REFERENCES cms_shop_categories(id) ON DELETE SET NULL,
+ KEY idx_shop_featured(featured,sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Заказ сохраняет снимок цены и товара; банковских реквизитов покупателя нет.
+CREATE TABLE IF NOT EXISTS cms_shop_orders (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ public_number CHAR(16) NOT NULL UNIQUE,
+ product_id BIGINT UNSIGNED NULL,
+ product_title VARCHAR(250) NOT NULL,
+ unit_price DECIMAL(12,2) NOT NULL,
+ quantity SMALLINT UNSIGNED NOT NULL,
+ total_price DECIMAL(14,2) NOT NULL,
+ customer_name VARCHAR(120) NOT NULL,
+ customer_phone VARCHAR(40) NOT NULL,
+ customer_email VARCHAR(190) NOT NULL,
+ customer_address VARCHAR(500) NOT NULL DEFAULT '',
+ customer_note TEXT NULL,
+ payment_method VARCHAR(30) NOT NULL DEFAULT 'standard',
+ payment_status VARCHAR(20) NOT NULL DEFAULT 'unpaid',
+ order_status VARCHAR(20) NOT NULL DEFAULT 'new',
+ consent_version VARCHAR(50) NOT NULL,
+ consent_text_hash CHAR(64) NOT NULL,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ KEY idx_orders_status(order_status,created_at),
+ FOREIGN KEY(product_id) REFERENCES content(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -115,6 +115,7 @@ require_once __DIR__ . '/profile.php';
 require_once __DIR__ . '/home-blocks.php';
 require_once __DIR__ . '/media.php';
 require_once __DIR__ . '/content-images.php';
+require_once __DIR__ . '/shop-view.php';
 
 require_once __DIR__ . '/modules.php';
 require_once __DIR__ . '/government-home.php';

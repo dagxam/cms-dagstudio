@@ -8,14 +8,21 @@ declare(strict_types=1);
 function cms_public_menu_links(string $template): array {
     $links=[];
     $used=[];
-    $add=static function(string $label,string $url) use (&$links,&$used):void {
+    $add=static function(string $label,string $url,array $children=[]) use (&$links,&$used):void {
         $label=trim($label);$url=trim($url);
         if($label===''||$url===''||!safe_template_url($url)||isset($used[$url]))return;
         $used[$url]=true;
-        $links[]=['label'=>$label,'url'=>$url];
+        $childLinks=[];
+        foreach($children as $child){
+            $title=(string)($child['label']??'');
+            $target=(string)($child['url']??'');
+            if($title===''||$target===''||!safe_template_url($target)||isset($used[$target]))continue;
+            $used[$target]=true;$childLinks[]=['label'=>$title,'url'=>$target];
+        }
+        $links[]=['label'=>$label,'url'=>$url,'children'=>$childLinks];
     };
     foreach(cms_menu_visible($template) as $link) {
-        $add((string)($link['label']??''),(string)($link['url']??''));
+        $add((string)($link['label']??''),(string)($link['url']??''),$link['children']??[]);
     }
     foreach(cms_module_ids($template,'nav') as $id) {
         $add(cms_module_label($id),cms_module_href($id));
@@ -72,9 +79,20 @@ function cms_render_public_header(string $template): void {
       </div>
       <nav class="cms-media-site-nav" aria-label="Главное меню">
         <?php foreach($links as $link): ?>
+        <?php if(!empty($link['children'])):?>
+        <details class="cms-nav-dropdown">
+          <summary><?=h($link['label'])?> <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+          <div class="cms-nav-submenu">
+            <?php if($link['url']!=='#submenu'):?><a href="<?=h($link['url'])?>" <?=($_SERVER['REQUEST_URI']??'/')===$link['url']?'aria-current="page"':''?>><?=h($link['label'])?> — обзор</a><?php endif;?>
+            <?php foreach($link['children'] as $child):?><a href="<?=h($child['url'])?>" <?=($_SERVER['REQUEST_URI']??'/')===$child['url']?'aria-current="page"':''?>><?=h($child['label'])?></a><?php endforeach;?>
+          </div>
+        </details>
+        <?php else:?>
         <a href="<?=h($link['url'])?>" <?=($_SERVER['REQUEST_URI']??'/')===$link['url']?'aria-current="page"':''?>><?=h($link['label'])?></a>
+        <?php endif;?>
         <?php endforeach;?>
       </nav>
+      <script src="/assets/menu-dropdown.js?v=1" defer></script>
     </header>
     <?php
 }

@@ -6,7 +6,7 @@ header('X-Robots-Tag: noindex, nofollow');
 $me = require_account();
 $section = (string)($_GET['section'] ?? 'dashboard');
 $types = kinds();
-if (!in_array($section, array_merge(['dashboard','profile','edit','templates','settings','users','messages','documents','photos','videos','accessibility','privacy','modules','menus','contacts','socials'],array_keys($types)),true)) $section='dashboard';
+if (!in_array($section, array_merge(['dashboard','profile','edit','templates','settings','users','messages','orders','shop','documents','photos','videos','accessibility','privacy','modules','menus','contacts','socials'],array_keys($types)),true)) $section='dashboard';
 if ($section === 'edit') {
     $id = max(0,(int)($_GET['id'] ?? 0));
     $record = null;
@@ -21,7 +21,7 @@ if ($section === 'edit') {
     require_module($kind);
     if (!module_enabled($kind)) { http_response_code(404); exit('Модуль отключён'); }
 } elseif ($section !== 'dashboard' && $section !== 'profile') {
-    require_module(in_array($section,['accessibility','privacy','modules','menus','contacts','socials'],true)?'settings':(in_array($section,['documents','photos','videos'],true)?'media':$section));
+    require_module(in_array($section,['accessibility','privacy','modules','menus','contacts','socials','orders','shop'],true)?'settings':(in_array($section,['documents','photos','videos'],true)?'media':$section));
     if (isset($types[$section]) && !module_enabled($section)) {
         http_response_code(404);
         exit('Модуль отключён');
@@ -34,7 +34,7 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Панель управления — DAG STUDIO CMS</title>
-<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=homeblocks1"><link rel="stylesheet" href="/assets/templates.css?v=govleader1"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/admin-profile.js?v=profile1" defer></script><script src="/assets/home-blocks.js?v=1" defer></script><script src="/assets/government-home.js?v=1" defer></script><script src="/assets/government-leader.js?v=1" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
+<link id="dag-favicon" rel="icon" type="image/svg+xml" href="/assets/ornament-dark.svg"><script>try{document.documentElement.dataset.theme=localStorage.getItem("dagstudio-cms-theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script><script src="/assets/theme.js" defer></script><link rel="stylesheet" href="/assets/style.css?v=homeblocks1"><link rel="stylesheet" href="/assets/templates.css?v=shop1"><script src="/assets/template-palettes.js?v=palette4" defer></script><script src="/assets/admin-profile.js?v=profile1" defer></script><script src="/assets/home-blocks.js?v=1" defer></script><script src="/assets/government-home.js?v=1" defer></script><script src="/assets/government-leader.js?v=1" defer></script><script src="/assets/content-editor.js?v=1" defer></script></head>
 <body class="admin-layout">
 <aside class="sidebar">
 <a class="brand" href="/admin/index.php"><span class="brand-symbol" aria-hidden="true"><img class="logo-on-dark" src="/assets/ornament-dark.svg" alt=""><img class="logo-on-light" src="/assets/ornament-light.svg" alt=""></span> <span>DAG STUDIO <b>CMS</b></span></a>
@@ -43,6 +43,11 @@ unset($_SESSION['flash'],$_SESSION['flash_error']);
 <?php foreach($types as $key=>$label): if(!allowed($key) || !module_enabled($key)) continue; ?>
 <a class="nav-item <?=($section===$key||($section==='edit'&&$kind===$key))?'active':''?>" href="/admin/index.php?section=<?=h($key)?>"><span class="cms-nav-icon"><?=cms_fa_icon($key)?></span> <?=h($label)?></a>
 <?php endforeach; ?>
+<?php if(allowed('settings')):?>
+<span class="nav-label">МАГАЗИН</span>
+<a class="nav-item <?=$section==='shop'?'active':''?>" href="?section=shop"><span class="cms-nav-icon"><i class="fa-solid fa-store"></i></span> Категории и витрина</a>
+<a class="nav-item <?=$section==='orders'?'active':''?>" href="?section=orders"><span class="cms-nav-icon"><i class="fa-solid fa-cart-shopping"></i></span> Заказы</a>
+<?php endif;?>
 <?php if (allowed('media')): ?>
 <?php foreach(['documents'=>'Документы','photos'=>'Фотогалерея','videos'=>'Видеогалерея'] as $key=>$label):
     if(!cms_module_enabled($key))continue; ?>
@@ -88,7 +93,7 @@ $settingsAvailable=allowed('settings')||allowed('messages')||allowed('users');
 'modules'=>'Настройки / Модули','accessibility'=>'Настройки / Доступность и возраст',
 'privacy'=>'Настройки / Конфиденциальность',
 'contacts'=>'Настройки / Контакты','socials'=>'Настройки / Социальные сети',
-'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи','profile'=>'Настройки профиля'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span><span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span></button><div class="admin-account-actions">
+'messages'=>'Настройки / Обращения','users'=>'Настройки / Пользователи','profile'=>'Настройки профиля','shop'=>'Магазин / Категории и витрина','orders'=>'Магазин / Заказы'][$section]??ucfirst($section))))?></span></span><div class="admin-header-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Переключить тему" title="Переключить тему"><span class="theme-toggle-dark" aria-hidden="true"><i class="fa-solid fa-moon"></i></span><span class="theme-toggle-light" aria-hidden="true"><i class="fa-solid fa-sun"></i></span></button><div class="admin-account-actions">
   <details class="cms-profile-menu" data-profile-menu>
     <summary class="user-pill cms-profile-trigger" aria-label="Меню пользователя: <?=h($me['name'])?>">
       <i class="fa-solid fa-user" aria-hidden="true"></i>
@@ -216,7 +221,22 @@ $cover=$record?cms_content_image((int)$record['id']):null;
 <?php if ($kind==='page'): ?>
 <?=cms_page_editor_widgets((int)($record['id']??0),site_template())?>
 <?php endif; ?>
-<?php if ($kind==='product'): ?><label>Цена (₽)<input name="price" type="number" step="0.01" min="0" value="<?=h((string)$row['price'])?>"></label><?php endif;?>
+<?php if($kind==='product'):
+ cms_shop_tables();
+ $shopMeta=$record?cms_shop_product_meta((int)$record['id']):['category_id'=>null,'featured'=>0,'sort_order'=>100];
+?>
+<fieldset class="cms-shop-product-settings"><legend><i class="fa-solid fa-store"></i> Настройки магазина</legend>
+ <label>Цена в рублях<input name="price" type="number" step="0.01" min="0" value="<?=h((string)$row['price'])?>" placeholder="Например: 1990.00"></label>
+ <div class="two">
+  <label>Категория товара<select name="shop_category"><option value="">Без категории</option>
+  <?php foreach(cms_shop_categories() as $cat):?><option value="<?=(int)$cat['id']?>" <?=((int)$shopMeta['category_id']===(int)$cat['id'])?'selected':''?>><?=h($cat['name'])?></option><?php endforeach;?>
+  </select></label>
+  <label>Порядок вывода (от 1 до 9999)<input type="number" min="1" max="9999" name="shop_sort" value="<?=(int)$shopMeta['sort_order']?>" required></label>
+ </div>
+ <label class="check"><input type="checkbox" name="shop_featured" value="1" <?=$shopMeta['featured']?'checked':''?>> <i class="fa-solid fa-star" aria-hidden="true"></i> Лучший товар — вывести в подборке на главной</label>
+ <p class="muted">На главной показываются только опубликованные товары. Категории и способы оформления находятся в разделе «Магазин».</p>
+</fieldset>
+<?php endif;?>
 <div class="two"><label>Статус публикации<select name="status">
 <option value="draft" <?=$row['status']==='draft'?'selected':''?>>Черновик</option>
 <option value="published" <?=$row['status']==='published'?'selected':''?>>Опубликовано</option>
@@ -251,6 +271,12 @@ $covers=cms_content_image_map($rows);
 
 <?php elseif (in_array($section,['documents','photos','videos'],true)): ?>
 <?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/media-library.php'; ?>
+
+<?php elseif ($section==='shop'): ?>
+<?php if(!defined('DAG_CMS_ADMIN_VIEW'))define('DAG_CMS_ADMIN_VIEW',true);require __DIR__.'/shop-editor.php'; ?>
+
+<?php elseif ($section==='orders'): ?>
+<?php if(!defined('DAG_CMS_ADMIN_VIEW'))define('DAG_CMS_ADMIN_VIEW',true);require __DIR__.'/orders-editor.php'; ?>
 
 <?php elseif ($section==='menus'): ?>
 <?php if(!defined('DAG_CMS_ADMIN_VIEW')) define('DAG_CMS_ADMIN_VIEW',true); require __DIR__.'/menu-editor.php'; ?>

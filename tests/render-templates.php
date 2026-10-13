@@ -116,6 +116,28 @@ if(getenv('TEST_GOV_LEADER')==='1' && $id==='government'){
         'leader_image'=>'/assets/uploads/leader-'.str_repeat('a',32).'.webp',
     ],JSON_UNESCAPED_UNICODE)]);
 }
+if(getenv('TEST_SHOP_VIEW')==='1' && $id==='store'){
+    $up->execute(['cms_modules_enabled','["page","news","service","product","documents","photos","videos","features","contact"]']);
+    $categorySlug='special-shop-testing';
+    $pdo->prepare('INSERT INTO cms_shop_categories(name,slug,sort_order) VALUES(?,?,?) ON DUPLICATE KEY UPDATE name=VALUES(name)')
+        ->execute(['Обувь',$categorySlug,2]);
+    $category=(int)$pdo->query("SELECT id FROM cms_shop_categories WHERE slug='special-shop-testing'")->fetchColumn();
+    $pdo->prepare("INSERT INTO content(kind,title,slug,price,status) VALUES('product',?,?,?,'published')
+      ON DUPLICATE KEY UPDATE price=VALUES(price),status='published'")
+        ->execute(['Тестовые кроссовки','test-sneakers-shop','1999.00']);
+    $productId=(int)$pdo->query("SELECT id FROM content WHERE slug='test-sneakers-shop'")->fetchColumn();
+    $pdo->prepare('INSERT INTO cms_shop_product_meta(product_id,category_id,featured,sort_order)
+      VALUES(?,?,1,1) ON DUPLICATE KEY UPDATE category_id=VALUES(category_id),featured=1,sort_order=1')
+        ->execute([$productId,$category]);
+    $up->execute(['cms_shop_settings',json_encode(['featured_title'=>'Лучшие товары магазина',
+      'catalog_title'=>'Каталог товаров','featured_limit'=>4,'catalog_limit'=>4,
+      'home_categories'=>true,'home_featured'=>true,'home_catalog'=>true,
+      'methods'=>['standard'],'transfer_text'=>''],JSON_UNESCAPED_UNICODE)]);
+    $up->execute(['cms_menus_by_type',json_encode(['store'=>[
+      ['label'=>'Каталог','url'=>'/?kind=product','children'=>[
+        ['label'=>'Обувь','url'=>'/?kind=product&category=special-shop-testing']]]
+    ]],JSON_UNESCAPED_UNICODE)]);
+}
 file_put_contents($config,'<?php return '.var_export($c,true).';');
 try {
     $_SERVER['REQUEST_METHOD']='GET';
@@ -149,6 +171,12 @@ try {
         !str_contains($html,'html[data-theme="light"] body.site-page') ||
         !str_contains($html,'html[data-theme="dark"] body.site-page')) {
         throw new RuntimeException('HTML не прошёл проверку для шаблона '.$id);
+    }
+    if(getenv('TEST_SHOP_VIEW')==='1' && $id==='store'){
+        foreach(['Лучшие товары магазина','Тестовые кроссовки','Обувь','cms-shop-category-link',
+          'cms-shop-product-card','cms-nav-submenu','Заказать'] as $label){
+            if(!str_contains($html,$label))throw new RuntimeException('Не отображается раздел магазина: '.$label);
+        }
     }
     if(getenv('TEST_HOME_BLOCKS')==='1'){
         if(!str_contains($html,'Верхний блок для '.$id)||

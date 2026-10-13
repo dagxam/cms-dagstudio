@@ -47,7 +47,7 @@ if ($search!=='')$govTitle='Результаты поиска';
 <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
 <link rel="stylesheet" href="/assets/templates.css?v=govcomposer1">
 <link rel="stylesheet" href="/assets/government.css?v=leader1">
-<link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
+<link rel="stylesheet" href="/assets/media.css?v=menus2">
 <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
 <style id="dag-site-palettes"><?=template_palette_css($design,'government')?></style>

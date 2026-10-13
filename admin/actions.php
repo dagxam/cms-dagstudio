@@ -38,6 +38,46 @@ try {
         session_regenerate_id(true);
         log_action('profile.password.update',(string)$me['id']);
         $_SESSION['flash']='Пароль обновлён. Используйте новый пароль при следующем входе.';
+    } elseif ($action === 'shop_save_settings') {
+        require_module('settings');
+        cms_shop_tables();
+        $settings=cms_shop_validate_settings($_POST);
+        database()->prepare('INSERT INTO settings(name,value) VALUES(?,?) ON DUPLICATE KEY UPDATE value=VALUES(value)')
+            ->execute(['cms_shop_settings',json_encode($settings,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR)]);
+        log_action('shop.settings','updated');
+        $_SESSION['flash']='Настройки витрины и способы оплаты сохранены.';
+        $back='/admin/index.php?section=shop';
+    } elseif ($action === 'shop_save_category') {
+        require_module('settings');
+        $id=filter_var($_POST['id']??null,FILTER_VALIDATE_INT)?:0;
+        $name=$_POST['name']??null;$order=$_POST['order']??null;
+        if(!is_string($name)||!is_string($order)||!ctype_digit($order))throw new RuntimeException('Проверьте категорию.');
+        cms_shop_category_save($id,$name,(int)$order);
+        log_action('shop.category.save',(string)$id);
+        $_SESSION['flash']='Категория сохранена.';
+        $back='/admin/index.php?section=shop';
+    } elseif ($action === 'shop_delete_category') {
+        require_module('settings');
+        $id=filter_var($_POST['id']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1]]);
+        if(!$id)throw new RuntimeException('Категория не найдена.');
+        cms_shop_tables();
+        database()->prepare('DELETE FROM cms_shop_categories WHERE id=?')->execute([$id]);
+        log_action('shop.category.delete',(string)$id);
+        $_SESSION['flash']='Категория удалена, товары сохранены.';
+        $back='/admin/index.php?section=shop';
+    } elseif ($action === 'shop_update_order') {
+        require_module('settings');
+        $id=filter_var($_POST['id']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1]]);
+        $status=$_POST['order_status']??null;$payment=$_POST['payment_status']??null;
+        if(!$id||!is_string($status)||!isset(cms_shop_order_statuses()[$status])||
+           !is_string($payment)||!in_array($payment,['unpaid','paid'],true))
+            throw new RuntimeException('Проверьте параметры заказа.');
+        cms_shop_tables();
+        database()->prepare('UPDATE cms_shop_orders SET order_status=?,payment_status=? WHERE id=?')
+          ->execute([$status,$payment,$id]);
+        log_action('shop.order.update',(string)$id.':'.$status);
+        $_SESSION['flash']='Статус заказа сохранён.';
+        $back='/admin/index.php?section=orders';
     } elseif ($action === 'save_template_menu') {
         require_module('settings');
         $template=(string)($_POST['template']??'');
@@ -796,6 +836,7 @@ try {
         $hasUpload=is_array($incomingCover)&&
             (int)($incomingCover['error']??UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_NO_FILE;
         if($hasUpload&&$removeCover)throw new RuntimeException('Выберите загрузку или удаление обложки.');
+        if($kind==='product')cms_shop_tables();
         cms_content_images_table();
         $previousCover=$id?cms_content_image($id):null;
         $newCover=null;
@@ -844,6 +885,7 @@ try {
             database()->prepare('UPDATE content_images SET alt_text=? WHERE content_id=?')
                 ->execute([$coverAlt!==''?$coverAlt:$title,$id]);
         }
+        if($kind==='product')cms_shop_update_product($id,(string)($_POST['shop_category']??''),isset($_POST['shop_featured'])?'1':'0',(string)($_POST['shop_sort']??'100'));
         log_action('content.save', $kind . ':' . $id);
         database()->commit();
         if($previousCover && ($newCover!==null || $removeCover))cms_content_image_delete_file($previousCover);

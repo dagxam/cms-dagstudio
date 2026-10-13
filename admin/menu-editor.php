@@ -12,10 +12,10 @@ if(!isset(template_catalog()[$menuTpl]))$menuTpl=site_template();
 <?php endforeach;?></nav>
 <div class="box form-panel cms-menu-editor">
 <h2>Меню: <?=h(template_catalog()[$menuTpl]['label'])?></h2>
-<p class="muted">Введите по одной строке «Название | /адрес», расположите строки в нужном порядке. Для разделов подходят /?kind=news, /?kind=page, /media.php?type=document, /media.php?type=photo, /media.php?type=video и внешние HTTPS-ссылки.</p>
+<p class="muted">Каждая основная строка задаёт пункт меню. Чтобы добавить подменю, начинайте следующую строку с двух пробелов и дефиса. Переставляйте строки для сортировки. Для разделов подходят /?kind=news, /?kind=page, /media.php?type=document, /media.php?type=photo, /media.php?type=video и внешние HTTPS-ссылки.</p>
 <form method="post" action="/admin/actions.php"><?=csrf()?>
 <input type="hidden" name="action" value="save_template_menu"><input type="hidden" name="template" value="<?=h($menuTpl)?>">
-<label>Пункты меню <textarea name="menu_lines" rows="13" maxlength="15000" placeholder="Главная | /&#10;Новости | /?kind=news"><?=h(cms_menu_lines($menuTpl))?></textarea></label>
-<p class="muted">До 20 пунктов. Модули, настроенные для области «Верхнее меню», дополняют это меню без повторения одинаковых ссылок.</p>
+<label>Пункты меню <textarea name="menu_lines" rows="15" maxlength="15000" placeholder="Главная | /&#10;Каталог | /?kind=product&#10;  - Все товары | /?kind=product&#10;  - Акции | /?kind=product&amp;sort=price_asc"><?=h(cms_menu_lines($menuTpl))?></textarea></label>
+<p class="muted">До 20 основных пунктов и 10 подпунктов на каждый. Пример: «Каталог | /?kind=product» и следующей строкой «  - Новинки | /?kind=product». Модули, настроенные для области «Верхнее меню», дополняют это меню без повторения одинаковых ссылок.</p>
 <button class="button" type="submit">Сохранить меню этого шаблона</button>
 </form></div>

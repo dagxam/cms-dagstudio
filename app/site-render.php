@@ -44,8 +44,8 @@ if ($activeTemplate === 'government') {
   <script>var dagDefaultTheme=<?=json_encode(template_default_mode($activeTemplate))?>;try{var dagSavedTheme=localStorage.getItem("dagstudio-template-<?=h($activeTemplate)?>");document.documentElement.dataset.theme=dagSavedTheme==="light"||dagSavedTheme==="dark"?dagSavedTheme:dagDefaultTheme}catch(e){document.documentElement.dataset.theme=dagDefaultTheme}</script>
   <script src="/assets/theme.js?v=palette4" defer></script>
   <link rel="stylesheet" href="/assets/style.css?v=fa672-local2">
-  <link rel="stylesheet" href="/assets/templates.css?v=homeblocks1">
-  <link rel="stylesheet" href="/assets/media.css?v=fa672-local2">
+  <link rel="stylesheet" href="/assets/templates.css?v=shop1">
+  <link rel="stylesheet" href="/assets/media.css?v=menus2">
   <script src="/assets/accessibility.js?v=a11y4" defer></script>
 <script src="/assets/privacy.js?v=privacy4" defer></script>
   <style id="dag-site-palettes"><?=template_palette_css($design,$activeTemplate)?></style>
@@ -71,6 +71,10 @@ if ($activeTemplate === 'government') {
     <?php if($record['summary']): ?><p class="lead"><?=h($record['summary'])?></p><?php endif;?>
     <?php if($record['kind']==='product' && $record['price']!==null): ?><p class="price"><?=h(number_format((float)$record['price'],2,',',' '))?> ₽</p><?php endif;?>
     <div class="article-body"><?=nl2br(h($record['body']))?></div>
+    <?php if($activeTemplate==='store'&&$record['kind']==='product' && $record['price']!==null && (float)$record['price']>0):?>
+    <div class="cms-shop-product-cta"><a class="button" href="/order.php?product=<?=(int)$record['id']?>"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Оформить заказ</a>
+      <p>Заявка поступит в магазин. Условия доставки и оплаты согласовываются после подтверждения заказа.</p></div>
+    <?php endif;?>
   </article>
   <?php if($pageConfig):cms_page_module($pageConfig['after'],$activeTemplate); ?></div>
   <?php if($pageConfig['right']):?><aside class="cms-page-detail-sidebar" aria-label="Боковые блоки справа"><?php foreach($pageConfig['right'] as $widget):cms_module_sidebar($widget,$activeTemplate);endforeach;?></aside><?php endif;?>
@@ -103,9 +107,12 @@ if ($activeTemplate === 'government') {
   <?php if($leftModules):?><aside class="cms-module-sidebar cms-module-sidebar-left" aria-label="Левая колонка модулей">
   <?php foreach($leftModules as $id):?><?php cms_module_sidebar($id,$activeTemplate); ?><?php endforeach;?></aside><?php endif;?>
   <div class="site-sections cms-module-main">
+  <?php if($activeTemplate==='store'&&$kind===''&&$requestedWidget===''):cms_shop_render_home();endif;?>
   <?php if($kind==='' && $requestedWidget===''):cms_home_render($activeTemplate,'top');endif; ?>
   <?php foreach($visibleSections as $section): ?>
-    <?php if($section==='features'): ?>
+    <?php if($activeTemplate==='store'&&$section==='product'):?>
+      <?php cms_shop_render_catalog($kind===''); ?>
+    <?php elseif($section==='features'): ?>
     <section class="section-block site-block site-benefits" id="features">
       <div class="section-heading"><div><div class="eyebrow">НАШ ПОДХОД</div><h2><?=h($siteContent['features_title'])?></h2></div></div>
       <div class="cards site-feature-cards">
